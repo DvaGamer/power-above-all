@@ -282,6 +282,13 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("mandate"); Feedback("seal"); }
         }
+        public void RepairPatronTrust()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RepairPatronTrust(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("mandate"); Feedback("quill"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;

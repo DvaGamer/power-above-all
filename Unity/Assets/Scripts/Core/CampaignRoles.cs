@@ -115,6 +115,10 @@ namespace PowerAboveAll
             if (Definition(regionId) == null) return Result(false, "error.mandate.region");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (state.Obligation != null) return Result(false, "error.mandate.open");
+            string patronId = PatronIdForRole(state.RoleId);
+            var patron = state.Characters == null ? null : Character(state, patronId);
+            if (patron == null || !Percent(patron.Relationship)) return Result(false, "error.role.invalid");
+            if (patron.Relationship <= 0) return Result(false, "error.trust.closed", patron.NameKey);
             if (state.Week < state.NextMandateWeek) return Result(false, "error.mandate.cooldown", N(state.NextMandateWeek - state.Week));
             if (state.Power < MandateMinimumPower) return Result(false, "error.mandate.power", N((int)MandateMinimumPower));
             if (state.Week > MaximumWeek - MandateDelayWeeks) return Result(false, "error.mandate.calendar");

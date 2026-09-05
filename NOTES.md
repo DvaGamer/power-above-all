@@ -2,6 +2,13 @@
 
 ## Güncel oturum özeti — 6 Eylül 2026, 02:08 İstanbul
 
+- 23:38 UTC iki tam GREEN: `tactical-trust-first-20260905-233324-829-3db06d4c`92Unity/9PNG/14assert/8JSON/10browser, gerçek doğalWon=true125.803s/196kayıp/+24malzeme; `patron-trust-journey-20260905-233615-111-60fec1ea`92Unity/6PNG/15assert/3JSON/10browser,20hafta5temerrüt/ilişki0ret/telafiGüç35→29ilişki4/yenisöz22haftaödemeilişki8. İkiRuntimehashaynı7e01a3a9436c03cd80148c3ad9dc8c100cc147a3eea5a442a1d8518ecc925c82. Root şehirlerRU/TR, gerçekbattle/zaferRU, trustretRU/TRveonarılmışTRkareleri gördü. Humansavehashaynı. Session10737/85364bitti, açıkUnity/player yok. Doğaltaktikscript sonraki gate'lerde WonTruebekleyenregressionolacak; eskioutputdeğişmez.
+
+- 23:35 UTC `tactical-trust-first-20260905-233324-829-3db06d4c`: gerçek Unity92/92PASS (yeni TacticalSimulation15, BattleCommand8, PatronTrust13), freshbuildPASS; player hâlâ doğal savaş rotasında. Root input/HUD ortak public emirlere bağlandı. 453 RU/TR girdisi unique/metin/placeholderPASS. Root 01yeni şehirliChampagneatlas ve05gerçekçatışma karesini gördü. Session10737 pending; bitmiş veya GREEN değil. Sonraki trust-campaign.script gerçek20hafta5temerrüt/ret/onarma/yeniavans/22haftaödeme. Assetsfreeze.
+
+- 23:26 UTC: rol/araç/DX11 kontrol noktası `b90c7ae`. Yeni kaynaklar: gameplay ajanı ortak taktik adımı/yakın temas, verification ajanı ortak savaş emirleri+snapshot+doğal sonuç rotası, visual ajanı 12 şehir ve güven UI; root kişisel güven Core/GameApp/13 yeni test. Bunlar henüz Unity kapısından geçmedi. Sonraki Unity yalnız tüm kaynaklar freeze olunca root tarafından.
+- Gerçek Windows girdi incelemesi `native-input-20260905-231715-3fca5cfd`: eski doğrulanmış build'de fare New→confirm→rol kartı, Escape iptal ve Enter ile assembly başlangıcı görüldü. Protokol 4 assertion/2 PNG/1 JSON PASS, 23:19:20 UTC; bu helper native exit kodunu tutmadığı için yeni GREEN kanıtı sayılmaz. OS kareleri Temp/codex-shot-2026-09-06_02-17-55,02-18-13,02-18-22,02-18-44,02-18-54.png; root gördü. İlk kırpma DPI125% yüzünden yanlış alanı aldı, SetProcessDPIAware ile client1440×900/origin768,455 düzeltildi. İlk oyun tıklaması doğru çalışmıştı.
+
 On saatlik geliştirme aktiftir; bitiş 07:22:03 UTC / 10:22 İstanbul. Aşağıdaki eski durdurma kayıtları tarihçedir. Hızlı devam bilgisi [SESSION_PROGRESS.md](SESSION_PROGRESS.md) içindedir.
 
 - `roles-visible-20260905-230302-558-1717bcb0` tam GREEN: 56/56 Unity, taze Direct3D11 Windows player, 22 PNG, 29 durum kontrolü, 3 JSON, 10/10 tarayıcı testi, 141 dosyalık bütünlük manifesti. Başlatıcı bu build'i `complete-build` doğrulamasıyla seçti.

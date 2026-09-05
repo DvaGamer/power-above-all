@@ -576,9 +576,14 @@ namespace PowerAboveAll
             Text(new Rect(96,y+26,146,nameHeight),T("character."+patronId+".name"),body);
             if(patron!=null)Text(new Rect(96,y+nameHeight+36,146,40),T("ui.mandate.patron_relation",Number(patron.Relationship)),small);
             y+=Mathf.Max(110,nameHeight+84);
-            Paragraph(ref y,T("ui.mandate.identity."+state.RoleId),small,238,18);
+            if(!active&&patron!=null&&patron.Relationship==0)
+            {
+                if(PatronTrustRepair(app,ref y)){documentContentHeight=y+12;return;}
+            }
+            else Paragraph(ref y,T((active?"ui.mandate.identity.":"ui.trust.identity.")+state.RoleId),small,238,18);
             Rule(4,y,238);y+=17;
             Paragraph(ref y,MandatePresentation.PrivilegeName(terms.Kind),heading,238,10);
+            if(!active)Paragraph(ref y,T("ui.role_clarity.unsigned"),small,238,10);
             // Bu işaret yalnız belgenin koşullarına gider; hiçbir emir vermez.
             if(Press(new Rect(4,y,238,39),T(active?"ui.mandate.review_obligation":"ui.mandate.review_terms"),true,true))
                 pendingMandateTerms=true;
@@ -590,7 +595,7 @@ namespace PowerAboveAll
                 Paragraph(ref y,T(CampaignCore.MandateDue(state)?"ui.mandate.active_due":"ui.mandate.active"),notice,238,10);
                 Paragraph(ref y,T("ui.mandate.issued",MandatePresentation.Date(terms.IssuedWeek)),small,238,6);
             }
-            Paragraph(ref y,T("ui.mandate.due",MandatePresentation.Date(terms.DueWeek)),body,238,10);
+            Paragraph(ref y,T(active?"ui.mandate.due":"ui.role_clarity.proposed_due",MandatePresentation.Date(terms.DueWeek)),body,238,10);
             if(active)Paragraph(ref y,T("ui.mandate.original_region"),small,238,14);
             if(pendingMandateTerms){documentScroll.y=y;pendingMandateTerms=false;}
             MandateEffects(ref y,T(active?"ui.mandate.agreed_short":"ui.mandate.now"),terms.Immediate);
@@ -604,6 +609,8 @@ namespace PowerAboveAll
                 string expectedId=CampaignCore.MandateId(state.Obligation);
                 ActionResult fulfil=CampaignCore.CanResolveMandate(state,expectedId,"fulfil");
                 ActionResult broken=CampaignCore.CanResolveMandate(state,expectedId,"break");
+                Paragraph(ref y,T("ui.role_clarity.obligation_context",T("region."+terms.RegionId),
+                    MandatePresentation.Date(terms.DueWeek)),body,238,10);
                 Paragraph(ref y,T("ui.mandate.stocks",state.Gold,state.Food),small,238,12);
                 if(!fulfil.Ok)Paragraph(ref y,L.Text(fulfil.Key,fulfil.Args),small,238,12);
                 documentContentHeight=y+112;
@@ -631,6 +638,36 @@ namespace PowerAboveAll
                 y+=58;
             }
             documentContentHeight=y+12;
+        }
+
+        private bool PatronTrustRepair(GameApp app,ref float y)
+        {
+            var refusal=new GUIStyle(small);refusal.normal.textColor=red;
+            Paragraph(ref y,T("ui.trust.refusal."+app.State.RoleId),refusal,238,12);
+            PatronRepairTerms terms=CampaignCore.GetPatronRepairTerms(app.State);
+            if(terms==null)return false;
+            ActionResult repair=CampaignCore.CanRepairPatronTrust(app.State);
+            string caption=T("ui.trust.repair.title");
+            string effects=T("ui.trust.repair.effects",terms.PowerCost>0?Change(-terms.PowerCost):"0",Change(terms.RelationshipGain));
+            string consequence=T("ui.trust.repair.consequence");
+            string reason=repair.Ok?"":L.Text(repair.Key,repair.Args);
+            const float width=220;
+            float captionHeight=body.CalcHeight(new GUIContent(caption),width);
+            float effectsHeight=body.CalcHeight(new GUIContent(effects),width);
+            float consequenceHeight=small.CalcHeight(new GUIContent(consequence),width);
+            float reasonHeight=repair.Ok?0:small.CalcHeight(new GUIContent(reason),width)+10;
+            float height=12+captionHeight+10+effectsHeight+10+consequenceHeight+14+reasonHeight+44+12;
+            Fill(new Rect(1,y,247,height),pale);Fill(new Rect(1,y,3,height),red);
+            y+=12;
+            Text(new Rect(14,y,width,captionHeight),caption,body);y+=captionHeight+10;
+            Text(new Rect(14,y,width,effectsHeight),effects,body);y+=effectsHeight+10;
+            Text(new Rect(14,y,width,consequenceHeight),consequence,small);y+=consequenceHeight+14;
+            if(!repair.Ok){Text(new Rect(14,y,width,reasonHeight-10),reason,refusal);y+=reasonHeight;}
+            bool accepted=Press(new Rect(14,y,width,44),T("ui.trust.repair.action"),repair.Ok,true);
+            y+=68;
+            if(!accepted)return false;
+            app.RepairPatronTrust();documentScroll=Vector2.zero;
+            return true;
         }
 
         private void MandateEffects(ref float y,string label,MandateEffect effect)
@@ -718,9 +755,9 @@ namespace PowerAboveAll
         private void Confirm(GameApp app)
         {
             Fill(new Rect(0,0,1440,900),new Color(.07f,.13f,.10f,.74f));Fill(new Rect(445,300,550,290),paper);Border(new Rect(445,300,550,290),brass);
-            Text(new Rect(476,328,488,54),T("ui.restart.title"),title);Text(new Rect(476,397,488,76),T("ui.restart.body"),body);
+            Text(new Rect(476,328,488,54),T("ui.restart.title"),title);Text(new Rect(476,397,488,76),T("ui.role_clarity.restart_body"),body);
             if(Press(new Rect(476,511,231,43),T("ui.cancel")))confirmNew=false;
-            if(Press(new Rect(722,511,241,43),T("ui.restart.confirm"),true,true)){confirmNew=false;app.BeginRoleSelection();}
+            if(Press(new Rect(722,511,241,43),T("ui.role_clarity.choose_role"),true,true)){confirmNew=false;app.BeginRoleSelection();}
         }
         private void OnDestroy(){foreach(var texture in medallions)if(texture)Destroy(texture);if(serifFont)Destroy(serifFont);if(sansFont)Destroy(sansFont);}
     }

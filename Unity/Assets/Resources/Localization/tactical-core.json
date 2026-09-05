@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {"key":"battle.volley_queued","ru":"Залп подготовлен: выстрел на следующем шаге боя.","tr":"Yaylım hazırlandı: sonraki savaş adımında ateş edilecek."},
+    {"key":"battle.contact_cavalry","ru":"Кавалерия атакует при сближении; залпа нет.","tr":"Süvari yaklaşınca saldırır; yaylım ateşi yok."},
+    {"key":"battle.contact_engaged","ru":"Ближний бой: отряд атакует без расхода патронов.","tr":"Yakın dövüş: birlik cephane harcamadan saldırır."},
+    {"key":"battle.contact_no_ammo","ru":"Патронов нет. Прикажите сблизиться для ближнего боя.","tr":"Cephane yok. Yakın dövüş için yaklaşma emri verin."},
+    {"key":"battle.regiment_contact","ru":"Бой {0}с · уст. {1} · патр. {2}","tr":"Dövüş {0}sn · yor. {1} · müh. {2}"},
+    {"key":"battle.regiment_cavalry_contact","ru":"Ближний бой {0}с · уст. {1}","tr":"Yakın dövüş {0}sn · yor. {1}"}
+  ]
+}

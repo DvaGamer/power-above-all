@@ -22,6 +22,18 @@ namespace PowerAboveAll
         private readonly List<string> states = new List<string>();
         private readonly Dictionary<string, string> remembered = new Dictionary<string, string>();
         private int commands, assertions;
+        private CampaignState battleCampaignBefore;
+        private MarchPreview battleArrival;
+        private string battleTarget, battleId;
+        private BattleSnapshot acceptedBattle;
+
+        [Serializable] private sealed class BattleEvidence
+        {
+            public string BattleId, OriginRegionId, TargetRegionId;
+            public CampaignState CampaignBefore;
+            public MarchPreview Arrival;
+            public BattleSnapshot Battle;
+        }
 
         [Serializable]
         private sealed class Receipt
@@ -121,12 +133,13 @@ namespace PowerAboveAll
                         else app.ResolveMandate(CampaignCore.MandateId(app.State.Obligation), value);
                         break;
                     case "mandate-terms": RequireIdle(app); app.GetComponent<CabinetHud>().ShowMandateTerms(); break;
+                    case "patron-repair": RequireIdle(app); app.RepairPatronTrust(); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
                     case "act": RequireIdle(app); app.Act(value); break;
                     case "week": RequireIdle(app); app.NextWeek(); break;
-                    case "march": RequireIdle(app); app.March(); break;
+                    case "march": RequireIdle(app); RememberBattleContext(app); app.March(); break;
                     case "petition": RequireIdle(app); app.ChoosePetition(value); break;
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
@@ -143,10 +156,13 @@ namespace PowerAboveAll
                         Field(typeof(CabinetHud), "documentScroll").SetValue(app.GetComponent<CabinetHud>(), new Vector2(0, offset)); break;
                     case "retreat":
                         if (!app.BattleActive) throw new InvalidOperationException("Cannot retreat outside battle.");
-                        Method(typeof(TacticalBattle), "Finish").Invoke(app.GetComponent<TacticalBattle>(), new object[] { false, true }); break;
+                        CheckOrder(app.GetComponent<TacticalBattle>().Retreat()); break;
                     case "accept":
                         if (!app.BattleActive) throw new InvalidOperationException("Cannot accept outside battle.");
-                        Method(typeof(TacticalBattle), "AcceptOutcome").Invoke(app.GetComponent<TacticalBattle>(), null); break;
+                        var battle = app.GetComponent<TacticalBattle>();
+                        acceptedBattle = battle.CaptureSnapshot();
+                        CheckOrder(battle.AcceptReport()); break;
+                    case "battle": yield return BattleCommand(app, value); break;
                     case "expect": Expect(app, value); break;
                     case "remember":
                         RequireName(value); CampaignCore.Validate(app.State);
@@ -179,7 +195,10 @@ namespace PowerAboveAll
             int space = value.IndexOf(' ');
             if (space < 1 || space == value.Length - 1) throw new InvalidDataException("expect requires a field and value: " + value);
             string key = value.Substring(0, space), expected = value.Substring(space + 1).Trim();
-            object actual = key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
+            object actual = key == "BattlePaused" || key == "BattleEnded" || key == "BattleWon" || key == "BattleHasOutcome" || key == "BattleCanVolley" || key == "BattleSelectionArrived"
+                ? BattleExpectation(app.GetComponent<TacticalBattle>().CaptureSnapshot(), key) :
+                key == "PatronRelationship" ? PatronRelationship(app.State) :
+                key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
                 key == "HasObligation" ? app.State.Obligation != null :
                 key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
                 key == "Language" ? L.Language : key == "Mode" ? app.Mode : key == "ResolvedBattleCount" ?
@@ -187,6 +206,138 @@ namespace PowerAboveAll
             string observed = Convert.ToString(actual, CultureInfo.InvariantCulture);
             if (observed != expected) throw new InvalidOperationException("Expected " + value + ", observed=" + observed);
             assertions++; report.Add("  PASS " + value);
+        }
+
+        private static float PatronRelationship(CampaignState state)
+        {
+            string patronId = state == null ? null : CampaignCore.PatronIdForRole(state.RoleId);
+            var patron = patronId == null ? null : state.Characters.Find(character => character.Id == patronId);
+            if (patron == null) throw new InvalidOperationException("PatronRelationship requires a role with an existing patron.");
+            return patron.Relationship;
+        }
+
+        private static object BattleExpectation(BattleSnapshot snapshot, string key)
+        {
+            if (!snapshot.Active) throw new InvalidOperationException("Battle expectation requires an active encounter.");
+            switch (key)
+            {
+                case "BattlePaused": return snapshot.Paused;
+                case "BattleEnded": return snapshot.Ended;
+                case "BattleHasOutcome": return snapshot.HasOutcome;
+                case "BattleCanVolley": return snapshot.CanVolley;
+                case "BattleSelectionArrived": return snapshot.SelectionArrived;
+                case "BattleWon":
+                    if (!snapshot.HasOutcome) throw new InvalidOperationException("Battle outcome has not been produced.");
+                    return snapshot.Won;
+                default: throw new InvalidDataException("Unsupported battle expectation: " + key);
+            }
+        }
+
+        private void RememberBattleContext(GameApp app)
+        {
+            var check = CampaignCore.CanMarch(app.State, app.State.SelectedRegionId);
+            if (!check.Ok || !check.RequiresBattle) return;
+            battleCampaignBefore = CampaignArchive.Deserialize(CampaignArchive.Serialize(app.State, false));
+            battleTarget = app.State.SelectedRegionId;
+            battleId = "battle-" + app.State.Week.ToString(CultureInfo.InvariantCulture) + "-" + app.State.Moves.ToString(CultureInfo.InvariantCulture) + "-" + app.State.ArmyRegionId + "-" + battleTarget;
+            battleArrival = CampaignCore.PreviewMarch(app.State, battleTarget);
+            acceptedBattle = null;
+        }
+
+        private void CheckOrder(BattleOrderResult result)
+        {
+            if (!result.Ok) throw new InvalidOperationException("Battle order refused: " + result.ReasonKey);
+            report.Add("  order accepted; affected=" + result.AffectedCount.ToString(CultureInfo.InvariantCulture));
+        }
+
+        private static void Arguments(string[] parts, int count)
+        {
+            if (parts.Length != count) throw new InvalidDataException("Wrong battle command argument count.");
+        }
+
+        private static float Coordinate(string value)
+        {
+            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float coordinate) || float.IsNaN(coordinate) || float.IsInfinity(coordinate))
+                throw new InvalidDataException("Battle coordinate must be finite: " + value);
+            return coordinate;
+        }
+
+        private IEnumerator BattleCommand(GameApp app, string value)
+        {
+            string[] parts = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) throw new InvalidDataException("Battle command is missing.");
+            var battle = app.GetComponent<TacticalBattle>();
+            switch (parts[0])
+            {
+                case "select":
+                    Arguments(parts, 3); RequireChoice(parts[2], "replace", "add", "toggle");
+                    if (!int.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out int slot)) throw new InvalidDataException("Battle slot must be 1..4.");
+                    CheckOrder(battle.SelectPlayerRegiment(slot, (BattleSelectionMode)Enum.Parse(typeof(BattleSelectionMode), parts[2], true))); break;
+                case "move": Arguments(parts, 3); CheckOrder(battle.MoveSelected(new Vector2(Coordinate(parts[1]), Coordinate(parts[2])))); break;
+                case "formation":
+                    Arguments(parts, 2); RequireChoice(parts[1], "line", "column", "square");
+                    CheckOrder(battle.SetSelectedFormation((BattleFormation)Enum.Parse(typeof(BattleFormation), parts[1], true))); break;
+                case "fire": Arguments(parts, 2); RequireChoice(parts[1], "hold", "free"); CheckOrder(battle.SetSelectedFireAtWill(parts[1] == "free")); break;
+                case "volley": Arguments(parts, 1); CheckOrder(battle.VolleySelected()); break;
+                case "pause": Arguments(parts, 2); RequireChoice(parts[1], "on", "off"); CheckOrder(battle.SetPaused(parts[1] == "on")); break;
+                case "state":
+                    Arguments(parts, 2);
+                    if (!battle.Active) throw new InvalidOperationException("Battle state requires an active encounter.");
+                    WriteBattleState(parts[1], battle.CaptureSnapshot()); break;
+                case "wait":
+                    Arguments(parts, 3); RequireChoice(parts[1], "active", "arrived", "volley-ready", "ended");
+                    yield return WaitForBattle(app, battle, parts[1], Number(parts[2])); break;
+                case "verify-return": Arguments(parts, 1); VerifyBattleReturn(app); break;
+                default: throw new InvalidDataException("Unknown battle command: " + parts[0]);
+            }
+        }
+
+        private void WriteBattleState(string name, BattleSnapshot snapshot)
+        {
+            var evidence = new BattleEvidence { BattleId = battleId, OriginRegionId = battleCampaignBefore == null ? null : battleCampaignBefore.ArmyRegionId,
+                TargetRegionId = battleTarget, CampaignBefore = battleCampaignBefore, Arrival = battleArrival, Battle = snapshot };
+            WriteNew(ArtifactPath(name, ".json"), JsonUtility.ToJson(evidence, true));
+            states.Add(name + ".json");
+        }
+
+        private IEnumerator WaitForBattle(GameApp app, TacticalBattle battle, string condition, float limit)
+        {
+            float until = Time.realtimeSinceStartup + limit;
+            while (Time.realtimeSinceStartup < until)
+            {
+                BattleSnapshot snapshot = battle.CaptureSnapshot();
+                bool ready = condition == "active" ? snapshot.Active : condition == "ended" ? snapshot.Active && snapshot.Ended && snapshot.HasOutcome :
+                    condition == "arrived" ? snapshot.Active && !snapshot.Ended && snapshot.SelectionArrived : snapshot.CanVolley;
+                if (ready) yield break;
+                if ((condition != "active" && !snapshot.Active) || (condition != "active" && condition != "ended" && snapshot.Ended) || (condition == "active" && !snapshot.Active && !app.Busy))
+                {
+                    WriteBattleState("battle-wait-failed-" + commands.ToString(CultureInfo.InvariantCulture), snapshot);
+                    throw new InvalidOperationException("Encounter cannot satisfy battle wait " + condition + ".");
+                }
+                yield return null;
+            }
+            BattleSnapshot final = battle.CaptureSnapshot();
+            WriteBattleState("battle-timeout-" + commands.ToString(CultureInfo.InvariantCulture), final);
+            throw new TimeoutException("Battle wait " + condition + " exceeded " + limit.ToString(CultureInfo.InvariantCulture) + " real seconds; paused=" + final.Paused + ".");
+        }
+
+        private void VerifyBattleReturn(GameApp app)
+        {
+            RequireIdle(app);
+            if (battleCampaignBefore == null || battleArrival == null || acceptedBattle == null || !acceptedBattle.HasOutcome)
+                throw new InvalidOperationException("No observed battle and accepted report to compare.");
+            var after = app.State;
+            if (after.Troops != battleCampaignBefore.Troops - acceptedBattle.Casualties ||
+                after.ArmyRegionId != (acceptedBattle.Won ? battleTarget : battleCampaignBefore.ArmyRegionId) ||
+                Mathf.Abs(after.Morale - acceptedBattle.CampaignReturnMorale) > .001f ||
+                after.Food != battleArrival.FoodAfter || after.Moves != battleArrival.MovesAfter ||
+                after.MilitarySupplies != Math.Min(100000000, battleArrival.MilitarySuppliesAfter + acceptedBattle.MilitarySuppliesRecovered) ||
+                after.ResolvedBattles.Count != battleCampaignBefore.ResolvedBattles.Count + 1 || !after.ResolvedBattles.Contains(battleId))
+                throw new InvalidOperationException("Campaign does not match the naturally observed battle report and march costs.");
+            foreach (string previous in battleCampaignBefore.ResolvedBattles)
+                if (!after.ResolvedBattles.Contains(previous)) throw new InvalidOperationException("Earlier battle history was lost.");
+            CampaignCore.Validate(after);
+            assertions++; report.Add("  PASS battle return; won=" + acceptedBattle.Won + "; casualties=" + acceptedBattle.Casualties.ToString(CultureInfo.InvariantCulture));
         }
 
         private IEnumerator Shot(string name)
@@ -240,11 +391,6 @@ namespace PowerAboveAll
         {
             return type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 ?? throw new MissingFieldException(type.Name, name);
-        }
-        private static MethodInfo Method(Type type, string name)
-        {
-            return type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)
-                ?? throw new MissingMethodException(type.Name, name);
         }
         private static float Number(string value)
         {

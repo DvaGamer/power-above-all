@@ -60,6 +60,16 @@ $plan = Get-ReviewPlan (Join-Path $PSScriptRoot 'shots.script')
 Check ($plan.Captures.Count -eq 27 -and $plan.Assertions -gt 20 -and $plan.States.Count -eq 3) 'Full review has frames, state evidence and assertions'
 $journeyPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'long-campaign.script')
 Check ($journeyPlan.Captures.Count -eq 12 -and $journeyPlan.Assertions -gt 25 -and $journeyPlan.States.Count -eq 4) 'Long campaign review parses six-week evidence and save assertions'
+$tacticalPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'tactical-campaign.script')
+Check ($tacticalPlan.Captures.Count -eq 9 -and $tacticalPlan.States.Count -eq 8 -and $tacticalPlan.Assertions -ge 12) 'Natural tactical review includes all battle snapshots and return assertion in receipt plan'
+$badBattle = Fixture 'invalid-battle.script' "new`nexpect Week 0`nbattle finish true`nshot sample`nquit"
+Reject { Get-ReviewPlan $badBattle } 'Review grammar cannot inject a battle outcome'
+$badWait = Fixture 'unbounded-battle.script' "new`nexpect Week 0`nbattle wait ended 121`nshot sample`nquit"
+Reject { Get-ReviewPlan $badWait } 'Battle condition wait is bounded before player launch'
+$badPoint = Fixture 'nonfinite-battle.script' "new`nexpect Week 0`nbattle move NaN 6`nshot sample`nquit"
+Reject { Get-ReviewPlan $badPoint } 'Nonfinite battlefield destination is rejected'
+$duplicateBattleState = Fixture 'duplicate-battle-state.script' "new`nexpect Week 0`nstate report`nbattle state report`nshot sample`nquit"
+Reject { Get-ReviewPlan $duplicateBattleState } 'Campaign and battle state artifact names cannot collide'
 $badScript = Fixture 'unsafe.script' "new`nexpect Week 0`nshot ../human-file`nquit"
 Reject { Get-ReviewPlan $badScript } 'Artifact path traversal rejected'
 $duplicateScript = Fixture 'duplicate.script' "new`nexpect Week 0`nshot sample`nshot sample`nquit"

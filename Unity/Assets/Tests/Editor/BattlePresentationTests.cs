@@ -62,6 +62,7 @@ namespace PowerAboveAll.Tests
 
         void PrepareShot()
         {
+            foreach (object regiment in Regiments) Write(regiment, "FireAtWill", false);
             object attacker = Regiments[0], target = Regiments[4];
             Write(attacker, "Position", Vector3.zero);
             Write(attacker, "Facing", 0f);
@@ -72,6 +73,12 @@ namespace PowerAboveAll.Tests
             Write(battle, "visualClock", 3f);
             Call(battle, "UpdateVisual", attacker, 1f);
             Call(battle, "UpdateVisual", target, 1f);
+        }
+
+        void FirePreparedVolley()
+        {
+            Call(battle, "OrderVolley");
+            Call(battle, "Simulate", .05f);
         }
 
         [Test]
@@ -112,7 +119,7 @@ namespace PowerAboveAll.Tests
             }
             var state = new List<object>();
             foreach (object regiment in Regiments)
-                foreach (string field in new[] { "Men", "Morale", "Ammo", "Reload", "Position", "Facing", "Routed", "Cohesion", "Fatigue" })
+                foreach (string field in new[] { "Men", "Morale", "Ammo", "Reload", "ContactReload", "AimedVolleyPending", "Position", "Facing", "Routed", "Cohesion", "Fatigue" })
                     state.Add(Read(regiment, field));
             foreach (string field in new[] { "elapsed", "playerHold", "enemyHold", "ended" }) state.Add(Read(battle, field));
             BattleOutcome outcome = (BattleOutcome)Read(battle, "outcome");
@@ -131,7 +138,7 @@ namespace PowerAboveAll.Tests
             Begin(); PrepareShot();
             object attacker = Regiments[0], target = Regiments[4];
             int menBefore = (int)Read(target, "Men"), ammoBefore = (int)Read(attacker, "Ammo");
-            Call(battle, "Shoot", attacker, target, false);
+            FirePreparedVolley();
             Assert.That((int)Read(target, "Men"), Is.LessThan(menBefore));
             Assert.That((int)Read(attacker, "Ammo"), Is.EqualTo(ammoBefore - 1));
             Assert.That(Read(attacker, "LastVolley"), Is.EqualTo(3f));
@@ -151,7 +158,7 @@ namespace PowerAboveAll.Tests
         {
             Begin(); PrepareShot();
             object attacker = Regiments[0], target = Regiments[4];
-            Call(battle, "Shoot", attacker, target, false);
+            FirePreparedVolley();
             Write(attacker, "Moving", true);
             Write(battle, "visualClock", 3.23f);
             Call(battle, "UpdateVisual", attacker, .23f);
@@ -190,7 +197,7 @@ namespace PowerAboveAll.Tests
             Begin(); PrepareShot();
             int sounds = 0;
             battle.Feedback += cue => { if (cue == "volley") sounds++; };
-            Call(battle, "Shoot", Regiments[0], Regiments[4], false);
+            FirePreparedVolley();
             IList effects = (IList)Read(battle, "effects");
             Write(battle, "paused", true);
             Call(battle, "UpdateEffects");

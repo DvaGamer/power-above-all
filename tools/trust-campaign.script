@@ -1,0 +1,84 @@
+# Bes kraliyet temerrudu normal haftalarla guveni tuketir; durum enjeksiyonu yok.
+new
+lang ru
+role-menu
+role-start crown
+expect PatronRelationship 50
+mandate issue
+week
+week
+petition relief
+mandate break
+week
+week
+mandate issue
+week
+week
+mandate break
+week
+week
+mandate issue
+week
+week
+mandate break
+week
+week
+mandate issue
+week
+week
+mandate break
+week
+week
+mandate issue
+week
+week
+mandate break
+week
+week
+expect Week 20
+expect PatronRelationship 0
+expect HasObligation False
+panel mandate
+wait 0.4
+shot 01-valcourt-refuses-ru
+state 01-broken-trust
+remember broken-trust
+mandate issue
+same broken-trust
+lang tr
+wait 0.3
+shot 02-valcourt-refuses-tr
+save
+load
+same broken-trust
+patron-repair
+expect PatronRelationship 4
+expect HasObligation False
+wait 0.3
+shot 03-responsibility-accepted-tr
+state 03-repaired-trust
+remember repaired-trust
+patron-repair
+same repaired-trust
+mandate issue
+expect HasObligation True
+lang ru
+wait 0.3
+shot 04-fresh-advance-ru
+week
+week
+expect Week 22
+expect MandateDue True
+wait 0.3
+shot 05-fresh-deadline-ru
+mandate fulfil
+expect PatronRelationship 8
+expect HasObligation False
+state 06-honoured-after-repair
+save
+remember honoured-after-repair
+select normandy
+load
+same honoured-after-repair
+shot 06-honoured-after-repair-ru
+quit

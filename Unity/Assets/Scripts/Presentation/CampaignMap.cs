@@ -522,50 +522,88 @@ namespace PowerAboveAll
             city.SetParent(provinces[seed.Id].transform, false);
             city.localPosition = World(seed.Point, .14f);
             var drawing = new CityEngraving();
-            Color ink = Hex("#3E5A4E"), faint = Hex("#8FA079"), wall = Hex("#F3E7CA");
-            bool capital = seed.Id == "ile";
-            bool coastal = seed.Id == "brittany" || seed.Id == "normandy";
-            bool frontier = seed.Id == "lorraine" || seed.Id == "champagne";
-            bool grain = seed.Id == "orleans" || seed.Id == "poitou" || seed.Id == "picardy";
+            Color ink = Hex("#3E5A4E"), faint = Hex("#8FA079"), wall = Hex("#F3E7CA"), roof = Hex("#60868B");
 
-            // Harflerden ayrılan, yaklaşık 34 × 20 piksel bir kent silüeti.
-            // Yapılar özgün işaretlerdir; belirli tarihî bir cephenin kopyası değildir.
-            drawing.Line(faint, .045f, -1.52f,-.83f, -.8f,-.9f, .1f,-.86f, 1.49f,-.78f);
-            if (grain)
+            // Aynı küçük ayak izinde on iki elle kurulan silüet. Bunlar belirli bir
+            // tarihî yapının kopyası veya yeni liman/üretim/geçiş mekaniği değildir.
+            drawing.Line(faint, .045f, -1.47f,-.81f, -.62f,-.79f, .32f,-.81f, 1.43f,-.78f);
+            switch (seed.Id)
             {
-                for (int row = 0; row < 3; row++)
-                    drawing.Line(faint, .04f, -1.52f + row * .18f,-.73f, -1.2f + row * .18f,-.40f);
-            }
-            if (coastal)
-            {
-                drawing.Line(ink, .055f, -1.28f,-.61f, -1.28f,.62f);
-                drawing.Shape(wall, -1.32f,.52f, -1.76f,-.22f, -1.32f,-.15f);
-                drawing.Line(ink, .045f, -1.32f,.52f, -1.76f,-.22f, -1.32f,-.15f);
-                drawing.Line(ink, .06f, -1.82f,-.52f, -1.64f,-.69f, -1.08f,-.66f);
-            }
-            if (capital)
-            {
-                EngravedHouse(drawing, -.26f, -.44f, .45f, .87f, .26f);
-                EngravedHouse(drawing, -1.45f, -.72f, .98f, .57f, .29f);
-                EngravedHouse(drawing, .47f, -.72f, .93f, .57f, .29f);
-                EngravedHouse(drawing, -.50f, -.77f, .97f, .68f, .35f);
-                drawing.Line(ink, .05f, -1.45f,-.41f, 1.39f,-.41f);
-            }
-            else
-            {
-                EngravedHouse(drawing, -.70f, -.20f, .68f, .35f, .27f);
-                EngravedHouse(drawing, .09f, -.68f, frontier ? .40f : .33f, 1.13f, .30f);
-                EngravedHouse(drawing, coastal ? -.97f : -1.17f, -.73f, .96f, .48f, .30f);
-                EngravedHouse(drawing, .46f, -.66f, seed.Id == "languedoc" ? 1f : .80f, .47f, .28f);
-                drawing.Line(ink, .07f, .21f,.14f, .21f,.33f);
-            }
-            if (frontier)
-            {
-                drawing.Shape(wall, -1.32f,-.78f, 1.36f,-.78f, 1.36f,-.51f, -1.32f,-.51f);
-                drawing.Line(ink, .06f, -1.32f,-.78f, -1.32f,-.45f, -.89f,-.45f, -.89f,-.54f,
-                    -.42f,-.54f, -.42f,-.45f, .08f,-.45f, .08f,-.54f, .55f,-.54f,
-                    .55f,-.45f, 1.36f,-.45f, 1.36f,-.78f);
-                drawing.Shape(ink, -.19f,-.78f, .16f,-.78f, .16f,-.62f, -.02f,-.53f, -.19f,-.62f);
+                case "ile":
+                    EngravedHouse(drawing, -1.40f, -.72f, .68f, .58f, .18f);
+                    EngravedHouse(drawing, .64f, -.72f, .64f, .58f, .18f);
+                    EngravedHouse(drawing, -.42f, -.73f, .84f, .98f, .20f);
+                    drawing.Line(ink, .065f, -1.38f,-.24f, 1.30f,-.24f);
+                    break;
+                case "brittany":
+                    EngravedHouse(drawing, -.52f, -.56f, .66f, .55f, .20f);
+                    EngravedHouse(drawing, -1.44f, -.73f, .62f, .44f, .22f);
+                    EngravedHouse(drawing, .58f, -.76f, .70f, .35f, .30f);
+                    break;
+                case "normandy":
+                    EngravedHouse(drawing, -1.44f, -.75f, 1.65f, .40f, .40f);
+                    EngravedTower(drawing, .72f, -.74f, .40f, 1.22f);
+                    break;
+                case "picardy":
+                    EngravedHouse(drawing, -1.43f, -.73f, 2.02f, .55f, .44f);
+                    EngravedHouse(drawing, .90f, -.75f, .38f, .30f, .14f);
+                    drawing.Line(ink, .07f, -.61f,-.70f, -.61f,-.33f, -.35f,-.33f, -.35f,-.70f);
+                    break;
+                case "champagne":
+                    EngravedHouse(drawing, -.80f, -.55f, .50f, .60f, .22f);
+                    EngravedHouse(drawing, -1.44f, -.76f, .70f, .40f, .24f);
+                    EngravedHouse(drawing, .60f, -.75f, .62f, .55f, .26f);
+                    EngravedBlock(drawing, -.04f, -.76f, .36f, .38f, wall);
+                    EngravedArch(drawing, .14f, -.76f, .19f, .28f, true);
+                    break;
+                case "lorraine":
+                    EngravedTower(drawing, -1.24f, -.73f, .55f, 1.12f);
+                    EngravedTower(drawing, .55f, -.73f, .55f, 1.12f);
+                    EngravedBlock(drawing, -.69f, -.73f, 1.24f, .49f, wall);
+                    drawing.Line(ink, .065f, -.69f,-.24f, .55f,-.24f);
+                    EngravedArch(drawing, -.05f, -.73f, .40f, .40f, true);
+                    break;
+                case "burgundy":
+                    EngravedHouse(drawing, -.84f, -.74f, .90f, .88f, .45f);
+                    EngravedHouse(drawing, .15f, -.76f, 1.15f, .33f, .17f);
+                    EngravedHouse(drawing, -1.43f, -.78f, .44f, .30f, .18f);
+                    break;
+                case "orleans":
+                    EngravedHouse(drawing, -.43f, -.12f, .65f, .44f, .20f);
+                    EngravedBridge(drawing, -1.30f, -.76f, 2.50f, .58f);
+                    break;
+                case "poitou":
+                    EngravedHouse(drawing, -1.43f, -.76f, .93f, .40f, .24f);
+                    EngravedMill(drawing, .65f, -.76f);
+                    break;
+                case "guyenne":
+                    EngravedHouse(drawing, -1.43f, -.75f, .65f, .41f, .18f);
+                    EngravedHouse(drawing, -.76f, -.75f, .66f, .44f, .16f);
+                    EngravedHouse(drawing, -.08f, -.75f, .65f, .40f, .20f);
+                    EngravedTower(drawing, .85f, -.74f, .34f, 1.02f);
+                    break;
+                case "languedoc":
+                    EngravedBlock(drawing, -1.30f, -.75f, 2.42f, .59f, wall);
+                    drawing.Shape(roof, -1.40f,-.16f, -.96f,.25f, .84f,.25f, 1.30f,-.16f);
+                    drawing.Line(ink, .065f, -1.30f,-.75f, -1.30f,-.16f, -1.40f,-.16f,
+                        -.96f,.25f, .84f,.25f, 1.30f,-.16f, 1.12f,-.16f, 1.12f,-.75f);
+                    for (int arch = 0; arch < 3; arch++)
+                        EngravedArch(drawing, -.78f + arch * .68f, -.75f, .40f, .43f, true);
+                    break;
+                case "provence":
+                    for (int step = 0; step < 3; step++)
+                    {
+                        float x = step == 0 ? -1.42f : step == 1 ? -.67f : .13f;
+                        float width = step == 0 ? .74f : step == 1 ? .79f : .93f;
+                        float height = .38f + step * .22f;
+                        EngravedBlock(drawing, x, -.76f, width, height, wall);
+                        EngravedBlock(drawing, x - .025f, -.76f + height, width + .05f, .09f, roof);
+                        drawing.Line(ink, .065f, x,-.76f, x,-.67f+height, x+width,-.67f+height, x+width,-.76f);
+                        drawing.Line(ink, .07f, x+width*.52f,-.73f, x+width*.52f,-.52f);
+                    }
+                    EngravedBlock(drawing, 1.10f, -.35f, .14f, .67f, Hex("#B79D71"));
+                    drawing.Line(ink, .065f, 1.10f,-.35f, 1.10f,.32f, 1.24f,.32f, 1.24f,-.35f);
+                    break;
             }
             var mesh = NewMesh(drawing.Vertices, drawing.Indices);
             mesh.name = "Town engraving: " + seed.Id;
@@ -576,6 +614,79 @@ namespace PowerAboveAll
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = false;
         }
+        private static void EngravedBlock(CityEngraving drawing, float x, float baseline, float width, float height, Color colour)
+        {
+            drawing.Shape(colour, x,baseline, x+width,baseline, x+width,baseline+height, x,baseline+height);
+        }
+
+        private static void EngravedTower(CityEngraving drawing, float x, float baseline, float width, float height)
+        {
+            Color ink = Hex("#3E5A4E"), wall = Hex("#F3E7CA"), shade = Hex("#B79D71");
+            float right = x + width, top = baseline + height;
+            drawing.Shape(shade, right,baseline, right+.12f,baseline+.08f, right+.12f,top+.08f, right,top);
+            EngravedBlock(drawing, x, baseline, width, height, wall);
+            EngravedBlock(drawing, x-.025f, top, width+.05f, .12f, Hex("#60868B"));
+            drawing.Line(ink, .065f, x,baseline, x,top+.12f, right+.025f,top+.12f,
+                right+.12f,top+.08f, right+.12f,baseline+.08f, right,baseline, x,baseline);
+            drawing.Line(ink, .045f, right,baseline, right,top);
+            drawing.Line(ink, .07f, x+width*.48f,top-.36f, x+width*.48f,top-.16f);
+        }
+
+        private static void EngravedArch(CityEngraving drawing, float centreX, float baseline, float width, float height, bool filled)
+        {
+            Color ink = Hex("#3E5A4E"), wall = Hex("#F3E7CA");
+            float half = width * .5f, centreY = baseline + height * .45f;
+            if (filled)
+            {
+                drawing.Shape(ink, centreX-half,baseline, centreX+half,baseline,
+                    centreX+half,centreY, centreX+width*.36f,baseline+height*.80f,
+                    centreX,baseline+height, centreX-width*.36f,baseline+height*.80f, centreX-half,centreY);
+                return;
+            }
+            // Halka ayrı dışbükey dörtgenlerden oluşur; kemer boşluğu fan üçgenleriyle kapanmaz.
+            const float thickness = .12f;
+            EngravedBlock(drawing, centreX-half, baseline, thickness, height*.45f, wall);
+            EngravedBlock(drawing, centreX+half-thickness, baseline, thickness, height*.45f, wall);
+            for (int segment = 0; segment < 6; segment++)
+            {
+                float a = segment * Mathf.PI / 6, b = (segment + 1) * Mathf.PI / 6;
+                Vector2 outerA = new Vector2(centreX+Mathf.Cos(a)*half, centreY+Mathf.Sin(a)*height*.55f);
+                Vector2 outerB = new Vector2(centreX+Mathf.Cos(b)*half, centreY+Mathf.Sin(b)*height*.55f);
+                Vector2 innerA = new Vector2(centreX+Mathf.Cos(a)*(half-thickness), centreY+Mathf.Sin(a)*(height*.55f-thickness));
+                Vector2 innerB = new Vector2(centreX+Mathf.Cos(b)*(half-thickness), centreY+Mathf.Sin(b)*(height*.55f-thickness));
+                drawing.Shape(wall, outerA.x,outerA.y, outerB.x,outerB.y, innerB.x,innerB.y, innerA.x,innerA.y);
+                drawing.Line(ink, .04f, outerA.x,outerA.y, outerB.x,outerB.y);
+                drawing.Line(ink, .04f, innerA.x,innerA.y, innerB.x,innerB.y);
+            }
+            drawing.Line(ink, .045f, centreX-half,baseline, centreX-half,centreY);
+            drawing.Line(ink, .045f, centreX+half,baseline, centreX+half,centreY);
+        }
+
+        private static void EngravedBridge(CityEngraving drawing, float x, float baseline, float width, float height)
+        {
+            for (int arch = 0; arch < 3; arch++)
+                EngravedArch(drawing, x+(arch+.5f)*width/3, baseline, width*.94f/3, height, false);
+            EngravedBlock(drawing, x-.04f, baseline+height, width+.08f, .12f, Hex("#F3E7CA"));
+            drawing.Line(Hex("#3E5A4E"), .065f, x-.04f,baseline+height+.12f, x+width+.04f,baseline+height+.12f);
+        }
+
+        private static void EngravedMill(CityEngraving drawing, float centreX, float baseline)
+        {
+            Color ink = Hex("#3E5A4E"), wall = Hex("#F3E7CA");
+            drawing.Shape(wall, centreX-.30f,baseline, centreX+.30f,baseline,
+                centreX+.18f,baseline+.95f, centreX-.18f,baseline+.95f);
+            drawing.Shape(Hex("#60868B"), centreX-.22f,baseline+.95f, centreX,baseline+1.12f, centreX+.22f,baseline+.95f);
+            drawing.Line(ink, .065f, centreX-.30f,baseline, centreX-.18f,baseline+.95f,
+                centreX,baseline+1.12f, centreX+.18f,baseline+.95f, centreX+.30f,baseline);
+            float hub = baseline + .96f;
+            for (int direction = -1; direction <= 1; direction += 2)
+            {
+                drawing.Line(ink, .11f, centreX-.43f,hub-.43f*direction, centreX+.43f,hub+.43f*direction);
+                drawing.Line(wall, .045f, centreX-.43f,hub-.43f*direction, centreX+.43f,hub+.43f*direction);
+            }
+            EngravedBlock(drawing, centreX-.06f, hub-.06f, .12f, .12f, ink);
+        }
+
         private static void EngravedHouse(CityEngraving drawing, float x, float baseline, float width, float height, float roofHeight)
         {
             Color ink = Hex("#3E5A4E"), wall = Hex("#F3E7CA"), shade = Hex("#B79D71");
@@ -586,7 +697,7 @@ namespace PowerAboveAll
             drawing.Shape(wall, x,baseline, right,baseline, right,eaves, x,eaves);
             drawing.Shape(roof, x-.06f,eaves, peak,ridge, right+.06f,eaves);
             drawing.Shape(roofLight, peak,ridge, peak+depth,ridge+.10f, right+depth+.06f,eaves+.10f, right+.06f,eaves);
-            drawing.Line(ink, .055f, x,baseline, x,eaves, x-.06f,eaves, peak,ridge, peak+depth,ridge+.10f,
+            drawing.Line(ink, .065f, x,baseline, x,eaves, x-.06f,eaves, peak,ridge, peak+depth,ridge+.10f,
                 right+depth+.06f,eaves+.10f, right+depth,baseline+.09f, right,baseline, x,baseline);
             drawing.Line(ink, .045f, peak,ridge, right+.06f,eaves, x-.06f,eaves);
             drawing.Line(ink, .045f, right,eaves, right,baseline);

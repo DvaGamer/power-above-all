@@ -25,7 +25,7 @@ namespace PowerAboveAll
 
     // Original, deliberately compact diorama. A miniature represents several people.
     // All battle state and random combat rolls advance at a seeded, fixed 20 Hz.
-    public sealed class TacticalBattle : MonoBehaviour
+    public sealed partial class TacticalBattle : MonoBehaviour
     {
         enum Kind { Line, Militia, Cavalry, Artillery }
         enum Formation { Line, Column, Square }
@@ -43,11 +43,11 @@ namespace PowerAboveAll
         sealed class Regiment
         {
             public int Id, Original, Men, Ammo;
-            public bool Player, FireAtWill = true, Moving, Routed, Withdrawn, WasHit;
+            public bool Player, FireAtWill = true, Moving, Routed, Withdrawn, WasHit, AimedVolleyPending;
             public Kind Kind;
             public Formation Formation;
             public Condition Condition;
-            public float Morale, Fatigue, Cohesion = 90, Experience, Reload, Quiet, Facing;
+            public float Morale, Fatigue, Cohesion = 90, Experience, Reload, ContactReload, Quiet, Facing;
             public float LastVolley = -100, LastHit = -100;
             public bool VisualReady;
             public Vector3 Position, Destination;
@@ -185,7 +185,7 @@ namespace PowerAboveAll
 
         void HandleInput()
         {
-            if (Input.GetKeyDown(KeyCode.Space)) paused = !paused;
+            if (Input.GetKeyDown(KeyCode.Space)) ShowOrderResult(SetPaused(!Paused));
             if (Input.GetKeyDown(KeyCode.Alpha1)) SelectIndex(0);
             if (Input.GetKeyDown(KeyCode.Alpha2)) SelectIndex(1);
             if (Input.GetKeyDown(KeyCode.Alpha3)) SelectIndex(2);
@@ -207,10 +207,15 @@ namespace PowerAboveAll
                 if (hovered != null)
                 {
                     bool additive = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-                    if (!additive) selected.Clear();
-                    if (selected.Contains(hovered) && additive) selected.Remove(hovered);
-                    else if (!selected.Contains(hovered)) selected.Add(hovered);
-                    Feedback?.Invoke("select");
+                    int slot = 0;
+                    foreach (Regiment regiment in regiments)
+                    {
+                        if (!regiment.Player) continue;
+                        slot++;
+                        if (regiment != hovered) continue;
+                        ShowOrderResult(SelectPlayerRegiment(slot, additive ? BattleSelectionMode.Toggle : BattleSelectionMode.Replace));
+                        break;
+                    }
                 }
             }
             if (Input.GetMouseButtonDown(1) && selected.Count > 0)
@@ -220,71 +225,22 @@ namespace PowerAboveAll
                 if (ground.Raycast(ray, out float distance))
                 {
                     Vector3 point = ray.GetPoint(distance);
-                    Vector3 centre = Vector3.zero;
-                    int commandCount = 0;
-                    foreach (Regiment regiment in selected)
-                        if (Commandable(regiment)) { centre += regiment.Position; commandCount++; }
-                    if (commandCount == 0) return;
-                    centre /= commandCount;
-                    foreach (Regiment regiment in selected)
-                    {
-                        if (!Commandable(regiment)) continue;
-                        Vector3 offset = commandCount > 1 ? regiment.Position - centre : Vector3.zero;
-                        regiment.Destination = Bound(point + offset);
-                        regiment.Moving = true;
-                    }
-                    Feedback?.Invoke("move");
+                    ShowOrderResult(MoveSelected(new Vector2(point.x, point.z)));
                 }
             }
         }
 
         void SelectIndex(int index)
         {
-            if (index >= regiments.Count || !Commandable(regiments[index])) return;
-            if (!(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) selected.Clear();
-            if (!selected.Contains(regiments[index])) selected.Add(regiments[index]);
-            Feedback?.Invoke("select");
+            bool additive = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            ShowOrderResult(SelectPlayerRegiment(index + 1, additive ? BattleSelectionMode.Add : BattleSelectionMode.Replace));
         }
 
-        void Simulate(float dt)
+        void ShowOrderResult(BattleOrderResult result)
         {
-            elapsed += dt;
-            foreach (Regiment regiment in regiments)
-            {
-                if (regiment.Withdrawn || regiment.Men <= 0) continue;
-                regiment.Reload = Mathf.Max(0, regiment.Reload - dt);
-                regiment.Quiet += dt;
-                if (regiment.Routed)
-                {
-                    regiment.Position += new Vector3(0, 0, regiment.Player ? -1 : 1) * dt * 3.8f;
-                    if (Mathf.Abs(regiment.Position.z) > 35) regiment.Withdrawn = true;
-                    continue;
-                }
-                Regiment enemy = FindEnemy(regiment);
-                if (!regiment.Player) EnemyOrders(regiment, enemy);
-                Move(regiment, dt);
-                if (!regiment.Moving && enemy != null)
-                {
-                    float facing = Heading(enemy.Position - regiment.Position);
-                    regiment.Facing = Mathf.MoveTowardsAngle(regiment.Facing, facing, dt * 38);
-                }
-                regiment.Cohesion = Mathf.Clamp(regiment.Cohesion + (regiment.Moving ? regiment.Formation == Formation.Column ? -.12f : -.7f : 2.8f) * dt, 20, 100);
-                regiment.Fatigue = Mathf.Clamp(regiment.Fatigue + (regiment.Moving ? .5f : -.65f) * dt, 0, 100);
-                if (regiment.Quiet > 7 && !regiment.Moving && regiment.Morale > 20)
-                    regiment.Morale = Mathf.Min(regiment.Player ? Mathf.Clamp(setup.Morale, 30, 100) : 78, regiment.Morale + dt * .65f * (regiment.Player ? .5f + setup.CommanderCompetence / 100 : 1));
-                if (enemy != null && regiment.FireAtWill && CanAttack(regiment, enemy)) Shoot(regiment, enemy, false);
-                SetCondition(regiment);
-            }
-            UpdateObjective(dt);
-            if (ended) return;
-            int allied = 0, opposing = 0;
-            foreach (Regiment regiment in regiments)
-            {
-                if (regiment.Routed || regiment.Withdrawn || regiment.Men <= 0) continue;
-                if (regiment.Player) allied += regiment.Men; else opposing += regiment.Men;
-            }
-            if (allied <= originalTroops * .12f) Finish(false, false);
-            else if (opposing == 0) Finish(true, false);
+            if (result.Ok || string.IsNullOrEmpty(result.ReasonKey)) return;
+            messageKey = result.ReasonKey;
+            messageUntil = elapsed + 4;
         }
 
         void UpdateEffects()
@@ -318,56 +274,6 @@ namespace PowerAboveAll
             }
         }
 
-        void Move(Regiment regiment, float dt)
-        {
-            if (!regiment.Moving) return;
-            Vector3 difference = regiment.Destination - regiment.Position; difference.y = 0;
-            if (difference.magnitude < .3f) { regiment.Moving = false; return; }
-            float speed = regiment.Kind == Kind.Cavalry ? 3.6f : regiment.Kind == Kind.Artillery ? .85f : 1.65f;
-            speed *= regiment.Formation == Formation.Column ? 1.3f : regiment.Formation == Formation.Square ? .43f : .84f;
-            speed *= Mathf.Lerp(1, .52f, regiment.Fatigue / 100);
-            if (InOrchard(regiment.Position)) speed *= .65f;
-            if (InCreek(regiment.Position)) { speed *= .42f; regiment.Cohesion = Mathf.Max(20, regiment.Cohesion - dt * 2); }
-            Vector3 direction = difference.normalized;
-            foreach (Regiment other in regiments)
-            {
-                if (other == regiment || other.Withdrawn || other.Routed || other.Player != regiment.Player) continue;
-                Vector3 away = regiment.Position - other.Position; away.y = 0;
-                float gap = away.magnitude;
-                if (gap < 4.6f && gap > .01f) direction += away.normalized * ((4.6f - gap) / 4.6f) * .75f;
-            }
-            regiment.Position = Bound(regiment.Position + direction.normalized * Mathf.Min(speed * dt, difference.magnitude));
-            regiment.Facing = Mathf.MoveTowardsAngle(regiment.Facing, Heading(difference), dt * 65);
-        }
-
-        void EnemyOrders(Regiment regiment, Regiment enemy)
-        {
-            if (enemy == null) return;
-            bool commit = elapsed > 35 || playerHold > 8 || OwnRouted(false) > 0;
-            if (regiment.Kind == Kind.Cavalry && !commit) return;
-            float distance = FlatDistance(regiment.Position, enemy.Position);
-            if (regiment.Kind == Kind.Artillery)
-            {
-                if (distance > 30 && elapsed > 14) { regiment.Destination = new Vector3(18, 0, 15); regiment.Moving = true; }
-                else regiment.Moving = false;
-                return;
-            }
-            if (playerHold > 3 && FlatDistance(regiment.Position, convoy) > 7)
-            {
-                regiment.Destination = convoy + new Vector3(regiment.Id % 2 == 0 ? -3 : 3, 0, 2);
-                regiment.Moving = true;
-                return;
-            }
-            float desired = regiment.Kind == Kind.Cavalry ? 2.4f : regiment.Kind == Kind.Militia ? 12 : 16;
-            if (distance > desired)
-            {
-                regiment.Destination = enemy.Position;
-                regiment.Moving = true;
-            }
-            else regiment.Moving = false;
-            if (regiment.Kind == Kind.Cavalry && distance < 10) regiment.Formation = Formation.Line;
-        }
-
         Regiment FindEnemy(Regiment regiment)
         {
             Regiment best = null; float minimum = float.MaxValue;
@@ -375,56 +281,23 @@ namespace PowerAboveAll
             {
                 if (other.Player == regiment.Player || other.Men <= 0 || other.Withdrawn || other.Routed) continue;
                 float distance = FlatDistance(regiment.Position, other.Position);
-                if (distance < minimum) { best = other; minimum = distance; }
+                if (distance < minimum || (distance == minimum && (best == null || other.Id < best.Id)))
+                { best = other; minimum = distance; }
             }
             return best;
         }
 
-        float Range(Regiment regiment) { return regiment.Kind == Kind.Artillery ? 34 : regiment.Kind == Kind.Cavalry ? 3.7f : regiment.Kind == Kind.Militia ? 15 : 19; }
+        float Range(Regiment regiment) { return AttackRange(regiment.Kind); }
         bool CanAttack(Regiment regiment, Regiment enemy)
         {
-            if (regiment.Routed || regiment.Withdrawn || regiment.Reload > 0 || enemy.Routed || enemy.Men <= 0) return false;
-            if (regiment.Kind != Kind.Cavalry && regiment.Ammo <= 0) return false;
-            if (regiment.Moving && regiment.Kind != Kind.Cavalry) return false;
-            if (FlatDistance(regiment.Position, enemy.Position) > Range(regiment)) return false;
-            float arc = regiment.Formation == Formation.Square ? 180 : regiment.Kind == Kind.Cavalry ? 75 : 45;
-            return Mathf.Abs(Mathf.DeltaAngle(regiment.Facing, Heading(enemy.Position - regiment.Position))) <= arc;
+            if (regiment == null || enemy == null) return false;
+            StepState attacker = new StepState(regiment), target = new StepState(enemy);
+            return ContactReady(attacker, target) || RangedReady(attacker, target);
         }
 
-        void Shoot(Regiment attacker, Regiment target, bool aimed)
+        bool CanVolley(Regiment regiment, Regiment enemy)
         {
-            if (!CanAttack(attacker, target)) return;
-            if (attacker.Kind != Kind.Cavalry) attacker.Ammo--;
-            attacker.Reload = attacker.Kind == Kind.Artillery ? 13 : attacker.Kind == Kind.Cavalry ? 3.4f : attacker.Kind == Kind.Militia ? 10.5f : 8;
-            attacker.Reload *= 1 + attacker.Fatigue / 180;
-            attacker.Fatigue = Mathf.Min(100, attacker.Fatigue + (aimed ? 4 : 2));
-            float power = Mathf.Sqrt(attacker.Men) * (attacker.Kind == Kind.Artillery ? .57f : attacker.Kind == Kind.Cavalry ? .34f : .43f);
-            power *= .76f + (float)rng.NextDouble() * .48f;
-            power *= Mathf.Lerp(.62f, 1, attacker.Cohesion / 100) * Mathf.Lerp(1, .62f, attacker.Fatigue / 100);
-            power *= 1 + attacker.Experience / 300;
-            if (aimed) power *= 1.22f;
-            if (attacker.Formation == Formation.Column) power *= .48f;
-            if (attacker.Formation == Formation.Square) power *= .57f;
-            if (attacker.Kind == Kind.Cavalry && target.Formation == Formation.Square) power *= .23f;
-            if (attacker.Kind == Kind.Artillery && target.Formation == Formation.Square) power *= 1.65f;
-            if (attacker.Kind == Kind.Cavalry && target.Reload > 4) power *= 1.35f;
-            if (TerrainHeight(attacker.Position.x, attacker.Position.z) > TerrainHeight(target.Position.x, target.Position.z) + 1) power *= 1.2f;
-            if (InOrchard(target.Position) && attacker.Kind != Kind.Cavalry) power *= .66f;
-            float flank = Mathf.Abs(Mathf.DeltaAngle(target.Facing, Heading(attacker.Position - target.Position))) > 100 ? 1.7f : 1;
-            int casualties = Mathf.Clamp(Mathf.RoundToInt(power * (flank > 1 ? 1.2f : 1)), 1, target.Men);
-            target.Men -= casualties;
-            float shock = attacker.Kind == Kind.Artillery ? 5 : attacker.Kind == Kind.Cavalry ? 6 : 2.6f;
-            float command = target.Player ? Mathf.Clamp(setup.CommanderCompetence, 0, 100) : 55;
-            target.Morale = Mathf.Max(0, target.Morale - (casualties * 130f / Mathf.Max(1, target.Original) + shock) * flank * (1.13f - command / 400));
-            target.Cohesion = Mathf.Max(0, target.Cohesion - shock * flank);
-            target.Quiet = 0; target.WasHit = true;
-            target.LastHit = visualClock;
-            SetCondition(target);
-            if (attacker.Kind != Kind.Cavalry)
-            {
-                attacker.LastVolley = visualClock;
-                VolleyEffects(attacker, target);
-            }
+            return regiment != null && enemy != null && RangedReady(new StepState(regiment), new StepState(enemy));
         }
 
         void SetCondition(Regiment regiment)
@@ -434,16 +307,7 @@ namespace PowerAboveAll
             regiment.Condition = regiment.Morale >= 72 ? Condition.Steady : regiment.Morale >= 55 ? Condition.Pressured : regiment.Morale >= 36 ? Condition.Shaken : regiment.Morale >= 20 ? Condition.Wavering : Condition.Routing;
             if (regiment.Condition != Condition.Routing) return;
             regiment.Routed = true; regiment.Moving = false;
-            foreach (Regiment other in regiments)
-                if (other != regiment && other.Player == regiment.Player && !other.Routed && FlatDistance(other.Position, regiment.Position) < 15)
-                    other.Morale = Mathf.Max(0, other.Morale - 5);
-        }
-
-        int OwnRouted(bool player)
-        {
-            int count = 0;
-            foreach (Regiment regiment in regiments) if (regiment.Player == player && regiment.Routed) count++;
-            return count;
+            regiment.AimedVolleyPending = false;
         }
 
         void UpdateObjective(float dt)
@@ -469,7 +333,7 @@ namespace PowerAboveAll
             ended = true; paused = false;
             Feedback?.Invoke(retreat ? "retreat" : won ? "victory" : "defeat");
             int survivors = 0; float morale = 0;
-            foreach (Regiment regiment in regiments)
+            foreach (Regiment regiment in StableRegiments())
             {
                 if (!regiment.Player) continue;
                 survivors += regiment.Men;
@@ -513,14 +377,15 @@ namespace PowerAboveAll
 
         void OrderVolley()
         {
-            bool fired = false;
+            if (!Active || ended || paused) return;
+            bool queued = false;
             foreach (Regiment regiment in selected)
             {
                 Regiment enemy = FindEnemy(regiment);
-                if (enemy == null || !CanAttack(regiment, enemy)) continue;
-                Shoot(regiment, enemy, true); fired = true;
+                if (!Commandable(regiment) || !CanVolley(regiment, enemy)) continue;
+                regiment.AimedVolleyPending = true; queued = true;
             }
-            messageKey = fired ? "battle.volley_fired" : "battle.volley_unavailable";
+            messageKey = queued ? "battle.volley_queued" : "battle.volley_unavailable";
             messageUntil = elapsed + 6;
         }
 
@@ -541,6 +406,7 @@ namespace PowerAboveAll
                 regiment.Moving || regiment.Ammo <= 0 || regiment.Reload > .6f) return false;
             Regiment enemy = FindEnemy(regiment);
             if (enemy == null || FlatDistance(regiment.Position, enemy.Position) > Range(regiment)) return false;
+            if (regiment.Kind != Kind.Artillery && FlatDistance(regiment.Position, enemy.Position) <= ContactReach) return false;
             float arc = regiment.Formation == Formation.Square ? 180 : 45;
             return Mathf.Abs(Mathf.DeltaAngle(regiment.Facing, Heading(enemy.Position - regiment.Position))) <= arc;
         }
@@ -824,6 +690,7 @@ namespace PowerAboveAll
                     Reload = (float)rng.NextDouble() * 2
                 };
                 regiment.Destination = regiment.Position;
+                regiment.ContactReload = regiment.Kind == Kind.Cavalry ? regiment.Reload : 0;
                 regiment.Root = new GameObject((player ? "Royal " : "Opposing ") + regiment.Kind);
                 regiment.Root.transform.SetParent(world.transform, false);
                 regiment.SelectionOutline = FieldLine("Formation frontage", world.transform, player ? blueRing : redRing, 5, .10f);
@@ -1089,8 +956,8 @@ namespace PowerAboveAll
             Panel(new Rect(934, 42, 485, 91), Paint(0x243B37));
             Text(new Rect(946, 50, 270, 76), "battle.terrain_rules", smallStyle);
             GUI.enabled = !ended;
-            if (Button(new Rect(1230, 49, 176, 32), paused ? "battle.resume" : "battle.pause")) paused = !paused;
-            if (Button(new Rect(1230, 87, 176, 32), "battle.retreat")) Finish(false, true);
+            if (Button(new Rect(1230, 49, 176, 32), paused ? "battle.resume" : "battle.pause")) ShowOrderResult(SetPaused(!Paused));
+            if (Button(new Rect(1230, 87, 176, 32), "battle.retreat")) ShowOrderResult(Retreat());
             GUI.enabled = true;
             DrawRegimentLabels();
             Panel(new Rect(0, 738, 1440, 162), Paint(0x243B37));
@@ -1108,31 +975,36 @@ namespace PowerAboveAll
                 Text(new Rect(x + 10, 788, 190, 21), "battle.regiment_strength", isSelected ? inkCardStyle : cardStyle,
                     regiment.Men, L.Text("battle.condition." + regiment.Condition.ToString().ToLowerInvariant()));
                 Text(new Rect(x + 10, 811, 190, 20), "battle.regiment_morale", details, Mathf.RoundToInt(regiment.Morale), Mathf.RoundToInt(regiment.Cohesion));
+                Regiment nearest = FindEnemy(regiment);
+                bool contactStatus = regiment.Kind != Kind.Artillery && (regiment.Ammo <= 0 ||
+                    (nearest != null && FlatDistance(regiment.Position, nearest.Position) <= ContactReach));
                 if (regiment.Kind == Kind.Cavalry)
-                    Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_melee", details, Mathf.RoundToInt(regiment.Fatigue));
+                    Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_cavalry_contact", details, Mathf.CeilToInt(regiment.ContactReload), Mathf.RoundToInt(regiment.Fatigue));
+                else if (contactStatus)
+                    Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_contact", details, Mathf.CeilToInt(regiment.ContactReload), Mathf.RoundToInt(regiment.Fatigue), regiment.Ammo);
                 else Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_reload", details, regiment.Ammo, Mathf.CeilToInt(regiment.Reload), Mathf.RoundToInt(regiment.Fatigue));
             }
             Regiment primary = FirstCommandable();
             Text(new Rect(892, 742, 527, 20), "battle.orders_header", smallStyle);
             GUI.enabled = primary != null;
-            if (OrderButton(new Rect(892, 763, 166, 31), "battle.formation.line", primary != null && primary.Formation == Formation.Line)) OrderFormation(Formation.Line);
-            if (OrderButton(new Rect(1068, 763, 166, 31), "battle.formation.column", primary != null && primary.Formation == Formation.Column)) OrderFormation(Formation.Column);
+            if (OrderButton(new Rect(892, 763, 166, 31), "battle.formation.line", primary != null && primary.Formation == Formation.Line)) ShowOrderResult(SetSelectedFormation(BattleFormation.Line));
+            if (OrderButton(new Rect(1068, 763, 166, 31), "battle.formation.column", primary != null && primary.Formation == Formation.Column)) ShowOrderResult(SetSelectedFormation(BattleFormation.Column));
             bool squareAvailable = false;
             foreach (Regiment regiment in selected)
                 if (Commandable(regiment) && regiment.Kind != Kind.Cavalry && regiment.Kind != Kind.Artillery) squareAvailable = true;
             GUI.enabled = squareAvailable;
-            if (OrderButton(new Rect(1244, 763, 175, 31), "battle.formation.square", primary != null && primary.Formation == Formation.Square)) OrderFormation(Formation.Square);
+            if (OrderButton(new Rect(1244, 763, 175, 31), "battle.formation.square", primary != null && primary.Formation == Formation.Square)) ShowOrderResult(SetSelectedFormation(BattleFormation.Square));
             GUI.enabled = primary != null;
-            if (OrderButton(new Rect(892, 801, 166, 31), "battle.fire_at_will", primary != null && primary.FireAtWill)) SetFireOrder(true);
-            if (OrderButton(new Rect(1068, 801, 166, 31), "battle.hold_fire", primary != null && !primary.FireAtWill)) SetFireOrder(false);
+            if (OrderButton(new Rect(892, 801, 166, 31), "battle.fire_at_will", primary != null && primary.FireAtWill)) ShowOrderResult(SetSelectedFireAtWill(true));
+            if (OrderButton(new Rect(1068, 801, 166, 31), "battle.hold_fire", primary != null && !primary.FireAtWill)) ShowOrderResult(SetSelectedFireAtWill(false));
             bool volleyAvailable = false;
             foreach (Regiment regiment in selected)
             {
                 Regiment enemy = FindEnemy(regiment);
-                if (Commandable(regiment) && enemy != null && CanAttack(regiment, enemy)) volleyAvailable = true;
+                if (Commandable(regiment) && CanVolley(regiment, enemy)) volleyAvailable = true;
             }
             GUI.enabled = !paused && volleyAvailable;
-            if (Button(new Rect(1244, 801, 175, 31), "battle.volley")) OrderVolley();
+            if (Button(new Rect(1244, 801, 175, 31), "battle.volley")) ShowOrderResult(VolleySelected());
             GUI.enabled = true;
             if (primary != null)
             {
@@ -1162,12 +1034,16 @@ namespace PowerAboveAll
         string VolleyReason(Regiment regiment)
         {
             if (paused) return "battle.volley_reason_pause";
-            if (regiment.Kind != Kind.Cavalry && regiment.Moving) return "battle.volley_reason_moving";
-            if (regiment.Kind != Kind.Cavalry && regiment.Ammo <= 0) return "battle.volley_reason_ammo";
-            if (regiment.Reload > 0) return "battle.volley_reason_reload";
+            if (regiment.Kind == Kind.Cavalry) return "battle.contact_cavalry";
             Regiment enemy = FindEnemy(regiment);
+            if (enemy != null && regiment.Kind != Kind.Artillery && FlatDistance(regiment.Position, enemy.Position) <= ContactReach)
+                return "battle.contact_engaged";
+            if (regiment.AimedVolleyPending) return "battle.volley_queued";
+            if (regiment.Kind != Kind.Cavalry && regiment.Moving) return "battle.volley_reason_moving";
+            if (regiment.Ammo <= 0) return regiment.Kind == Kind.Artillery ? "battle.volley_reason_ammo" : "battle.contact_no_ammo";
+            if (regiment.Reload > 0) return "battle.volley_reason_reload";
             if (enemy == null || FlatDistance(regiment.Position, enemy.Position) > Range(regiment)) return "battle.volley_reason_range";
-            if (!CanAttack(regiment, enemy)) return "battle.volley_reason_facing";
+            if (!CanVolley(regiment, enemy)) return "battle.volley_reason_facing";
             return "battle.volley_reason_ready";
         }
 
@@ -1220,7 +1096,7 @@ namespace PowerAboveAll
             Text(new Rect(404, 487, 625, 29), "battle.result_return_morale", dispatchBody, Mathf.RoundToInt(campaignReturnMorale));
             Text(new Rect(404, 529, 625, 49), outcome.MilitarySuppliesRecovered > 0 ? "battle.result_convoy" : "battle.result_no_convoy", dispatchBody, outcome.MilitarySuppliesRecovered);
             Text(new Rect(404, 578, 625, 22), "battle.result_note", dispatchSmall);
-            if (Button(new Rect(404, 611, 630, 35), "battle.continue")) AcceptOutcome();
+            if (Button(new Rect(404, 611, 630, 35), "battle.continue")) ShowOrderResult(AcceptReport());
         }
     }
 }

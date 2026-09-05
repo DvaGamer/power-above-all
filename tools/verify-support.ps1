@@ -35,13 +35,13 @@ function Invoke-OwnedProcess([string]$FilePath, [string[]]$Arguments, [int]$Time
   } finally { $ownedProcess.Dispose() }
 }
 
-function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory) {
+function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory, [ValidateRange(1, 300)][int]$TimeoutSeconds = 300) {
   if (-not (Test-Path -LiteralPath $CheckerPath -PathType Leaf)) { throw "Frame checker missing: $CheckerPath" }
   $pythonPath = (Get-Command python.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
   $stdoutPath = Join-Path $OutputDirectory 'frames.log'
   $stderrPath = Join-Path $OutputDirectory 'frames.stderr.log'
   # Yerel pipeline yerine sahip olunan gizli surec: cikis kodu ve iki akis ayri kanit olur.
-  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder) 300 (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
+  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder) $TimeoutSeconds (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
   $receiptPath = Join-Path $OutputDirectory 'frames-process.json'
   [IO.File]::WriteAllText($receiptPath, ([ordered]@{ executable = $pythonPath; exitCode = $frameExit; completedUtc = [DateTime]::UtcNow.ToString('O'); stdout = $stdoutPath; stderr = $stderrPath } | ConvertTo-Json), [Text.Encoding]::UTF8)
   if ($frameExit -ne 0) { throw "Frame checker exited $frameExit; see frames.log and frames.stderr.log." }
@@ -103,18 +103,49 @@ function Get-EditTestSummary([string]$Path, [int]$ExitCode) {
   return "$passed/$total passed"
 }
 
+function Assert-BattleReviewCommand([string]$Line) {
+  $parts = @($Line -split '\s+')
+  if ($parts.Count -lt 2) { throw 'Battle subcommand missing.' }
+  $valid = $false
+  switch ($parts[1]) {
+    'select' { $valid = $parts.Count -eq 4 -and $parts[2] -match '^[1-4]$' -and $parts[3] -in @('replace', 'add', 'toggle') }
+    'formation' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('line', 'column', 'square') }
+    'fire' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('hold', 'free') }
+    'pause' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('on', 'off') }
+    'volley' { $valid = $parts.Count -eq 2 }
+    'verify-return' { $valid = $parts.Count -eq 2 }
+    'state' { $valid = $parts.Count -eq 3 -and $parts[2] -match '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z' }
+    'move' {
+      $valid = $parts.Count -eq 4
+      if ($valid) {
+        foreach ($token in $parts[2..3]) {
+          [float]$coordinate = 0
+          if (-not [float]::TryParse($token, [Globalization.NumberStyles]::Float, [Globalization.CultureInfo]::InvariantCulture, [ref]$coordinate) -or [float]::IsNaN($coordinate) -or [float]::IsInfinity($coordinate)) { $valid = $false }
+        }
+      }
+    }
+    'wait' {
+      [float]$duration = 0
+      $valid = $parts.Count -eq 4 -and $parts[2] -in @('active', 'arrived', 'volley-ready', 'ended')
+      if ($valid) { $valid = [float]::TryParse($parts[3], [Globalization.NumberStyles]::Float, [Globalization.CultureInfo]::InvariantCulture, [ref]$duration) -and -not [float]::IsNaN($duration) -and -not [float]::IsInfinity($duration) -and $duration -gt 0 -and $duration -le 120 }
+    }
+  }
+  if (-not $valid) { throw "Unsupported or invalid battle command: $Line" }
+}
+
 function Get-ReviewPlan([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Review script missing: $Path" }
   $lines = @([IO.File]::ReadAllLines($Path) | ForEach-Object { $_.Trim() } | Where-Object { $_ -and -not $_.StartsWith('#') })
   if ($lines.Count -lt 2 -or $lines[0] -ne 'new' -or $lines[-1] -ne 'quit' -or @($lines | Where-Object { $_ -eq 'quit' }).Count -ne 1) { throw "Review must start with new and have one final quit." }
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
-    if ($line -match '^(shot|state)\s+(.+)$') {
+    if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
+    if ($line -match '^(shot|state|battle\s+state)\s+(.+)$') {
       $kind = $Matches[1]; $name = $Matches[2]
       if ($name -notmatch '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z') { throw "Unsafe artifact name: $name" }
       if ($kind -eq 'shot') { $captures += "$name.png" } else { $states += "$name.json" }
     }
-    if ($line -match '^(expect|same)\s+') { $assertions++ }
+    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return') { $assertions++ }
   }
   if ($captures.Count -eq 0 -or $assertions -eq 0) { throw "Review needs frames and assertions." }
   if (@($captures | Select-Object -Unique).Count -ne $captures.Count -or @($states | Select-Object -Unique).Count -ne $states.Count) { throw "Duplicate artifact names." }

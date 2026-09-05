@@ -4,6 +4,12 @@
 
 ## Doğrulanmış kontrol noktası
 
+- **23:36 UTC yeni iki kapı GREEN:** `tactical-trust-first-20260905-233324-829-3db06d4c` ve `patron-trust-journey-20260905-233615-111-60fec1ea`. Her biri92 Unity testi, taze DX11 build,10 tarayıcı testi ve141 dosya manifesti.
+- İlk gerçek taktik sonuç: normal seçim/hareket/düzen/ateş/nişanlı salvo emirleriyle125,8 saniyede konvoy zaferi;1200 kişiden196 kayıp,24 teçhizat.9 PNG/14 kontrol/8 JSON; rapor bir kez sefere geçti ve kayıt/yükleme eşit kaldı. Root RU raporunu gördü. Sonraki regresyon senaryosu artık açıkça zafer bekleyecek.
+- Güven rotası:20 haftada5 temerrüt, Valcourt ilişki0 iken avans reddi; siyasi sorumluluk Güç35→29/ilişki0→4; yeni avans ve22. haftada ödeme, ilişki8.6 PNG/15 kontrol/3 JSON. Root iki dilde ret ve telafi ekranını gördü. Eski bölgesel ve kurumsal kayıplar silinmedi.
+-12 farklı şehir silueti yeni atlas RU/TR karelerinde okunuyor. Gerçek Windows fare/klavye yolu ile New/iptal/rol kartı/Enter kontrolü de görüldü; ilk bu yardımcı koşunun native çıkış kodu tutulmadığı için tam kapı sayılmadı.
+- İnsan kaydı SHA256 23:38 UTC hâlâ aynı.453 RU/TR girdisi anahtar/boş metin/yer tutucu denetimini geçti. Bu kayıtlar aşağıdaki önceki kontrol noktalarının üstündedir.
+
 - Dal `polish/unity-visual-feel`; sanat kontrol noktası `19e5fa8`. Yeni rol kesiti ayrı commit hazırlığındadır.
 - Son rol kapısı: `output/verify/roles-visible-20260905-230302-558-1717bcb0/REPORT.md` — **GREEN**.
 - 56/56 Unity EditMode testi, yeni Direct3D11 Windows player, 22 gerçek PNG, 29 durum kontrolü, 3 JSON durum kaydı ve 10/10 tarayıcı çekirdek testi.
@@ -25,7 +31,7 @@ Root atlası, ekonomi sayfasını, dört portreyi, dilekçeyi, sevk geçişini, 
 ## Bilinen sınırlar
 
 - Üç çalışma rolü ve ayrıcalık/söz döngüsü uygulandı: saray avansı, meclis tahıl sözü, ordunun zor alımı. Kazanç, vade, ödeme ve ihlal bedelleri imzadan önce görünür; sonuçlar kaynaklara, bölgelere, desteğe ve kişisel ilişkilere döner. Bu kesit tüm kariyer veya geniş alternatif tarih sisteminin tamamı değildir.
-- Savaş sonunda rapor/dönüş test edildi; önceki otomatik görsel rota geri çekilme kullanır. Bu, taktik zaferin veya tüm insan girişlerinin sınandığı anlamına gelmez.
+- Doğal taktik zafer artık bir gerçek rota üzerinde görüldü. Bütün taktik planlar, kötü hazırlıklar ve tüm insan girdileri sınandı anlamına gelmez; yeni savaş regresyonu kapsamı yukarıda açıktır.
 - Ses kaynakları prosedürel taslaktır; dinlenmeden son ses kalitesi ilan edilmez.
 - Gizli oyun penceresi DX12'de screenshot hatası, DX11'de siyah kare üretti. Gerçek görüntü için önceki canlı önizleme izni kapsamındaki görünür test player kullanılır; test/editor/helper süreçleri gizli kalır. Siyah kareyi başarılı sayan bir istisna eklenmedi.
 

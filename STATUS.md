@@ -2,6 +2,8 @@
 
 Son güncelleme: **6 Eylül 2026**. Kullanıcının on saatlik özerk geliştirme talimatıyla çalışma yeniden başladı. Onaylı yeni yön [VISION.md](VISION.md), görsel hedef [ART_DIRECTION.md](ART_DIRECTION.md), gece işleri [NIGHT_QUEUE.md](NIGHT_QUEUE.md) içindedir.
 
+**En yeni kanıt, 23:36 UTC:** taktik ve güven rotaları92 Unity testiyle ayrı ayrı GREEN; `tactical-trust-first-20260905-233324-829-3db06d4c` doğal konvoy zaferini, `patron-trust-journey-20260905-233615-111-60fec1ea`20→22 haftalık temerrüt/ret/telafi/ödeme zincirini doğruladı. Eşzamanlı salvo, cephanesiz yakın temas, ortak oyuncu emirleri ve12 ayrı şehir silueti uygulandı. Ayrıntılar [NIGHT_REPORT.md](NIGHT_REPORT.md).
+
 Son tamamlanmış kapı **GREEN**: `output/verify/roles-visible-20260905-230302-558-1717bcb0/REPORT.md`. 56/56 Unity testi, taze Direct3D11 Windows player, 22 gerçek kare, 29 durum kontrolü, 3 durum dökümü ve 10/10 tarayıcı çekirdek testi geçti. Üç başlangıç rolü ve iki haftalık yükümlülükler çalışıyor; root RU/TR belgeleri gördü. Sanat commit'i `19e5fa8`; rol kesiti ayrı commit hazırlığındadır. Hızlı aktif kayıt [SESSION_PROGRESS.md](SESSION_PROGRESS.md).
 
 **Güncel durum:** Unity 6000.3.23f1; harita → emir → hafta → mevcut dilekçe → yürüyüş → savaş → rapor → dönüş → kayıt/yükleme yeni player'da doğrulandı. Normal inceleme derlemesindeki Development Build filigranı kaldırıldı; geliştirme derlemesi ayrı menüde. `PLAY_GAME.cmd` tamamı geçen en yeni derlemeyi seçer; `node play-game.cjs --check` seçimi oyunu açmadan gösterir.
