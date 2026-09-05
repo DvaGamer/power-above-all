@@ -1,5 +1,35 @@
 # Power Above All — sanat ve arayüz yönü
 
+## 6 Eylül 2026 — yeni görsel hedef: boyanmış atlas ve yaşayan minyatürler
+
+Kullanıcı yeni yön verdi: yer yer aydınlık, gerektiğinde karanlık; tam gerçekçilik yerine hoş, hafif tatlı bir renk dünyası; rastgele yapay zekâ üretimi gibi görünmeyen, bilinçli ve tutarlı sanat yönetimi. Önceki yalnız solgun/koyu yorum bu talebe göre güncellenir. Bu yön kullanıcı isteğine karşı geliştirilen **çalışma sanat kararıdır**; ekran görüntüsüyle henüz kabul edilmiş son görünüm değildir.
+
+Seçilen kavram: **güneşli guaj atlas ve yaşayan tarihî minyatürler**. Diğer değerlendirilen yollar, pastel oyuncak tiyatrosu ile renk yıkamalı mürekkep gravürüydü. Seçilen yol sıcaklık, anlaşılır siluetler ve tarihî kabine kimliğini bir araya getirir. Ana harita boyanmış bir atlas; savaş, aynı dünyanın içindeki ışık alan küçük bir arazi parçası; politik belgeler ve krizin çerçevesi koyu mürekkep tonlarıdır.
+
+| Ana renk | Değer | Görev |
+| --- | --- | --- |
+| Sıcak kâğıt | `#F3E7CA` | Belgeler, açık yüzeyler, güneşli kenarlar |
+| Orman mürekkebi | `#243B37` | Okunur metin, kabine çerçevesi, koyu arayüz |
+| Adaçayı | `#A9BA88` | Çayır, sakin kara yüzeyleri |
+| Yumuşak mavi | `#83B0B6` | Su, serin ayrım, harita havası |
+| Mercan | `#C98270` | Rakip ayrımı, ölçülü sıcak vurgu; açık zeminde küçük metin rengi olarak kullanılmaz |
+| Mat pirinç | `#CAB36F` | Seçim, temel emir ve hedef vurgusu |
+| Sıcak toprak | `#B79D71` | Yol, tarla, kıyı ve malzeme farkı |
+| Şarap gölgesi | `#58464D` | Tehlikenin koyu vurgusu ve derin gölgeler |
+
+Türetilmiş tonlar: güneşli çayır `#C6D19F`, serin çayır `#7F9E80`, yaprak `#4F7361`, kraliyet kumaşı `#5F8DA5`, keten `#E9DCB7`. Bunlar sekiz ana rengin ışık/malzeme ailesidir; ekranı daha fazla bağımsız renk koduna boğmaz. Renkler gerçek oyun ışığında ayrıca ayarlanır; kaynak hex değeri ekran pikseliyle birebir varsayılmaz.
+
+- Aydınlık yüzeylerin yanında koyu ve sakin alanlar kalır. Tehlike bütün ekranı sürekli siyaha boyamaz; odak, ışık ve sıcak/soğuk ilişkisiyle hissedilir.
+- Malzemeler mat, hafif boyanmış hissedilir; oyuncak plastiği, aşırı parlak metal, gereksiz parıltı, yoğun gren ve rastgele süs yoktur.
+- Büyük, bilinçli renk alanları ve hafif düzensiz siluetler kullanılır. Arazi dokusu hesaplanan orman/akarsu/tepe sınırlarını yalanlamaz. Süs, okunabilir emrin yerini almaz.
+- Yüzler, üniforma parçaları, kasabalar ve bitki siluetleri ortak bir çizim dili taşır; kopya yüzler, anlamsız armalar, bulanık yazı ve tutarsız ayrıntı kabul edilmez.
+- Yazı ve sayıların okunurluğu renk tatlılığından önce gelir. Soluk altın/kâğıt üzerinde düşük kontrastlı küçük yazı kullanılmaz. Devre dışı emir hâlâ okunur ve nedenini açıklar.
+- Kare kabulü: aynı oyuna ait görünen atlas ve savaş; aydınlık/koyu dağılımı bilinçli; birlikler ve sonraki eylem ilk bakışta anlaşılır; RU/TR metin kesilmez. Estetik olarak otomatik üretim hissini azaltma hedefi, varlıkların kökenine ilişkin yanlış iddia değildir.
+
+## Önceki yönün korunan ayrıntıları
+
+Aşağıdaki önceki kurallar yeni renk/ışık yönüyle birlikte okunur; çelişen solgunluk veya sürekli koyuluk yorumunda yukarıdaki son kullanıcı talimatı önceliklidir.
+
 Bu belge, proje sahibinin görsel yönünü uygulanabilir ekran kurallarına dönüştürür. **Etkin aşama: 0.2 Visual & Feel Polish Pass.** Unity seçildi; temel aktarım sürüyor ve çalışma zamanı henüz doğrulanmadı. Bu aşamada mevcut temelin görünümü, okunurluğu ve kontrol hissi iyileştirilir; **yeni mekanik veya ekonomi sistemi eklenmez**. Aşağıdaki henüz uygulanmamış sistemlere ait kurallar gelecekteki tasarım rehberi olarak kalır.
 
 Yön, kullanıcının metinle verdiği referans açıklamalarına dayanır. Bu karar için referans ekran görüntüsü veya görsel dosyası eklenmedi; burada görüntü karşılaştırması yapıldığı iddia edilmez.

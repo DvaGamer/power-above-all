@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -7,20 +8,31 @@ namespace PowerAboveAll
     /// <summary>Ministerial marginalia around a permanently visible atlas. Drawn by GameApp after its 1440×900 GUI transform.</summary>
     public sealed class CabinetHud : MonoBehaviour
     {
-        private readonly Color forest = C("#20362E"), deep = C("#192A24"), paper = C("#F0EADB"), pale = C("#E5E1CC"), ink = C("#314333"), muted = C("#7D856E"), brass = C("#CAB781"), red = C("#A36451"), rule = C("#CBCBB2");
+        private readonly Color forest = C("#20362E"), deep = C("#192A24"), paper = C("#F0EADB"), pale = C("#E5E1CC"), ink = C("#314333"), muted = C("#65705B"), brass = C("#CAB781"), red = C("#A36451"), rule = C("#CBCBB2");
         private GUIStyle body, small, tiny, title, heading, numeral, button, quietButton, lightBody, lightTiny, mapLabel, cityLabel, tabStyle;
-        private Texture2D disk;
+        private readonly Texture2D[] medallions = new Texture2D[4];
+        private float scrollGrabOffset;
         private Font serifFont, sansFont;
         private bool ready, showHelp, confirmNew;
         private Vector2 provinceScroll, documentScroll;
         private string document = "council";
         private string cachedLanguage;
         private readonly float[] displayedStocks = new float[6], targetStocks = new float[6];
+        private readonly float[] stockFrom = new float[6], stockChangedAt = new float[6];
+        private readonly int[] stockDirection = new int[6];
         private readonly bool[] stockInitialized = new bool[6];
         private LogEntry latestEntry;
         private float latestEntryTime;
         private float provinceContentHeight = 1100;
+        private float documentContentHeight = 584;
         private string shownProvince;
+        private CampaignState previewSource, nextState;
+        private LogEntry previewEntry;
+        private string previewRegion;
+        private ActionResult weekCheck;
+        private readonly Dictionary<string, ActionResult> orderChecks = new Dictionary<string, ActionResult>();
+        private bool weeklyChange;
+        private int observedWeek;
         public bool BlocksMapInput { get { return showHelp || confirmNew; } }
         private static readonly string[] ModeNames = { "control", "unrest", "food", "tax", "army", "influence" };
 
@@ -30,7 +42,7 @@ namespace PowerAboveAll
             EnsureStyles();
             if (cachedLanguage != L.Language) { cachedLanguage = L.Language; provinceScroll = documentScroll = Vector2.zero; }
             CampaignState state = app.State; EconomyForecast forecast = CampaignCore.Forecast(state);
-            if (state.Journal.Count > 0 && !ReferenceEquals(latestEntry, state.Journal[0])) { latestEntry = state.Journal[0]; latestEntryTime = Time.unscaledTime; }
+            Observe(state);
             bool previousEnabled = GUI.enabled;
             if (BlocksMapInput) GUI.enabled = false;
             Top(app, forecast);
@@ -48,17 +60,14 @@ namespace PowerAboveAll
             if (ready) return; ready = true;
             serifFont = Font.CreateDynamicFontFromOSFont(new[] { "Georgia", "Times New Roman", "Liberation Serif" }, 20);
             sansFont = Font.CreateDynamicFontFromOSFont(new[] { "Arial", "Segoe UI", "DejaVu Sans" }, 16);
-            body = Style(14, ink); small = Style(13, muted); tiny = Style(11, muted); title = Style(29, ink, true); heading = Style(21, ink, true); numeral = Style(28, paper, true);
+            body = Style(14, ink); small = Style(13, muted); tiny = Style(12, muted); title = Style(29, ink, true); heading = Style(21, ink, true); numeral = Style(28, paper);
             lightBody = Style(14, paper); lightTiny = Style(11, new Color(.69f,.73f,.64f));
             mapLabel = Style(15, C("#3D5038"), true); mapLabel.alignment = TextAnchor.MiddleCenter;
             cityLabel = Style(12, C("#667253"), true); cityLabel.fontStyle = FontStyle.Italic; cityLabel.alignment = TextAnchor.MiddleCenter;
             button = Style(14, paper); button.alignment = TextAnchor.MiddleCenter;
             quietButton = Style(13, ink); quietButton.alignment = TextAnchor.MiddleCenter;
             tabStyle = Style(12, muted); tabStyle.alignment = TextAnchor.MiddleCenter;
-            disk = new Texture2D(64,64,TextureFormat.RGBA32,false) { name = "Engraved seal", filterMode = FilterMode.Bilinear };
-            Color[] pixels = new Color[4096];
-            for(int y=0;y<64;y++)for(int x=0;x<64;x++){float d=Vector2.Distance(new Vector2(x+.5f,y+.5f),new Vector2(32,32));pixels[y*64+x]=new Color(1,1,1,Mathf.Clamp01(32-d));}
-            disk.SetPixels(pixels); disk.Apply();
+            for(int i=0;i<medallions.Length;i++)medallions[i]=EngravedMedallion(i);
         }
         private GUIStyle Style(int size, Color color, bool serif = false)
         {
@@ -68,20 +77,63 @@ namespace PowerAboveAll
         private static Color C(string html){ColorUtility.TryParseHtmlString(html,out var color);return color;}
         private static string T(string key,params object[] args){return L.Text(key,args);}
         private static string Number(float value){return Mathf.RoundToInt(value).ToString("N0",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"));}
+        private static string Number(long value){return value.ToString("N0",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"));}
         private static string Signed(int value){return (value>=0?"+":"−")+Number(Math.Abs(value));}
+        private static string Change(float value){return (value>=0?"+":"−")+Math.Abs(value).ToString("0.#",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"));}
+        private void Observe(CampaignState state)
+        {
+            LogEntry current=state.Journal.Count>0?state.Journal[0]:null;
+            bool replaced=!ReferenceEquals(previewSource,state);
+            if(!replaced&&ReferenceEquals(previewEntry,current)&&previewRegion==state.SelectedRegionId)return;
+            if(replaced)
+            {
+                Array.Clear(stockInitialized,0,stockInitialized.Length);
+                Array.Clear(stockDirection,0,stockDirection.Length);
+                documentScroll=provinceScroll=Vector2.zero;
+            }
+            weeklyChange=!replaced&&state.Week!=observedWeek;
+            observedWeek=state.Week;
+            if(!ReferenceEquals(latestEntry,current))
+            {
+                // Yeni kayıtlar üstte eklenirken okunmakta olan satır yerinde kalır.
+                if(!replaced&&document=="journal"&&documentScroll.y>1f&&latestEntry!=null)
+                {
+                    int previous=state.Journal.IndexOf(latestEntry);
+                    if(previous>0)for(int i=0;i<previous;i++)documentScroll.y+=JournalEntryHeight(state.Journal[i]);
+                }
+                latestEntry=current;latestEntryTime=Time.unscaledTime;
+            }
+            previewSource=state;previewEntry=current;previewRegion=state.SelectedRegionId;
+            // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
+            string snapshot=JsonUtility.ToJson(state);
+            nextState=JsonUtility.FromJson<CampaignState>(snapshot);
+            weekCheck=CampaignCore.NextWeek(nextState);
+            foreach(string action in new[]{"bread","tax","recruit","subsidy"})
+                orderChecks[action]=CampaignCore.Act(JsonUtility.FromJson<CampaignState>(snapshot),action,state.SelectedRegionId);
+        }
+        private string Animated(int index,int actual)
+        {
+            string moving=Animated(index,(float)actual);
+            return displayedStocks[index]==targetStocks[index]?Number((long)actual):moving;
+        }
         private string Animated(int index,float actual)
         {
-            targetStocks[index]=actual;
             if(!stockInitialized[index]){stockInitialized[index]=true;displayedStocks[index]=actual;}
+            else if(targetStocks[index]!=actual)
+            {
+                stockFrom[index]=displayedStocks[index];stockDirection[index]=actual>targetStocks[index]?1:-1;
+                stockChangedAt[index]=Time.unscaledTime+(weeklyChange?(index==0?0f:index==1?.13f:index==5?.26f:.13f):0f);
+            }
+            targetStocks[index]=actual;
             return Number(displayedStocks[index]);
         }
         private void Update()
         {
-            float blend=1f-Mathf.Exp(-Time.unscaledDeltaTime*9f);
             for(int i=0;i<displayedStocks.Length;i++)
             {
-                displayedStocks[i]=Mathf.Lerp(displayedStocks[i],targetStocks[i],blend);
-                if(Mathf.Abs(displayedStocks[i]-targetStocks[i])<.08f)displayedStocks[i]=targetStocks[i];
+                if(!stockInitialized[i]||displayedStocks[i]==targetStocks[i])continue;
+                float progress=Mathf.Clamp01((Time.unscaledTime-stockChangedAt[i])/.18f);
+                displayedStocks[i]=Mathf.Lerp(stockFrom[i],targetStocks[i],progress*progress*(3f-2f*progress));
             }
         }
         private static void Fill(Rect rect,Color color){Color before=GUI.color;GUI.color=color;GUI.DrawTexture(rect,Texture2D.whiteTexture);GUI.color=before;}
@@ -90,26 +142,144 @@ namespace PowerAboveAll
         private void Rule(float x,float y,float width){Fill(new Rect(x,y,width,1),rule);}
         private bool Press(Rect rect,string text,bool enabled=true,bool primary=false)
         {
-            bool over=rect.Contains(Event.current.mousePosition);
+            enabled=enabled&&GUI.enabled;
+            bool over=rect.Contains(Event.current.mousePosition),down=over&&Input.GetMouseButton(0)&&enabled;
             Color fill=primary?forest:pale;
             if(over&&enabled)fill=primary?C("#405B40"):C("#D9DFC5");
+            if(down)fill=Color.Lerp(fill,ink,.14f);
             if(!enabled)fill=Color.Lerp(fill,paper,.5f);
             Fill(rect,fill);Border(rect,primary?forest:C("#BCC4A8"));
+            if(over&&enabled)Fill(new Rect(rect.x+1,rect.yMax-2,rect.width-2,1),brass);
             bool previous=GUI.enabled;GUI.enabled=previous&&enabled;
-            var style=primary?button:quietButton;
+            var style=new GUIStyle(primary?button:quietButton);if(down)style.contentOffset=new Vector2(0,1);
             Color old=GUI.color;if(!enabled)GUI.color=new Color(old.r,old.g,old.b,.47f);
             bool hit=GUI.Button(rect,text,style);GUI.color=old;GUI.enabled=previous;return hit;
         }
-        private void Seal(Rect rect,Color color,int variant=0)
+        private Vector2 BeginMatteScroll(Rect viewport,Vector2 scroll,Rect content,int hint)
         {
-            Color old=GUI.color;GUI.color=color;GUI.DrawTexture(rect,disk);GUI.color=old;
-            // Profile miniature: collar, shoulders, curled wig, nose and a dark cravat.
-            float unit=rect.width/64f;
-            Rect R(float x,float y,float w,float h){return new Rect(rect.x+x*unit,rect.y+y*unit,w*unit,h*unit);}
-            GUI.color=C("#E0D6B6");GUI.DrawTexture(R(17,12,28,31),disk);GUI.DrawTexture(R(20,27,25,20),disk);GUI.color=old;
-            Fill(R(36,28,12,6),C("#E0D6B6"));Fill(R(18,43,29,12),C("#C6BC9C"));Fill(R(29,40,8,10),color);
-            for(int i=0;i<4;i++){GUI.color=C("#B9B49D");GUI.DrawTexture(R(13+(variant%2)*2,17+i*5,11,10),disk);}GUI.color=old;
-            Fill(R(36,26,2,2),color);Fill(R(43,36,4,1),color);Fill(R(20,52,28,1),color);
+            float maximum=Mathf.Max(0,content.height-viewport.height);
+            scroll.x=0;scroll.y=Mathf.Clamp(scroll.y,0,maximum);
+            Rect rail=new Rect(viewport.xMax-13,viewport.y,13,viewport.height);
+            int control=GUIUtility.GetControlID(hint,FocusType.Passive,rail);
+            float thumbHeight=Mathf.Min(viewport.height,Mathf.Max(28,viewport.height*viewport.height/content.height));
+            float travel=Mathf.Max(0,viewport.height-thumbHeight);
+            float thumbY=viewport.y+(maximum>0?scroll.y/maximum*travel:0);
+            Event current=Event.current;
+            if(maximum>0&&GUI.enabled)
+            {
+                if(current.type==EventType.ScrollWheel&&viewport.Contains(current.mousePosition))
+                {scroll.y=Mathf.Clamp(scroll.y+current.delta.y*24,0,maximum);current.Use();}
+                if(current.type==EventType.MouseDown&&current.button==0&&rail.Contains(current.mousePosition))
+                {
+                    GUIUtility.hotControl=control;
+                    scrollGrabOffset=current.mousePosition.y>=thumbY&&current.mousePosition.y<=thumbY+thumbHeight?current.mousePosition.y-thumbY:thumbHeight*.5f;
+                    scroll.y=travel>0?Mathf.Clamp01((current.mousePosition.y-viewport.y-scrollGrabOffset)/travel)*maximum:0;
+                    current.Use();
+                }
+                else if(current.type==EventType.MouseDrag&&GUIUtility.hotControl==control)
+                {scroll.y=travel>0?Mathf.Clamp01((current.mousePosition.y-viewport.y-scrollGrabOffset)/travel)*maximum:0;current.Use();}
+            }
+            if(current.type==EventType.MouseUp&&GUIUtility.hotControl==control)
+            {GUIUtility.hotControl=0;current.Use();}
+            if(maximum>0)
+            {
+                thumbY=viewport.y+scroll.y/maximum*travel;
+                bool over=rail.Contains(current.mousePosition)||GUIUtility.hotControl==control;
+                Fill(new Rect(rail.x+6,rail.y,1,rail.height),rule);
+                Fill(new Rect(rail.x+4,thumbY,5,thumbHeight),over?ink:muted);
+                Fill(new Rect(rail.x+5,thumbY+2,1,Mathf.Max(0,thumbHeight-4)),Color.Lerp(paper,brass,.6f));
+            }
+            // Unity yalnızca içerik kırpmasını yönetir; hazır parlak kaydırıcı çizilmez.
+            Rect page=new Rect(viewport.x,viewport.y,viewport.width-15,viewport.height);
+            return GUI.BeginScrollView(page,scroll,content,false,false,GUIStyle.none,GUIStyle.none);
+        }
+        private static float EllipseDistance(Vector2 point,Vector2 center,Vector2 radius)
+        {
+            Vector2 delta=point-center;
+            return (1f-Mathf.Sqrt(delta.x*delta.x/(radius.x*radius.x)+delta.y*delta.y/(radius.y*radius.y)))*Mathf.Min(radius.x,radius.y);
+        }
+        private static float EdgeDistance(Vector2 point,Vector2 a,Vector2 b)
+        {
+            Vector2 edge=b-a;
+            return (point-a-edge*Mathf.Clamp01(Vector2.Dot(point-a,edge)/edge.sqrMagnitude)).magnitude;
+        }
+        private static float ContourDistance(Vector2 point,Vector2[] points)
+        {
+            bool inside=false;float squared=10;
+            for(int i=0,j=points.Length-1;i<points.Length;j=i++)
+            {
+                Vector2 a=points[j],b=points[i],edge=b-a;
+                float length=edge.sqrMagnitude;
+                if(length<=.00000001f)continue;
+                Vector2 nearest=point-a-edge*Mathf.Clamp01(Vector2.Dot(point-a,edge)/length);
+                squared=Mathf.Min(squared,nearest.sqrMagnitude);
+                if((a.y>point.y)!=(b.y>point.y)&&point.x<(b.x-a.x)*(point.y-a.y)/(b.y-a.y)+a.x)inside=!inside;
+            }
+            return Mathf.Sqrt(squared)*(inside?1:-1);
+        }
+        private static Vector2[] SmoothContour(Vector2[] points)
+        {
+            var result=new Vector2[points.Length*4];
+            for(int i=0;i<points.Length;i++)for(int step=0;step<4;step++)
+            {
+                Vector2 a=points[(i+points.Length-1)%points.Length],b=points[i],c=points[(i+1)%points.Length],d=points[(i+2)%points.Length];
+                float t=step*.25f;
+                result[i*4+step]=.5f*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+            }
+            return result;
+        }
+        private Texture2D EngravedMedallion(int variant)
+        {
+            // Kurgusal kişilerin özgün gravür eskizi; tarihsel portre kaynağı değildir.
+            const int width=144,height=176;
+            var texture=new Texture2D(width,height,TextureFormat.RGBA32,false){name="Council engraved miniature "+variant,filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+            var face=SmoothContour(new[]{new Vector2(.40f,.79f),new Vector2(.54f,.80f),new Vector2(.63f,.75f),new Vector2(.64f,.68f),new Vector2(.64f,.64f),new Vector2(.68f,.60f),new Vector2(.73f+(variant==1?.015f:0),.57f),new Vector2(.70f,.55f),new Vector2(.675f,.55f),new Vector2(.69f,.524f),new Vector2(.678f,.51f),new Vector2(.65f,.478f),new Vector2(.59f,.456f),new Vector2(.60f,.37f),new Vector2(.44f,.34f),new Vector2(.445f,.47f),new Vector2(.37f,.56f),new Vector2(.35f,.70f)});
+            var coat=SmoothContour(new[]{new Vector2(.20f,.18f),new Vector2(.27f,.29f),new Vector2(.42f,.34f),new Vector2(.47f,.38f),new Vector2(.60f,.35f),new Vector2(.65f,.30f),new Vector2(.78f,.26f),new Vector2(.84f,.18f)});
+            Color ground=variant==2?C("#815F51"):C("#596B55"), skin=C("#D9CFAB"), shadow=C("#A5A384"), hair=variant>=2?C("#6F735C"):C("#C0BCA0");
+            var pixels=new Color[width*height];
+            for(int y=0;y<height;y++)for(int x=0;x<width;x++)
+            {
+                Vector2 point=new Vector2((x+.5f)/width,(y+.5f)/height);
+                float edge=EllipseDistance(point,new Vector2(.5f,.5f),new Vector2(.465f,.478f));
+                if(edge<-.006f){pixels[y*width+x]=Color.clear;continue;}
+                Color color=Color.Lerp(ground,brass,.08f+point.y*.09f);
+                float oval=Mathf.Sqrt(Mathf.Pow((point.x-.5f)/.465f,2)+Mathf.Pow((point.y-.5f)/.478f,2));
+                color=Color.Lerp(color,brass,Mathf.Clamp01(1-Mathf.Abs(oval-.946f)*120)*.68f);
+                float coatMask=Mathf.Clamp01(ContourDistance(point,coat)*height+.5f);
+                color=Color.Lerp(color,Color.Lerp(deep,ground,.62f),coatMask);
+                float hairMask=EllipseDistance(point,new Vector2(.425f,.674f),new Vector2(.187f,.212f));
+                if(variant>=2&&point.y<.64f)hairMask=-1;
+                color=Color.Lerp(color,hair,Mathf.Clamp01(hairMask*height+.5f));
+                float faceDistance=ContourDistance(point,face),faceMask=Mathf.Clamp01(faceDistance*height+.5f);
+                Color flesh=Color.Lerp(shadow,skin,Mathf.Clamp01((point.x-.35f)*2.8f+.22f));
+                float hatching=Mathf.Pow(Mathf.Max(0,Mathf.Sin((point.x+point.y*.36f)*105)),14)*.12f;
+                flesh=Color.Lerp(flesh,ground,hatching+Mathf.Clamp01(1-Mathf.Abs(faceDistance)*190)*.18f);
+                color=Color.Lerp(color,flesh,faceMask);
+                if(variant<2)
+                {
+                    for(int curl=0;curl<5;curl++)
+                    {
+                        float curlDistance=EllipseDistance(point,new Vector2(.307f+Mathf.Sin(curl*.8f)*.018f,.70f-curl*.063f),new Vector2(.061f,.043f));
+                        float curlMask=Mathf.Clamp01(curlDistance*height+.5f);
+                        Color curlColor=Color.Lerp(hair,shadow,Mathf.Clamp01(1-curlDistance*65)*.55f);
+                        color=Color.Lerp(color,curlColor,curlMask);
+                    }
+                }
+                float ear=EllipseDistance(point,new Vector2(.464f,.605f),new Vector2(.029f,.044f));
+                color=Color.Lerp(color,shadow,Mathf.Clamp01(1-Mathf.Abs(ear)*240)*faceMask*.5f);
+                float eye=EdgeDistance(point,new Vector2(.602f,.653f),new Vector2(.629f,.647f));
+                float brow=EdgeDistance(point,new Vector2(.597f,.679f),new Vector2(.634f,.671f));
+                float mouth=EdgeDistance(point,new Vector2(.657f,.528f),new Vector2(.685f,.525f));
+                float lapel=Mathf.Min(EdgeDistance(point,new Vector2(.402f,.328f),new Vector2(.49f,.201f)),EdgeDistance(point,new Vector2(.605f,.322f),new Vector2(.55f,.203f)));
+                color=Color.Lerp(color,ink,Mathf.Clamp01((.006f-Mathf.Min(eye,Mathf.Min(brow,mouth)))*height)*faceMask*.86f);
+                color=Color.Lerp(color,brass,Mathf.Clamp01((.006f-lapel)*height)*coatMask*.68f);
+                color.a=Mathf.Clamp01(edge*height+.5f);pixels[y*width+x]=color;
+            }
+            texture.SetPixels(pixels);texture.Apply(false,true);return texture;
+        }
+        private void Seal(Rect rect,int variant)
+        {
+            GUI.DrawTexture(rect,medallions[Mathf.Clamp(variant,0,medallions.Length-1)],ScaleMode.StretchToFill,true);
         }
 
         private void Top(GameApp app,EconomyForecast forecast)
@@ -117,20 +287,35 @@ namespace PowerAboveAll
             Fill(new Rect(0,0,1440,94),deep);Fill(new Rect(0,93,1440,1),C("#5B6249"));
             Border(new Rect(24,20,43,52),C("#8A855A"));Text(new Rect(28,25,35,39),T("ui.seal"),numeral);
             var brand=new GUIStyle(title);brand.fontSize=24;brand.normal.textColor=paper;
-            Text(new Rect(82,23,252,31),T("ui.title"),brand);Text(new Rect(84,60,236,16),T("ui.tagline"),lightTiny);
-            Resource(337,T("ui.gold"),Animated(0,app.State.Gold),T("ui.weekly",Signed(forecast.NetGold)),brass);
-            Resource(490,T("ui.food"),Animated(1,app.State.Food),T("ui.weekly",Signed(forecast.NetFood)),brass);
-            Resource(643,T("ui.supplies"),Animated(2,app.State.MilitarySupplies),T("ui.stock"),brass);
-            Resource(796,T("ui.troops"),Animated(3,app.State.Troops),T("ui.reserve",Number(app.State.Manpower)),brass);
-            Resource(949,T("ui.power"),Animated(4,app.State.Power),T("ui.personal"),brass);
-            Resource(1102,T("ui.unrest"),Animated(5,CampaignCore.AverageUnrest(app.State)),T("ui.country"),C("#C58B70"));
+            Text(new Rect(82,23,252,31),T("ui.title"),brand);
+            var tagline=new GUIStyle(lightTiny){wordWrap=false,clipping=TextClipping.Clip};
+            while(tagline.fontSize>9&&tagline.CalcSize(new GUIContent(T("ui.tagline"))).x>236)tagline.fontSize--;
+            Text(new Rect(84,60,236,18),T("ui.tagline"),tagline);
+            Resource(0,337,T("ui.gold"),Animated(0,app.State.Gold),T("ui.weekly",Signed(forecast.NetGold)),brass);
+            Resource(1,490,T("ui.food"),Animated(1,app.State.Food),T("ui.weekly",Signed(forecast.NetFood)),brass);
+            Resource(2,643,T("ui.supplies"),Animated(2,app.State.MilitarySupplies),T("ui.stock"),brass);
+            Resource(3,796,T("ui.troops"),Animated(3,app.State.Troops),T("ui.reserve",Number(app.State.Manpower)),brass);
+            Resource(4,949,T("ui.power"),Animated(4,app.State.Power),T("ui.personal"),brass);
+            Resource(5,1102,T("ui.unrest"),Animated(5,CampaignCore.AverageUnrest(app.State)),T("ui.country"),C("#C58B70"));
             var language=new Rect(1275,24,72,32);if(Press(language,T("ui.language")))app.SetLanguage(L.Language=="ru"?"tr":"ru");
-            if(Press(new Rect(1359,24,54,32),T("ui.help.short")))showHelp=!showHelp;
+            if(Press(new Rect(1359,24,54,32),T("ui.help.short"))){showHelp=!showHelp;app.Feedback("paper");}
+            CabinetAudio audio=app.GetComponent<CabinetAudio>();
+            if(audio!=null&&Press(new Rect(1275,64,138,23),T(audio.Muted?"ui.sound.off":"ui.sound.on")))
+            {
+                audio.SetMuted(!audio.Muted);
+                if(!L.IsReviewSession){PlayerPrefs.SetInt("muted",audio.Muted?1:0);PlayerPrefs.Save();}
+                if(!audio.Muted)app.Feedback("paper");
+            }
         }
-        private void Resource(float x,string label,string value,string detail,Color accent)
+        private void Resource(int index,float x,string label,string value,string detail,Color accent)
         {
             Fill(new Rect(x-16,24,1,48),C("#405344"));Text(new Rect(x,16,140,19),label,lightTiny);
-            var style=new GUIStyle(numeral);style.normal.textColor=accent;Text(new Rect(x,34,142,35),value,style);Text(new Rect(x,71,142,17),detail,lightTiny);
+            float emphasis=stockDirection[index]==0?0f:Mathf.Clamp01(1f-(Time.unscaledTime-stockChangedAt[index])/.9f);
+            bool benefit=index==5?stockDirection[index]<0:stockDirection[index]>0;
+            var style=new GUIStyle(numeral);style.normal.textColor=Color.Lerp(accent,benefit?C("#B9CC9D"):C("#DBAA91"),emphasis);
+            style.fontSize=value.Length>8?23:28;
+            Text(new Rect(x,34,142,35),value,style);Text(new Rect(x,71,142,17),detail,lightTiny);
+            if(emphasis>0f)Fill(new Rect(x,69,140,1),new Color(style.normal.textColor.r,style.normal.textColor.g,style.normal.textColor.b,emphasis*.6f));
         }
         private void Atlas(GameApp app)
         {
@@ -141,7 +326,7 @@ namespace PowerAboveAll
                 Rect rect=new Rect(245+i*modeWidth,94,modeWidth,43);bool active=app.Mode==ModeNames[i];
                 if(active){Fill(rect,C("#EFF0DE"));Fill(new Rect(rect.x+12,rect.yMax-3,rect.width-24,3),C("#7D9067"));}
                 var style=new GUIStyle(tabStyle);if(active)style.normal.textColor=ink;
-                if(GUI.Button(rect,T("ui.mode."+ModeNames[i]),style))app.SetMode(ModeNames[i]);
+                if(GUI.Button(rect,T("ui.mode."+ModeNames[i]),style)){app.SetMode(ModeNames[i]);app.Feedback("paper");}
             }
             var mapTitle=new GUIStyle(heading);mapTitle.alignment=TextAnchor.MiddleCenter;mapTitle.normal.textColor=C("#49604D");
             Text(new Rect(400,149,585,32),T("ui.atlas.title"),mapTitle);
@@ -150,10 +335,11 @@ namespace PowerAboveAll
             foreach(var definition in CampaignCore.Regions)
             {
                 Vector3 screen=app.Camera.WorldToScreenPoint(app.Map.RegionWorld(definition.Id));
-                float x=screen.x/Screen.width*1440f,y=(1f-screen.y/Screen.height)*900f;
+                Vector2 point=ViewLayout.ToCanvas(screen);float x=point.x,y=point.y;
                 if(x<265||x>1118||y<206||y>749)continue;
                 var style=new GUIStyle(mapLabel);if(definition.Id==app.State.SelectedRegionId){style.fontStyle=FontStyle.Bold;style.normal.textColor=C("#2C422C");}
-                Text(new Rect(x-83,y-34,166,24),T("region."+definition.Id),style);
+                float nameOffset=definition.Id=="champagne"?-18f:definition.Id=="lorraine"?12f:0f;
+                Text(new Rect(x-83,y-34+nameOffset,166,24),T("region."+definition.Id),style);
                 Text(new Rect(x-65,y+14,130,19),T("city."+definition.Id),cityLabel);
             }
             var geography=new GUIStyle(cityLabel);geography.fontSize=18;geography.normal.textColor=C("#6F8A7B");
@@ -175,19 +361,33 @@ namespace PowerAboveAll
             if(shownProvince!=region.Id){shownProvince=region.Id;provinceScroll=Vector2.zero;}
             Fill(new Rect(0,94,245,706),paper);Fill(new Rect(244,94,1,706),C("#AEBBA0"));
             Text(new Rect(18,110,213,22),T("ui.province.dispatch"),tiny);Rule(18,141,208);
-            Text(new Rect(18,155,212,60),T("region."+region.Id),title);
+            var regionTitle=new GUIStyle(title);regionTitle.fontSize=26;
+            Text(new Rect(18,152,212,64),T("region."+region.Id),regionTitle);
             Text(new Rect(19,214,209,24),T("city."+region.Id),small);
-            provinceScroll=GUI.BeginScrollView(new Rect(12,246,226,540),provinceScroll,new Rect(0,0,205,Mathf.Max(540,provinceContentHeight)),false,false);
+            // Emirler sabit kalır; yalnızca alttaki durum raporu kaydırılır.
+            GUI.BeginGroup(new Rect(12,246,226,540));
             float y=0;Text(new Rect(4,y,195,25),T("ui.orders"),tiny);y+=29;
-            Order(app,ref y,"bread",T("ui.order.bread"),T("ui.order.bread.detail"),!region.BreadUsed&&state.Food>=40,region.BreadUsed?"ui.reason.used":"ui.reason.food");
-            Order(app,ref y,"tax",T("ui.order.tax"),T("ui.order.tax.detail"),!region.TaxUsed,"ui.reason.used");
-            Order(app,ref y,"recruit",T("ui.order.recruit"),T("ui.order.recruit.detail"),!region.RecruitUsed&&state.ArmyRegionId==region.Id&&state.Gold>=120&&state.Food>=20&&state.MilitarySupplies>=15&&state.Manpower>=200,region.RecruitUsed?"ui.reason.used":state.ArmyRegionId!=region.Id?"ui.reason.army":"ui.reason.recruit");
+            Order(app,ref y,"bread",T("ui.order.bread"),T("ui.order.bread.detail"));
+            Order(app,ref y,"tax",T("ui.order.tax"),T("ui.order.tax.detail"));
+            Order(app,ref y,"recruit",T("ui.order.recruit"),T("ui.order.recruit.detail"));
             var march=CampaignCore.CanMarch(state,region.Id);bool here=state.ArmyRegionId==region.Id;
-            if(Press(new Rect(4,y,195,45),T(here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=53;
-            string marchDetail=here?T("ui.army.here.detail"):L.Text(march.Key,march.Args);
-            float marchHeight=small.CalcHeight(new GUIContent(marchDetail),195);Text(new Rect(4,y,195,marchHeight),marchDetail,small);y+=marchHeight+19;
-            if(region.Id=="ile")Order(app,ref y,"subsidy",T(state.SubsidyParis?"ui.order.subsidy.stop":"ui.order.subsidy"),T(state.SubsidyParis?"ui.order.subsidy.stop.detail":"ui.order.subsidy.detail"),true);
-            Rule(4,y,195);y+=20;
+            // Düğme durumu değiştirebilir; varış tahmini tıklamadan önce alınır.
+            var arrival=!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
+            int movementCost=arrival==null?0:state.Moves-arrival.MovesAfter;
+            if(Press(new Rect(4,y,195,34),T(here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=40;
+            string marchDetail=here?T("ui.army.here.detail"):arrival!=null?T("ui.march.cost",Number(arrival.FoodCost),Number(movementCost)):L.Text(march.Key,march.Args);
+            var marchStyle=new GUIStyle(tiny);if(!here&&!march.Ok)marchStyle.normal.textColor=red;
+            Paragraph(ref y,marchDetail,marchStyle,195,8);
+            if(arrival!=null&&arrival.Hungry)
+            {
+                var warning=new GUIStyle(tiny);warning.normal.textColor=red;Paragraph(ref y,T("ui.march.hungry"),warning,195,8);
+            }
+            if(region.Id=="ile")Order(app,ref y,"subsidy",T(state.SubsidyParis?"ui.order.subsidy.stop":"ui.order.subsidy"),T(state.SubsidyParis?"ui.order.subsidy.stop.detail":"ui.order.subsidy.detail"));
+            Rule(4,y+3,195);y+=15;
+            float reportTop=246+y,reportHeight=Mathf.Max(1,786-reportTop);
+            GUI.EndGroup();
+            provinceScroll=BeginMatteScroll(new Rect(12,reportTop,226,reportHeight),provinceScroll,new Rect(0,0,205,Mathf.Max(reportHeight,provinceContentHeight)),178901);
+            y=4;
             Meter(4,y,196,T("ui.control"),region.Control,C("#698260"));y+=48;Meter(4,y,196,T("ui.unrest"),region.Unrest,red);y+=48;Meter(4,y,196,T("ui.elite"),region.EliteLoyalty,C("#AF9964"));y+=52;
             Pair(4,y,195,T("ui.population"),T("ui.million",(definition.Population/1000000f).ToString("0.0",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"))));y+=30;
             Pair(4,y,195,T("ui.tax.base"),Number(definition.BaseTax));y+=30;Pair(4,y,195,T("ui.food.base"),Number(definition.BaseFood));y+=39;
@@ -198,17 +398,30 @@ namespace PowerAboveAll
             provinceContentHeight=y+10;
             GUI.EndScrollView();
         }
-        private void Order(GameApp app,ref float y,string action,string name,string detail,bool enabled,string reasonKey=null)
+        private void Order(GameApp app,ref float y,string action,string name,string detail)
         {
-            if(Press(new Rect(4,y,195,38),name,enabled))app.Act(action);y+=44;
-            if(!enabled&&!string.IsNullOrEmpty(reasonKey))
+            ActionResult check=orderChecks[action];
+            if(Press(new Rect(4,y,195,34),name,check.Ok))app.Act(action);y+=40;
+            if(!check.Ok)
             {
-                string reason=T(reasonKey);var reasonStyle=new GUIStyle(small);reasonStyle.normal.textColor=red;
+                string reason=OrderReason(app.State,check);var reasonStyle=new GUIStyle(tiny);reasonStyle.normal.textColor=red;
                 float reasonHeight=reasonStyle.CalcHeight(new GUIContent(reason),188);
-                Text(new Rect(7,y,188,reasonHeight),reason,reasonStyle);y+=reasonHeight+6;
+                Text(new Rect(7,y,188,reasonHeight),reason,reasonStyle);y+=reasonHeight+8;
+                return;
             }
-            float detailHeight=small.CalcHeight(new GUIContent(detail),188);
-            Text(new Rect(7,y,188,detailHeight),detail,small);y+=detailHeight+16;
+            float detailHeight=tiny.CalcHeight(new GUIContent(detail),188);
+            Text(new Rect(7,y,188,detailHeight),detail,tiny);y+=detailHeight+8;
+        }
+        private string OrderReason(CampaignState state,ActionResult check)
+        {
+            if(check.Key=="error.bread.cost")return T("ui.reason.missing",T("ui.food"),Number(40-state.Food));
+            if(check.Key!="error.recruit.cost")return L.Text(check.Key,check.Args);
+            var shortages=new List<string>();
+            if(state.Gold<120)shortages.Add(T("ui.reason.missing",T("ui.gold"),Number(120-state.Gold)));
+            if(state.Food<20)shortages.Add(T("ui.reason.missing",T("ui.food"),Number(20-state.Food)));
+            if(state.MilitarySupplies<15)shortages.Add(T("ui.reason.missing",T("ui.supplies"),Number(15-state.MilitarySupplies)));
+            if(state.Manpower<200)shortages.Add(T("ui.reason.missing",T("ui.manpower"),Number(200-state.Manpower)));
+            return string.Join("\n",shortages);
         }
         private void Pair(float x,float y,float width,string key,string value)
         {
@@ -217,6 +430,11 @@ namespace PowerAboveAll
         private void Meter(float x,float y,float width,string key,float value,Color color)
         {
             Pair(x,y,width,key,Number(value));Fill(new Rect(x,y+27,width,4),C("#D5D6BF"));Fill(new Rect(x,y+27,width*Mathf.Clamp01(value/100f),4),color);
+        }
+        private void Paragraph(ref float y,string text,GUIStyle style,float width=238,float after=12)
+        {
+            float height=style.CalcHeight(new GUIContent(text),width);
+            Text(new Rect(4,y,width,height),text,style);y+=height+after;
         }
 
         private void Cabinet(GameApp app,EconomyForecast forecast)
@@ -227,64 +445,131 @@ namespace PowerAboveAll
             for(int i=0;i<names.Length;i++)
             {
                 Rect rect=new Rect(1156+i*89,151,87,36);bool selected=document==names[i];if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
-                if(GUI.Button(rect,T("ui.tab."+names[i]),tabStyle)){document=names[i];documentScroll=Vector2.zero;}
+                if(GUI.Button(rect,T("ui.tab."+names[i]),tabStyle)){document=names[i];documentScroll=Vector2.zero;documentContentHeight=584;app.Feedback("paper");}
             }
-            float height=document=="council"?1700:document=="economy"?1230:Mathf.Max(575,app.State.Journal.Count*145+100);
-            documentScroll=GUI.BeginScrollView(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,height),false,false);
+            if(document=="journal")
+            {
+                documentContentHeight=heading.CalcHeight(new GUIContent(T("ui.journal.title")),242)+29;
+                foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
+            }
+            documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
             if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
         {
-            float y=0;Text(new Rect(4,y,244,38),T("ui.council.title"),heading);y+=43;
-            Text(new Rect(4,y,243,64),T("ui.council.intro"),small);y+=77;
+            float y=0;Paragraph(ref y,T("ui.council.title"),heading,242,12);
+            Paragraph(ref y,T("ui.council.intro"),small,242,19);
             foreach(var faction in app.State.Factions)
             {
                 var person=app.State.Characters.Find(p=>p.Id==faction.LeaderId);
                 Rule(4,y,242);y+=17;
-                Text(new Rect(5,y,240,29),T("faction."+faction.Id),heading);y+=38;
-                Seal(new Rect(6,y+2,52,60),faction.Id=="urban"?red:C("#69765B"),faction.Id=="assembly"?1:0);
-                if(person!=null){Text(new Rect(71,y,172,44),T(person.NameKey),body);Text(new Rect(71,y+45,172,44),T(person.PositionKey),small);}y+=94;
+                Paragraph(ref y,T("faction."+faction.Id),heading,240,12);
+                Seal(new Rect(6,y+2,52,60),faction.Id=="assembly"?1:faction.Id=="urban"?2:faction.Id=="army"?3:0);
+                float personHeight=64;
+                if(person!=null)
+                {
+                    float nameHeight=body.CalcHeight(new GUIContent(T(person.NameKey)),172);
+                    float roleHeight=small.CalcHeight(new GUIContent(T(person.PositionKey)),172);
+                    Text(new Rect(71,y,172,nameHeight),T(person.NameKey),body);
+                    Text(new Rect(71,y+nameHeight+5,172,roleHeight),T(person.PositionKey),small);
+                    personHeight=Mathf.Max(personHeight,nameHeight+roleHeight+5);
+                }
+                y+=personHeight+16;
                 Meter(5,y,236,T("ui.approval"),faction.Approval,C("#819168"));y+=46;
                 Pair(5,y,236,T("ui.influence"),Number(faction.Influence));y+=29;Pair(5,y,236,T("ui.radicalism"),Number(faction.Radicalism));y+=36;
-                Text(new Rect(5,y,236,65),T(faction.DemandKey),small);y+=74;
-                if(person!=null){Text(new Rect(5,y,236,43),T("ui.character.traits",Number(person.Ambition),Number(person.Competence),Number(person.Relationship)),tiny);y+=52;}
+                Paragraph(ref y,T(faction.DemandKey),body,236,10);
+                if(person!=null)Paragraph(ref y,T(person.AgendaKey),small,236,19);
             }
+            documentContentHeight=y+12;
         }
         private void Economy(GameApp app,EconomyForecast forecast)
         {
-            float y=0;Text(new Rect(4,y,244,36),T("ui.economy.title"),heading);y+=44;
-            Text(new Rect(4,y,243,68),T("ui.economy.intro"),small);y+=83;
-            Text(new Rect(4,y,243,25),T("ui.economy.treasury"),tiny);y+=35;
-            LedgerLine(ref y,T("ui.economy.tax"),forecast.TaxIncome);LedgerLine(ref y,T("ui.economy.army"),-forecast.ArmyCost);y+=8;Rule(4,y,238);y+=17;LedgerLine(ref y,T("ui.economy.balance"),forecast.NetGold,true);y+=24;
-            Text(new Rect(4,y,243,25),T("ui.economy.grain"),tiny);y+=35;
-            LedgerLine(ref y,T("ui.economy.production"),forecast.Production);LedgerLine(ref y,T("ui.economy.population"),-forecast.CivilianConsumption);LedgerLine(ref y,T("ui.economy.rations"),-forecast.ArmyConsumption);LedgerLine(ref y,T("ui.economy.subsidy"),-forecast.SubsidyConsumption);y+=8;Rule(4,y,238);y+=17;LedgerLine(ref y,T("ui.economy.balance"),forecast.NetFood,true);y+=31;
-            Text(new Rect(4,y,243,30),T("ui.economy.chain"),heading);y+=40;
-            Text(new Rect(4,y,238,135),T("ui.economy.chain.detail"),body);y+=148;
-            Fill(new Rect(4,y,238,126),pale);Fill(new Rect(4,y,3,126),brass);Text(new Rect(16,y+12,214,102),T("ui.economy.supply.detail"),small);y+=146;
-            Text(new Rect(4,y,238,86),T("ui.economy.subsidy.note"),small);y+=92;
+            CampaignState state=app.State;
+            float y=0;Paragraph(ref y,T("ui.economy.title"),heading,242,10);
+            Paragraph(ref y,T("ui.economy.intro"),small,242,18);
+            if(!weekCheck.Ok)
+            {
+                var warning=new GUIStyle(small);warning.normal.textColor=red;
+                Paragraph(ref y,L.Text(weekCheck.Key,weekCheck.Args),warning);
+            }
+            StockProjection(ref y,T("ui.gold"),state.Gold,nextState.Gold,forecast.NetGold);
+            StockProjection(ref y,T("ui.food"),state.Food,nextState.Food,forecast.NetFood);
+            Rule(4,y,238);y+=18;
+            Paragraph(ref y,T("ui.economy.treasury"),tiny,238,13);
+            LedgerLine(ref y,T("ui.economy.tax"),forecast.TaxIncome);
+            int payroll=(int)Math.Ceiling(state.Troops/12d);
+            LedgerLine(ref y,T("ui.economy.payroll"),-payroll);
+            LedgerLine(ref y,T("ui.economy.equipment"),-(forecast.ArmyCost-payroll));
+            LedgerLine(ref y,T("ui.economy.balance"),forecast.NetGold,true);y+=9;
+            Paragraph(ref y,T("ui.economy.tax.reason"),small,238,19);
+            Rule(4,y,238);y+=18;
+            Paragraph(ref y,T("ui.economy.grain"),tiny,238,13);
+            LedgerLine(ref y,T("ui.economy.production"),forecast.Production);
+            LedgerLine(ref y,T("ui.economy.population"),-forecast.CivilianConsumption);
+            LedgerLine(ref y,T("ui.economy.rations"),-forecast.ArmyConsumption);
+            LedgerLine(ref y,T("ui.economy.subsidy"),-forecast.SubsidyConsumption);
+            LedgerLine(ref y,T("ui.economy.balance"),forecast.NetFood,true);y+=9;
+            Paragraph(ref y,T("ui.economy.food.reason"),small,238,18);
+            Paragraph(ref y,T(state.SubsidyParis?"ui.economy.subsidy.active":"ui.economy.subsidy.inactive"),small,238,19);
+            Rule(4,y,238);y+=18;
+            Paragraph(ref y,T("ui.economy.unrest.title"),heading,238,12);
+            float unrest=CampaignCore.AverageUnrest(state),after=CampaignCore.AverageUnrest(nextState);
+            Paragraph(ref y,T("ui.economy.unrest.forecast",Number(unrest),Number(after),Change(after-unrest)),body,238,12);
+            Paragraph(ref y,T("ui.economy.unrest.reason"),small,238,18);
+            Paragraph(ref y,T("ui.economy.supply.detail"),small,238,18);
             if(Press(new Rect(4,y,238,41),T("ui.economy.paris")))app.SelectRegion("ile");
+            y+=55;documentContentHeight=y;
+        }
+        private void StockProjection(ref float y,string label,int current,int projected,int net)
+        {
+            Fill(new Rect(1,y,247,100),pale);Fill(new Rect(1,y,3,100),brass);
+            Text(new Rect(13,y+10,226,18),label,tiny);
+            string values=Number(current)+"  →  "+Number(projected);
+            var amount=new GUIStyle(heading);amount.font=sansFont;amount.fontSize=22;
+            while(amount.fontSize>13&&amount.CalcSize(new GUIContent(values)).x>226)amount.fontSize--;
+            Text(new Rect(13,y+33,226,28),values,amount);
+            var caption=new GUIStyle(tiny);caption.normal.textColor=net<0?red:muted;
+            Text(new Rect(13,y+69,226,26),T("ui.economy.projection",Signed(net)),caption);y+=114;
+            long shortage=Math.Max(0L,-((long)current+net));
+            if(shortage>0)
+            {
+                var warning=new GUIStyle(small);warning.normal.textColor=red;
+                Paragraph(ref y,T("ui.economy.shortfall",Number(shortage)),warning,238,14);
+            }
         }
         private void LedgerLine(ref float y,string label,int value,bool total=false)
         {
-            Text(new Rect(5,y,163,45),label,total?body:small);var number=new GUIStyle(total?heading:body);number.alignment=TextAnchor.UpperRight;number.normal.textColor=value<0?red:ink;Text(new Rect(174,y,68,38),Signed(value),number);y+=49;
+            GUIStyle labelStyle=total?body:small;
+            float height=Mathf.Max(26,labelStyle.CalcHeight(new GUIContent(label),155));
+            if(total){Rule(4,y,238);y+=8;}
+            Text(new Rect(5,y,155,height),label,labelStyle);
+            var number=new GUIStyle(body);number.alignment=TextAnchor.UpperRight;number.normal.textColor=value<0?red:ink;
+            Text(new Rect(161,y,81,height),Signed(value),number);y+=height+9;
         }
+        private float JournalEntryHeight(LogEntry entry){return 28+body.CalcHeight(new GUIContent(L.Text(entry.Key,entry.Args)),226)+29;}
+        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
         private void Journal(GameApp app)
         {
-            Text(new Rect(4,0,243,35),T("ui.journal.title"),heading);float y=52;bool first=true;
+            float y=0;Paragraph(ref y,T("ui.journal.title"),heading,242,19);bool first=true;
             foreach(var entry in app.State.Journal)
             {
+                float height=JournalEntryHeight(entry);
+                bool urgent=entry.Key=="log.shortage"||entry.Key=="log.battle.defeat"||entry.Key=="log.subsidy.failed";
                 if(first)
                 {
-                    float emphasis=Mathf.Clamp01(1f-(Time.unscaledTime-latestEntryTime)/5f);
-                    Fill(new Rect(0,y-7,245,132),Color.Lerp(paper,C("#E2DEC5"),.25f+emphasis*.6f));
-                    Fill(new Rect(0,y-7,2,132),brass);
+                    float emphasis=Mathf.Clamp01(1f-(Time.unscaledTime-latestEntryTime)/1.4f);
+                    Fill(new Rect(0,y-7,245,height-8),Color.Lerp(paper,C("#E2DEC5"),.25f+emphasis*.6f));
                     var stamp=new GUIStyle(tiny);stamp.alignment=TextAnchor.UpperRight;stamp.normal.textColor=red;
                     Text(new Rect(141,y,99,22),T("ui.journal.latest"),stamp);first=false;
                 }
-                Text(new Rect(5,y,236,22),Date(entry.Week),tiny);y+=28;
-                Text(new Rect(5,y,234,81),L.Text(entry.Key,entry.Args),body);y+=95;Rule(5,y,236);y+=17;
+                if(Important(entry))Fill(new Rect(0,y-7,2,height-8),urgent?red:brass);
+                Text(new Rect(9,y,226,22),Date(entry.Week),tiny);
+                var entryStyle=new GUIStyle(body);if(urgent)entryStyle.normal.textColor=red;
+                Text(new Rect(9,y+28,226,height-57),L.Text(entry.Key,entry.Args),entryStyle);
+                y+=height;Rule(9,y-12,230);
             }
+            documentContentHeight=y+10;
         }
 
         private void Bottom(GameApp app)
@@ -318,6 +603,6 @@ namespace PowerAboveAll
             if(Press(new Rect(476,511,231,43),T("ui.cancel")))confirmNew=false;
             if(Press(new Rect(722,511,241,43),T("ui.restart.confirm"),true,true)){confirmNew=false;app.NewCampaign();}
         }
-        private void OnDestroy(){if(disk)Destroy(disk);if(serifFont)Destroy(serifFont);if(sansFont)Destroy(sansFont);}
+        private void OnDestroy(){foreach(var texture in medallions)if(texture)Destroy(texture);if(serifFont)Destroy(serifFont);if(sansFont)Destroy(sansFont);}
     }
 }

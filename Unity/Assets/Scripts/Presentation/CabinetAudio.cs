@@ -18,6 +18,7 @@ namespace PowerAboveAll
             "paper", "quill", "seal", "order", "march", "week", "volley", "hit", "victory", "defeat"
         };
         private static readonly float[] Durations = { .30f, .22f, .18f, .16f, .42f, .48f, .44f, .12f, .38f, .48f };
+        private static readonly float[] Gains = { .30f, .28f, .36f, .32f, .36f, .38f, .42f, .25f, .40f, .38f };
         private readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>(StringComparer.Ordinal);
         private readonly Dictionary<string, float> lastCue = new Dictionary<string, float>(StringComparer.Ordinal);
         private readonly AudioSource[] voices = new AudioSource[VoiceCount];
@@ -55,6 +56,14 @@ namespace PowerAboveAll
             if (Muted || !isActiveAndEnabled || string.IsNullOrEmpty(cue)) return;
             Prepare();
             cue = cue.Trim().ToLowerInvariant();
+            // Mevcut taslaklardan ayrı ağırlıklar; yeni bir ses sistemi değildir.
+            switch(cue)
+            {
+                case "bread": cue="paper";break;
+                case "tax": cue="quill";break;
+                case "recruit": cue="order";break;
+                case "subsidy": cue="seal";break;
+            }
             AudioClip clip;
             if (!clips.TryGetValue(cue, out clip)) return;
             float now = Time.unscaledTime;
@@ -69,6 +78,7 @@ namespace PowerAboveAll
             // A busy pool drops the sound rather than stacking or truncating clips.
             if (voice == null) return;
             voice.clip = clip;
+            voice.volume=Gains[Array.IndexOf(CueNames,cue)];
             voice.Play();
             lastAny = now;
             lastCue[cue] = now;

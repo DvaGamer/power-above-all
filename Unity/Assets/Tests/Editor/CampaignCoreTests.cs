@@ -96,6 +96,37 @@ namespace PowerAboveAll.Tests
             var loaded=Clone(s);CampaignCore.Validate(loaded);before=Snapshot(loaded);
             Assert.IsFalse(CampaignCore.ResolveBattle(loaded,"champagne","battle-0-2-ile-champagne",true,100,60).Ok);Assert.AreEqual(before,Snapshot(loaded));
         }
+        [Test] public void BattleArrivalIncludesTravelWithoutChargingCampaignBeforeResolution()
+        {
+            var s=CampaignCore.Create();s.Food=0;string before=Snapshot(s);
+            var arrival=CampaignCore.PreviewMarch(s,"champagne");
+            Assert.AreEqual(before,Snapshot(s));Assert.IsTrue(arrival.Hungry);
+            Assert.AreEqual(73,arrival.Supply);Assert.AreEqual(20,arrival.Fatigue);Assert.AreEqual(70,arrival.Morale);
+            float reportMorale=CampaignCore.BattleReturnMorale(arrival.Morale,60,true);
+            Assert.IsTrue(CampaignCore.ResolveBattle(s,"champagne","battle-0-2-ile-champagne",true,100,60).Ok);
+            Assert.AreEqual(arrival.FoodAfter,s.Food);Assert.AreEqual(arrival.MilitarySuppliesAfter,s.MilitarySupplies);
+            Assert.AreEqual(arrival.Supply,s.Supply);Assert.AreEqual(arrival.Fatigue+15,s.Fatigue);
+            Assert.AreEqual(reportMorale,s.Morale);Assert.AreEqual(63,s.Morale);Assert.AreEqual(0,s.Moves);
+            Assert.IsNull(CampaignCore.PreviewMarch(s,"provence"));
+        }
+        [Test] public void DefeatReportMoraleMatchesCampaignIncludingClampedLowMorale()
+        {
+            foreach(float ending in new[]{0f,4f,30f,100f})
+            {
+                var s=CampaignCore.Create();var arrival=CampaignCore.PreviewMarch(s,"champagne");
+                float report=CampaignCore.BattleReturnMorale(arrival.Morale,ending,false);
+                Assert.IsTrue(CampaignCore.ResolveBattle(s,"champagne","battle-0-2-ile-champagne",false,300,ending).Ok);
+                Assert.AreEqual(report,s.Morale);Assert.That(s.Morale,Is.InRange(0f,100f));
+            }
+        }
+        [Test] public void RecoveredBattleStoresRemainSaveableAtCapacity()
+        {
+            var s=CampaignCore.Create();s.MilitarySupplies=100000000;
+            Assert.IsTrue(CampaignCore.ResolveBattle(s,"champagne","battle-0-2-ile-champagne",true,100,60).Ok);
+            CampaignCore.RecoverMilitarySupplies(s,24);
+            Assert.AreEqual(100000000,s.MilitarySupplies);Assert.DoesNotThrow(()=>CampaignCore.Validate(s));
+            CampaignCore.RecoverMilitarySupplies(s,-24);Assert.AreEqual(100000000,s.MilitarySupplies);
+        }
         [Test] public void DefeatConsumesMarchButKeepsOriginalArmyLocation()
         {
             var s=CampaignCore.Create();Assert.IsTrue(CampaignCore.ResolveBattle(s,"champagne","battle-0-2-ile-champagne",false,300,30).Ok);

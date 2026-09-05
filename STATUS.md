@@ -1,8 +1,10 @@
 # Power Above All — Proje durumu
 
-Son güncelleme: **5 Eylül 2026**. Kullanıcı geliştirmeyi durdurup gereksinimlerin plana kaydedilmesini istedi. Devam işleri [POLISH_PLAN.md](POLISH_PLAN.md) içinde korunur.
+Son güncelleme: **6 Eylül 2026**. Kullanıcının on saatlik özerk geliştirme talimatıyla çalışma yeniden başladı. Onaylı yeni yön [VISION.md](VISION.md), görsel hedef [ART_DIRECTION.md](ART_DIRECTION.md), gece işleri [NIGHT_QUEUE.md](NIGHT_QUEUE.md) içindedir.
 
-**Güncel durum:** Unity 6000.3.23f1 kuruldu, kullanıcı lisansı etkinleştirdi, Editor'de `Main.unity` açıldı ve Play modunda sefer haritası çizildi. Bu denemede TacticalBattle yerel nesne başlatma hatası görüldü; kaynakta düzeltildi. **Düzeltme sonrası yeniden derleme ve açılış henüz doğrulanmadı.** Tam oyun akışı, Rusça/Türkçe görsel inceleme, ses ve Windows oyun derlemesi tamamlanmış sayılmaz.
+Güncel ana kaynak doğrulaması **GREEN**: `output/verify/baseline-visible-20260905-214616-749-5ef5f22d/REPORT.md`. 23/23 Unity testi, taze Windows player, 20 gerçek kare, 26 durum kontrolü, 3 durum dökümü ve 10/10 tarayıcı çekirdek testi geçti. Önceki izole shader düzeltmesi ana kaynağa taşındı. Kullanıcı kayıt SHA256 değeri aynı kaldı. Tam görsel polish ve ses kabulü henüz bitmedi.
+
+**Güncel durum:** Unity 6000.3.23f1; harita → emir → hafta → mevcut dilekçe → yürüyüş → savaş → rapor → dönüş → kayıt/yükleme yeni player'da doğrulandı. Normal inceleme derlemesindeki Development Build filigranı kaldırıldı; geliştirme derlemesi ayrı menüde. `PLAY_GAME.cmd` tamamı geçen en yeni derlemeyi seçer; `node play-game.cjs --check` seçimi oyunu açmadan gösterir.
 
 Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut döngünün sunumu, okunurluğu ve oyun hissi. Yeni mekanik veya ekonomi genişletmesi yok. Unity oyununun dilleri **Rusça ve Türkçe**; belgeler Türkçedir.
 
@@ -36,36 +38,45 @@ Ekran görüntüleri test bilgisayarındaki `output/playwright/` klasöründedir
 - [x] `cb200f1` çalışma anlık görüntüsü GitHub'a yüklendi.
 - [ ] Son yerel değişikliklerin ikinci anlık görüntüsü; yükleme tamamlanmadan yapılmış sayılmaz.
 
-## Unity kaydı — kısmen denenmiş kaynaklar
+## Unity doğrulama kaydı — 5–6 Eylül
 
-- [x] Motor seçimi: Unity.
-- [x] Dil gereksinimi: yeni oyunda Rusça ve Türkçe.
-- [x] Saf C# sefer çekirdeği Windows .NET derleyicisiyle derlendi.
-- [x] Bağımsız C# kontrolleri: başlangıç, atomik kaynak işlemi, düşmanca yürüyüş, savaş sonucu, tekrar sonucu reddetme, ikmal etkileri, 200 hafta ve bozuk durum reddi.
-- [x] 14 Unity/NUnit editör testi kaynak olarak eklendi.
-- [x] Unity 6000.3.23f1 kuruldu: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
-- [x] `OPEN_UNITY.cmd` başlatıcısı `Unity/` projesini hedefliyor; başlangıç sahnesi `Assets/Scenes/Main.unity`.
-- [x] İlk lisans hatasından sonra kullanıcı lisansı etkinleştirdi; Editor yeniden açıldı.
-- [x] `Main.unity` açıldı; Play modunda sefer haritası çizildi.
-- [x] Bu denemede görülen TacticalBattle yerel nesne başlatma hatası kaynakta düzeltildi.
-- [ ] Düzeltme sonrası yeniden derleme, yeniden açılış ve Play denemesi.
-- [ ] Bu testlerin Unity Test Runner içinde çalıştırılması.
-- [ ] Unity editöründe tam oyun akışının çalışma zamanı doğrulaması.
-- [ ] Rusça/Türkçe arayüz ve kayıtlı günlüklerin dil değişiminde görsel doğrulanması.
-- [ ] Oyunun Unity'den derlenip açılması.
+Unity 6000.3.23f1 ve lisans hazırdır. Proje `Unity/`, başlangıç sahnesi `Assets/Scenes/Main.unity` içindedir. Bu bilgisayardaki Editor yolu `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
 
-## Bir sonraki aşama — 0.2 Visual & Feel Polish Pass
+| Denetim | Doğrulanan sonuç | Kapsam sınırı |
+| --- | --- | --- |
+| Unity Test Runner / EditMode | **23/23 geçti:** 17 sefer çekirdeği + 6 savaş testi | Bütün ekranların veya seslerin kabulü değildir |
+| Gerçek Unity DLL'leriyle bağımsız Roslyn | **10 Runtime + 2 Editor dosyası** derlendi | Oyuncu çalışma zamanını tek başına doğrulamaz |
+| Tarayıcı referansı testleri | **10/10 geçti** | Rusça tarayıcı 0.1 içindir |
+| RU/TR statik dil denetimi | **310 anahtar, 620 metin; 0 hata** | Eksik/yinelenen anahtar ve biçim alanlarını denetler; görsel taşmayı ölçmez |
+| Atlas geometri/yerleşim denetimi | **44 rota, 7 ekran oranı** kontrolü geçti | Görsel kalite ve oyuncu deneyimi onayı değildir |
+| Doğal atlas görüntüsü | **1440×900, 4× MSAA** görüntüsü alındı | Son madalyon/kaydırıcı değişiklikleri dahil bütün ekranlar yeniden incelenecek |
+| İlk Windows derlemesi | Derleme ve oyun açılışı başarılı | Savaşa geçişte eksik `Standard` shader hatası görüldü |
+| Son malzeme düzeltmesi | Kaynak düzeltmesi uygulandı | Yeni Windows derlemesi ve savaş → rapor → atlas çalışma zamanı kontrolü bekliyor |
 
-Kaynakta bulunan sunum: 12 bölgeli kabartma atlas ve bilgi katmanları; şehir minyatürleri ve ordu sancağı; belge panelleri, siyasi güçler ve hesap defteri; taktik savaş ve sefer bağlantısı; Rusça/Türkçe metinler. Yumuşak ordu hareketi, seçili bölgenin yükselmesi, emir sonrası bölge vurgusu, kaynak sayılarının geçişi, son günlük kaydı vurgusu ve devre dışı emir gerekçeleri eklendi. Bunların tamamı görsel olarak onaylanmış değildir.
+Roslyn kontrol kümesinde dış süreç tarafından eklenen `AutoShots.cs` de bulunur. Bu dosya ve dış sürecin `tools/` araçları mevcut polish ekibinin uygulaması olarak sahiplenilmez.
 
-Tarayıcıdaki mevcut ikinci hafta ekmek dilekçesi Unity'ye belge olarak aktarıldı. Kâğıt, kalem, mühür, emir, yürüyüş, hafta, salvo, isabet, zafer ve yenilgi için on prosedürel foley taslağı bulunur; tamamlanmış profesyonel ses varlıkları değildir.
+Son derleme ve çalışma zamanı kanıtları `output/polish-review-20260906` altında ayrı test profiliyle toplanıyor; henüz sonuçlanmış olarak işaretlenmedi. Önceki doğal atlas görüntüsü `output/atlas-ru.png` içindedir. Bu yerel çıktılar kaynak dosyalarının veya başarılı testlerin yerine görsel kabul iddiası oluşturmaz.
 
-- [ ] Mevcut haritanın ve belge panellerinin hiyerarşisini iyileştirmek.
-- [ ] Mevcut savaşın seçimini, emir geri bildirimini ve okunurluğunu iyileştirmek.
-- [ ] Rusça ve Türkçede taşma, eksik anahtar ve tutarsız terimleri gidermek.
-- [ ] Unity çalışma zamanı ve görsel kontrollerini tamamlayıp kanıtlarını kaydetmek.
+## Uygulanan kaynak polish'i
 
-**Kapsam sınırı:** yeni mekanik ve ekonomi genişletmesi yok. Kullanıcının durdurma isteği doğrultusunda uygulama devam ettirilmiyor; kalan görsel gereksinimler ve kontroller planda saklanıyor.
+- **Kabine ve emirler:** sol sütundaki emirler sabittir; sadece alttaki durum raporu kaydırılır. Kullanılamayan emir gerçek nedenini ve eksik kaynak miktarını gösterir. Yürüyüş maliyeti ortak çekirdek tahmininden gelir; aynı OnGUI içindeki durum değişimi nedeniyle oluşan null başvuru düzeltildi.
+- **Hesap defteri:** şimdi/gelecek hafta stokları, açık, maaş, teçhizat, üretim, sivil/ordu tüketimi, Paris yardımı ve huzursuzluk tahmini görünür. Sonraki hafta hesaplaması gerçek durumu değiştirmeden derin kopya üzerinde çalışır; ekonomi dengesi değişmez.
+- **Belge dili:** özel mat kaydırma rayları, metne göre yükseklik, okuma konumunu koruyan günlük ve önemli haber ayrımı; kısa tek satırlı başlık altı metni ve özgün prosedürel gravür madalyonları eklendi. Büyük tam sayı stokları son değerde hassasiyet kaybetmeden gösterilir.
+- **Mevcut dilekçe:** ikinci haftadaki aynı ekmek talebi, kişi ve çıkarı belli bir belge olarak sunulur. Stok, doğrudan sonuçlar ve kullanılamama nedeni görünür; yeni olay kataloğu yoktur.
+- **Atlas:** kıyı/ana kara çerçevesi, kent işaretleri, doku, rota, komşu yer adları ve bölge vurguları elden geçirildi. Seçim, hover, yerel emir ve ordu yürüyüşü mevcut verilere bağlandı.
+- **Savaş:** mevcut alayların hareketi, yaylım hazırlığı, duman, isabet, çekilme ve komut tepkileri iyileştirildi. Sunum duraklamaya uyar; vuruş hesabı görsel efektler tarafından yeniden uygulanmaz. Sonuç raporunda meydan morali ile sefer dönüş morali ayrılır ve atlas dönüşü kısalır.
+- **Görüntü:** ortak 1440×900 yerleşimi kamera, arayüz ve işaretçi koordinatlarında en-boy oranını korur. Editor'de doğal ölçek ve 4× MSAA kullanılır; geniş pencerede görüntü yatay/dikey farklı oranlarda gerilmez.
+- **Ses:** kâğıt, kalem, mühür, emir, yürüyüş, hafta, salvo, isabet, zafer ve yenilgi için mevcut on prosedürel taslak; kısa geri bildirimler, kanal sınırı ve kalıcı sessize alma ile bağlandı. Bunlar profesyonel veya tarihsel kayıt değildir; son dinleme bekler.
+
+Bu liste kaynakta uygulanan değişiklikleri anlatır. **Tam polish planı, Rusça/Türkçe bütün ekranların görsel kabulü ve bitmiş oyun hissi tamamlandı sayılmaz.** Yeni mekanik, ekonomi genişletmesi veya olay yönetmeni bu aşamaya eklenmez.
+
+## Sıradaki doğrulama
+
+- [ ] Malzeme düzeltmesini içeren Windows oyununu yeniden derlemek ve bağımsız oyunda savaş başlangıcını doğrulamak.
+- [ ] Ayrı test profilinde harita → emir → hafta → dilekçe → yürüyüş → savaş → rapor → atlas döngüsünü tamamlamak; sonucu yalnızca bir kez uygulamak.
+- [ ] Son kaynaklarla bütün ekranları RU/TR'de incelemek: taşma, okunurluk, kaydırma, sayı standardı ve dil değiştiren günlükler.
+- [ ] Ses düzeylerini, tekrarı, eşzamanlı ses sınırını ve sessize almayı oyun içinde dinleyerek kontrol etmek.
+- [ ] Sonuçları ve kalan sınırlamaları bu dosyada ve `POLISH_PLAN.md` içinde ayrı kaydetmek.
 
 ## Bilinen sınırlamalar
 
@@ -74,11 +85,11 @@ Tarayıcıdaki mevcut ikinci hafta ekmek dilekçesi Unity'ye belge olarak aktar�
 - Harita tarihî sınırları birebir yansıtmaz.
 - Tarayıcı 0.1 kayıtları kullanılan tarayıcıya ve adrese bağlıdır; Unity kayıtlarıyla ortak değildir. Tamamlanmamış savaş kaydedilmez.
 - Tarayıcı 0.1 arayüzü Rusçadır. Yeni Unity oyununun Rusça/Türkçe desteği zorunludur; kaynakların bulunması tam arayüz doğrulaması sayılmaz.
-- Baştan sona doğrulanmış referans tarayıcı 0.1'dir. Unity'nin ilk Play denemesi kısmi kanıttır; son düzeltmenin yeniden denenmesi ve tam akış kontrolü bekler. Tam hanedan, diplomasi, inşaat ve çok oyunculu sistemler henüz yoktur.
+- Tarayıcı 0.1 önceden doğrulanmış referanstır. Unity'nin kaynak, EditMode ve ilk derleme kanıtları vardır; son malzeme düzeltmesinden sonra bağımsız oyunun tam döngüsü ve bütün ekranların kabulü bekler. Tam hanedan, diplomasi, inşaat ve çok oyunculu sistemler henüz yoktur.
 
 ## İlerleme nasıl izlenir?
 
 1. Yalnızca doğrulanan işleri bu dosyada tamamlandı olarak işaretleyin.
-2. Tarayıcı referansını START.cmd veya npm start ile, Unity projesini OPEN_UNITY.cmd ile açın.
+2. Windows oyununu `PLAY_GAME.cmd` ile açın; başlatıcı `Unity/Builds/WindowsPolish/` ve `Unity/Builds/Windows/` içindeki mevcut `.exe` dosyalarından en yenisini seçer. `OPEN_UNITY.cmd` editörü açar. Tarayıcı referansı `START.cmd` veya `npm start` ile çalışır.
 3. [Issues](https://github.com/DvaGamer/power-above-all/issues), [pull request'ler](https://github.com/DvaGamer/power-above-all/pulls) ve Git geçmişinden değişiklikleri takip edin.
 4. [Actions](https://github.com/DvaGamer/power-above-all/actions) sekmesinde otomatik kontrol sonuçlarını inceleyin.

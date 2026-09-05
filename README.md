@@ -1,26 +1,37 @@
 # Power Above All
 
+> **6 Eylül 2026: Özerk geliştirme sürüyor.** Kullanıcı on saat çalışma istedi. Yeni vizyon [VISION.md](VISION.md), sanat yönü [ART_DIRECTION.md](ART_DIRECTION.md), gerçek ilerleme ve kanıtlar [STATUS.md](STATUS.md) içinde tutulur.
+
 **Fransa. Mayıs 1789. Her şeyin üstünde iktidar.**
 
 Fransız Devrimi'nin başlangıcında geçen bir strateji oyununun ilk oynanabilir prototipi. Bölgeleri yönetin; hazineyi, halkın hoşnutsuzluğunu ve ordunun ihtiyaçlarını dengeleyin; taktik çatışmalarda birliklerinize komuta edin.
 
-> **Güncel proje Unity'de; oyun dilleri Rusça ve Türkçe.** Unity 6000.3.23f1 kuruldu, lisans etkinleştirildi, `Main.unity` açıldı ve Play modunda sefer haritası çizildi. Bu denemede görülen TacticalBattle başlatma hatası kaynakta düzeltildi; **düzeltme sonrası yeniden derleme ve açılış henüz doğrulanmadı**. Tam oyun akışı, görsel inceleme ve Windows oyun derlemesi tamamlanmış sayılmaz. Tarayıcı 0.1, önceden doğrulanmış Rusça referans olarak korunur. Belgeler Türkçedir.
+> **Güncel proje Unity 6000.3.23f1'de; oyun dilleri Rusça ve Türkçe.** Ana kaynak güvenli doğrulama kapısından geçti: 23 Unity testi, taze Windows player, 20 gerçek kare ve 26 durum kontrolü. Shader düzeltmesi ve savaş sonrası kayıt akışı doğrulandı; görsel geliştirme sürüyor. Tarayıcı 0.1, Rusça referans olarak korunur. Belgeler Türkçedir.
 
-Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut temelin görünümü, okunurluğu, kontrolleri ve oyun hissi. **Kullanıcının isteğiyle geliştirme durduruldu; kalan gereksinimler [POLISH_PLAN.md](POLISH_PLAN.md) içine kaydediliyor.** Yeni mekanik veya ekonomi genişletmesi bu aşamanın kapsamında değil.
+Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut temelin görünümü, okunurluğu, kontrolleri ve oyun hissi. Uygulama ve kalan kabul ölçütleri [POLISH_PLAN.md](POLISH_PLAN.md) üzerinden izlenir. Yeni mekanik veya ekonomi genişletmesi bu aşamanın kapsamında değil.
 
 ## Unity temelinin durumu
 
-Kaynaklarda 12 bölgeli kabartma atlas, belge panelleri, siyasi güçler ve hesap defteri, taktik savaş, Rusça/Türkçe metinler ve kayıt bağlantısı bulunur. Görsel iyileştirmeler; yumuşak ordu hareketini, seçilen bölge vurgusunu, emirlerin bölgedeki geri bildirimini, sayı geçişlerini ve son günlük kaydının vurgulanmasını kapsar. Tarayıcıdaki ikinci hafta ekmek dilekçesi Unity'ye aktarılmıştır. On prosedürel foley sesi hazırlanmıştır; bunlar tamamlanmış ses varlıkları değildir.
+Kaynaklarda 12 bölgeli atlas, siyasi güçler, hesap defteri, ikinci hafta ekmek dilekçesi, taktik savaş ve kayıt bağlantısı bulunur. Son sunum çalışması şu alanları kapsar:
 
-Saf C# çekirdeği bağımsız derleyiciyle kontrol edildi. Editor'de ilk Play denemesi yapıldı; görülen TacticalBattle hatasının son kaynak düzeltmesi yeniden denenmedi. 14 NUnit editör testi kaynakta bulunur ve **Unity Test Runner içinde henüz çalıştırılmadı**. Kaynakların bulunması ve haritanın çizilmesi, tamamlanmış oyun akışı veya görsel kalite kanıtı değildir. Güncel doğrulamalar [STATUS.md](STATUS.md) içinde tutulur.
+- Sol belgede sabit emirler ve gerçek kullanılamama nedenleri; durum raporu ayrıca kaydırılır.
+- Çekirdeğin kopya durum üzerinde hesapladığı şimdi/gelecek hafta stokları ve huzursuzluk tahmini; maaş, teçhizat, üretim ve tüketim kalemleri.
+- Mat kaydırma rayları, okuma konumunu koruyan günlük, gravür esinli özgün kişi madalyonları ve fiyatı görünen dilekçe kararları.
+- Atlasın kıyı, kent, sınır, rota ve bölge vurguları; mevcut ordunun yürüyüşü ve yerel emir geri bildirimi.
+- Savaşta mevcut alayların hareket, yaylım, duman, isabet ve geri çekilme tepkileri; ayrı meydan/sefer morali gösteren sonuç raporu.
+- En-boy oranını koruyan ortak arayüz/kamera yerleşimi, doğal **1440×900** görüntü ve **4× MSAA**. Geniş pencerelerde görüntü gerilmez.
+
+**23/23 Unity EditMode testi** (17 sefer, 6 savaş), bağımsız Roslyn derleme kontrolü, tarayıcı referansının 10 testi, 310 anahtar/620 RU/TR metin ve 44 rota/7 ekran oranı denetimi geçti. İlk Windows derlemesi açıldı; savaşa geçişte eksik `Standard` shader hatası görüldü. Malzemeleri derlemeye dahil eden kaynak düzeltmesi uygulandı; son Windows derlemesi ve çalışma zamanı kontrolü `output/polish-review-20260906` altında ayrı test profiliyle sürüyor. Güncel kanıt ve sınırlar [STATUS.md](STATUS.md) içinde tutulur.
+
+On kısa prosedürel foley taslağı bulunur; ses düzeyleri, eşzamanlı ses sınırı ve sessize alma uygulanmıştır. Bunlar profesyonel veya tarihsel ses kayıtları değildir; son dinleme ve bütün ekranların görsel kabulü bekler.
 
 Unity için Rusça/Türkçe gereksinimi; menüler, emirler, araç ipuçları, olaylar, kayıtla geri gelen günlükler ve savaş mesajlarını kapsar. Dil değiştirmek sefer durumunu değiştirmemelidir. Yerelleştirme anahtarları içeriğe, çeviriler kaynak dosyalarına aittir.
 
-## Unity projesini açma
+## Windows oyununu veya Unity projesini açma
 
-1. Windows'ta kök dizindeki **`OPEN_UNITY.cmd`** dosyasını açın. Başlatıcı `Unity/` projesini hedefler ve Node.js kullanır.
-2. Bu bilgisayardaki Editor: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
-3. `Assets/Scenes/Main.unity` sahnesini açın. Son düzeltmeden sonra Play denemesinin tekrarı, testler ve Windows derlemesi bekleyen doğrulamalardır.
+1. **Oyunu açmak için `PLAY_GAME.cmd`** dosyasını çalıştırın. Başlatıcı `Unity/Builds/WindowsPolish/` ve `Unity/Builds/Windows/` içindeki mevcut oyunlardan en yeni `.exe` dosyasını seçer; 1440×900 pencerede açar. Henüz oyun derlemesi yoksa bunu bildirir.
+2. **Editörü açmak için `OPEN_UNITY.cmd`** dosyasını çalıştırın. Başlatıcı `Unity/` projesini hedefler. Her iki başlatıcı Node.js kullanır.
+3. Bu bilgisayardaki Editor: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`. Başlangıç sahnesi `Assets/Scenes/Main.unity`; Editor'de oyunu çalıştırmak için Play'e basın.
 
 İlk başlatmada alınan `No valid Unity Editor license found` hatasının ardından kullanıcı lisansı etkinleştirdi. Editor açıldı; lisans şu anda bekleyen engel değildir.
 
@@ -109,7 +120,8 @@ Başlamadan önce [katkı rehberini](CONTRIBUTING.md) okuyun. Bir görevi üstle
 
 | Dosya | Sorumluluk |
 | --- | --- |
-| `Unity/` | Geliştirilmekte olan Unity temeli; editör ve oyun derlemesi henüz doğrulanmadı |
+| `Unity/` | Güncel Rusça/Türkçe oyun, sefer ve savaş testleri; son Windows savaş doğrulaması sürüyor |
+| `PLAY_GAME.cmd`, `play-game.cjs` | En yeni mevcut Windows oyununu başlatır |
 | `OPEN_UNITY.cmd`, `open-unity.cjs` | Unity proje başlatıcısı |
 | `index.html` | Arayüz iskeleti ve şematik harita |
 | `styles.css` | Görsel tasarım ve ekran boyutlarına uyum |

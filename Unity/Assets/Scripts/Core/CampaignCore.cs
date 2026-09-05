@@ -52,6 +52,12 @@ namespace PowerAboveAll
         public string Key;
         public string[] Args = new string[0];
     }
+    public sealed class MarchPreview
+    {
+        public int FoodCost, FoodAfter, MilitarySuppliesAfter, MovesAfter;
+        public float Supply, Fatigue, Morale;
+        public bool Difficult, Hungry;
+    }
     public sealed class EconomyForecast
     {
         public int TaxIncome, ArmyCost, Production, CivilianConsumption;
@@ -174,18 +180,34 @@ namespace PowerAboveAll
             bool hostile=Region(s,id).Unrest>=65;
             var result=Result(true,hostile?"march.battle":"march.ready");result.RequiresBattle=hostile;return result;
         }
-        // Applies travel costs once. Battle casualties are supplied by the tactical simulation.
-        private static void Travel(CampaignState s,string id,bool battle)
+        public static MarchPreview PreviewMarch(CampaignState s,string id)
+        {
+            if(!CanMarch(s,id).Ok)return null;
+            return TravelProjection(s,id);
+        }
+        private static MarchPreview TravelProjection(CampaignState s,string id)
         {
             var r=Region(s,id);bool difficult=r.Control<55||r.Unrest>=50;
             int cost=(int)Math.Ceiling(s.Troops/100d)+(difficult?6:0);
             bool hungry=s.Food<cost;
-            s.Food=Stock((long)s.Food-cost);s.MilitarySupplies=Stock((long)s.MilitarySupplies-5);
-            s.Supply=Clamp(s.Supply-(difficult?12:5)-(hungry?15:0));
-            s.Fatigue=Clamp(s.Fatigue+(difficult?20:10));s.Morale=Clamp(s.Morale-(hungry?8:0));
-            s.Moves=Math.Max(0,s.Moves-(difficult?2:1));
-            if(difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
-            if(hungry&&!battle)
+            return new MarchPreview { FoodCost=cost,FoodAfter=Stock((long)s.Food-cost),
+                MilitarySuppliesAfter=Stock((long)s.MilitarySupplies-5),
+                Supply=Clamp(s.Supply-(difficult?12:5)-(hungry?15:0)),
+                Fatigue=Clamp(s.Fatigue+(difficult?20:10)),Morale=Clamp(s.Morale-(hungry?8:0)),
+                MovesAfter=Math.Max(0,s.Moves-(difficult?2:1)),Difficult=difficult,Hungry=hungry };
+        }
+        public static float BattleReturnMorale(float arrivalMorale,float endingMorale,bool won)
+        { return Clamp(Math.Min(arrivalMorale,endingMorale)+(won?3:-8)); }
+        public static void RecoverMilitarySupplies(CampaignState s,int amount)
+        { s.MilitarySupplies=Stock((long)s.MilitarySupplies+Math.Max(0,amount)); }
+        // Preview and commitment share one travel calculation. The campaign is only charged on resolution.
+        private static void Travel(CampaignState s,string id,bool battle)
+        {
+            var r=Region(s,id);var arrival=TravelProjection(s,id);
+            s.Food=arrival.FoodAfter;s.MilitarySupplies=arrival.MilitarySuppliesAfter;
+            s.Supply=arrival.Supply;s.Fatigue=arrival.Fatigue;s.Morale=arrival.Morale;s.Moves=arrival.MovesAfter;
+            if(arrival.Difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
+            if(arrival.Hungry&&!battle)
             {int lost=(int)Math.Ceiling(s.Troops*.02d);s.Troops-=lost;Record(s,"log.march.attrition",N(lost));}
         }
         public static ActionResult March(CampaignState s,string id)
@@ -202,7 +224,7 @@ namespace PowerAboveAll
             string expected="battle-"+N(s.Week)+"-"+N(s.Moves)+"-"+s.ArmyRegionId+"-"+target;
             if(!check.RequiresBattle||battleId!=expected)return Result(false,"error.battle.stale");
             Travel(s,target,true);s.Troops-=casualties;s.ResolvedBattles.Add(battleId);
-            s.Morale=Clamp(Math.Min(s.Morale,endingMorale)+(won?3:-8));s.Fatigue=Clamp(s.Fatigue+15);
+            s.Morale=BattleReturnMorale(s.Morale,endingMorale,won);s.Fatigue=Clamp(s.Fatigue+15);
             var r=Region(s,target);var army=Faction(s,"army");var general=Character(s,"dumas");
             if(won)
             {

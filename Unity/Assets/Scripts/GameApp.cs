@@ -13,6 +13,7 @@ namespace PowerAboveAll
         public CampaignMap Map { get; private set; }
         public Camera Camera { get; private set; }
         public bool BattleActive => battle != null && battle.Active;
+        public bool Busy => BattleActive || dispatchPending;
         private CabinetHud hud;
         private TacticalBattle battle;
         private CabinetAudio sound;
@@ -25,7 +26,18 @@ namespace PowerAboveAll
         private bool dispatchPending;
         private string dispatchKey;
         private GUIStyle dispatchStyle;
-        private string SavePath => Path.Combine(Application.persistentDataPath, "campaign-v1.json");
+        private string SavePath
+        {
+            get
+            {
+                string folder = Application.isEditor ? Environment.GetEnvironmentVariable("POWER_ABOVE_ALL_TEST_PROFILE") : null;
+                var arguments = Environment.GetCommandLineArgs();
+                int shots = Array.IndexOf(arguments, "-shots");
+                if (folder == null && shots >= 0 && shots + 1 < arguments.Length)
+                    folder = Path.Combine(Path.GetFullPath(arguments[shots + 1]), ".campaign");
+                return Path.Combine(folder ?? Application.persistentDataPath, "campaign-v1.json");
+            }
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -37,6 +49,7 @@ namespace PowerAboveAll
             L.Initialize();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
+            QualitySettings.antiAliasing = 4;
             State = CampaignCore.Create();
             Camera = new GameObject("Atlas camera", typeof(Camera), typeof(AudioListener)).GetComponent<Camera>();
             var light = new GameObject("Afternoon light", typeof(Light)).GetComponent<Light>();
@@ -58,20 +71,31 @@ namespace PowerAboveAll
         }
         private void Update()
         {
+            Camera.rect = ViewLayout.CameraRect(BattleActive ? new Rect(0, .18f, 1, .73f)
+                : new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
             if (dispatchPending)
             {
+                Map.SetHovered(null);
                 if (Time.unscaledTime >= dispatchUntil)
                 {
                     dispatchPending = false;
-                    var action = afterDispatch; afterDispatch = null; action?.Invoke();
+                    var action = afterDispatch; afterDispatch = null;
+                    try { action?.Invoke(); }
+                    catch (Exception error)
+                    {
+                        Debug.LogException(error); battle.Stop(); pendingTarget = pendingBattleId = null;
+                        RestoreAtlas(); messageKey = "app.battle.failed"; messageArgs = new object[0];
+                    }
                 }
                 return;
             }
             if (Input.GetKeyDown(KeyCode.M))
             {
-                sound.SetMuted(!sound.Muted); PlayerPrefs.SetInt("muted", sound.Muted ? 1 : 0); PlayerPrefs.Save();
+                sound.SetMuted(!sound.Muted);
+                if (!L.IsReviewSession) { PlayerPrefs.SetInt("muted", sound.Muted ? 1 : 0); PlayerPrefs.Save(); }
             }
-            if (BattleActive || hud.BlocksMapInput || State.PendingPetition) return;
+            if (BattleActive || hud.BlocksMapInput || State.PendingPetition) { Map.SetHovered(null); return; }
+            Map.SetHovered(Map.Pick(Input.mousePosition));
             if (Input.GetKeyDown(KeyCode.F5)) Save();
             if (Input.GetKeyDown(KeyCode.F9)) Load();
             if (Input.GetMouseButtonDown(0))
@@ -87,7 +111,8 @@ namespace PowerAboveAll
         private void OnGUI()
         {
             var old = GUI.matrix;
-            GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1440f, Screen.height / 900f, 1));
+            ViewLayout.DrawFrame();
+            GUI.matrix = ViewLayout.GuiMatrix;
             if (BattleActive)
             {
                 GUI.color = new Color(.10f, .17f, .13f);
@@ -152,7 +177,7 @@ namespace PowerAboveAll
         {
             if (BattleActive || dispatchPending) return;
             var result = CampaignCore.Act(State, action, State.SelectedRegionId); Report(result);
-            if (result.Ok) { Feedback(action == "tax" ? "quill" : "seal"); Map.Pulse(State.SelectedRegionId); }
+            if (result.Ok) { Feedback(action); Map.Pulse(State.SelectedRegionId); }
         }
         public void NextWeek()
         {
@@ -165,13 +190,14 @@ namespace PowerAboveAll
         {
             if (BattleActive || dispatchPending) return;
             State = CampaignCore.Create(); Mode = "control"; messageKey = "app.welcome"; messageArgs = new object[0];
-            Refresh(); WriteSave(false);
+            Map.ResetPresentation(); Refresh(); WriteSave(false);
         }
         public void March()
         {
             if (BattleActive || dispatchPending) return;
             var result = CampaignCore.March(State, State.SelectedRegionId);
             if (!result.RequiresBattle) { Report(result); if (result.Ok) Feedback("march"); return; }
+            var arrival = CampaignCore.PreviewMarch(State, State.SelectedRegionId);
             pendingTarget = State.SelectedRegionId;
             pendingBattleId = "battle-" + State.Week + "-" + State.Moves + "-" + State.ArmyRegionId + "-" + pendingTarget;
             WriteSave(false);
@@ -179,8 +205,9 @@ namespace PowerAboveAll
             {
                 Map.SetVisible(false);
                 var commander = State.Characters.Find(c => c.Id == "dumas");
-                battle.Begin(new BattleSetup { Troops = State.Troops, Supply = State.Supply, Morale = State.Morale,
-                    Fatigue = State.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
+                battle.Begin(new BattleSetup { Troops = State.Troops, Supply = arrival.Supply, Morale = arrival.Morale,
+                    Fatigue = arrival.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
+                    CampaignMoraleAfterBattle = (won, morale) => CampaignCore.BattleReturnMorale(arrival.Morale, morale, won),
                     Seed = 1789 + State.Week * 31 + State.Moves, RegionNameKey = "region." + pendingTarget }, Camera, CompleteBattle);
             });
         }
@@ -189,9 +216,9 @@ namespace PowerAboveAll
             if (pendingBattleId == null) return;
             var result = CampaignCore.ResolveBattle(State, pendingTarget, pendingBattleId, outcome.Won, outcome.Casualties, outcome.EndingMorale);
             pendingBattleId = null; pendingTarget = null;
-            if (result.Ok) State.MilitarySupplies += Mathf.Max(0, outcome.MilitarySuppliesRecovered);
+            if (result.Ok) CampaignCore.RecoverMilitarySupplies(State, outcome.MilitarySuppliesRecovered);
             battle.Stop(); RestoreAtlas(); Report(result);
-            Dispatch(outcome.Won ? "app.return.victory" : "app.return.defeat", () => { });
+            // The report's single return button restores the atlas immediately.
         }
         private void Dispatch(string key, Action action)
         {
@@ -199,9 +226,9 @@ namespace PowerAboveAll
         }
         private void RestoreAtlas()
         {
-            Camera.orthographic = true; Camera.orthographicSize = 33.5f;
-            Camera.transform.SetPositionAndRotation(new Vector3(0, 65, 0), Quaternion.Euler(90, 0, 0));
-            Camera.rect = new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900);
+            Camera.orthographic = true; Camera.orthographicSize = 28.3f;
+            Camera.transform.SetPositionAndRotation(new Vector3(-5.8f, 65, 2.7f), Quaternion.Euler(90, 0, 0));
+            Camera.rect = ViewLayout.CameraRect(new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
             Camera.backgroundColor = new Color(.655f, .729f, .69f);
             Camera.nearClipPlane = .1f; Camera.farClipPlane = 200;
             Map.SetVisible(true); Refresh();
@@ -212,7 +239,7 @@ namespace PowerAboveAll
             try
             {
                 CampaignCore.Validate(State);
-                Directory.CreateDirectory(Application.persistentDataPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(SavePath));
                 string temporary = SavePath + ".tmp";
                 File.WriteAllText(temporary, JsonUtility.ToJson(new SaveFile { State = State }, true));
                 if (File.Exists(SavePath)) File.Replace(temporary, SavePath, SavePath + ".bak");
@@ -230,7 +257,7 @@ namespace PowerAboveAll
                 var save = JsonUtility.FromJson<SaveFile>(File.ReadAllText(SavePath));
                 if (save == null || save.Version != 1 || save.State == null) throw new InvalidDataException("Unsupported save");
                 CampaignCore.Validate(save.State); State = save.State;
-                messageKey = "app.loaded"; messageArgs = new object[0]; Refresh();
+                messageKey = "app.loaded"; messageArgs = new object[0]; Map.ResetPresentation(); Refresh();
             }
             catch (Exception error) { Debug.LogException(error); messageKey = "app.load.failed"; messageArgs = new object[0]; }
         }
