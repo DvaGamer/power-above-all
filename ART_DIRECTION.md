@@ -1,14 +1,33 @@
 # Power Above All — sanat ve arayüz yönü
 
-Bu belge, proje sahibinin yeni görsel yönünü uygulanabilir ekran kurallarına dönüştürür. Mevcut kodun veya görsellerin bu hedefleri zaten karşıladığını iddia etmez. Bu aşamada yön ve plan hizalanıyor; arayüz kodunda değişiklik yapılmıyor.
+Bu belge, proje sahibinin görsel yönünü uygulanabilir ekran kurallarına dönüştürür. **Etkin aşama: 0.2 Visual & Feel Polish Pass.** Unity seçildi; temel aktarım sürüyor ve çalışma zamanı henüz doğrulanmadı. Bu aşamada mevcut temelin görünümü, okunurluğu ve kontrol hissi iyileştirilir; **yeni mekanik veya ekonomi sistemi eklenmez**. Aşağıdaki henüz uygulanmamış sistemlere ait kurallar gelecekteki tasarım rehberi olarak kalır.
 
 Yön, kullanıcının metinle verdiği referans açıklamalarına dayanır. Bu karar için referans ekran görüntüsü veya görsel dosyası eklenmedi; burada görüntü karşılaştırması yapıldığı iddia edilmez.
 
-Sistem ve ekran referanslarının görevleri [REFERENCES.md](REFERENCES.md) içinde ayrılmıştır. Depo belgeleri Türkçe; oyun arayüzü şimdilik Rusçadır.
+Sistem ve ekran referanslarının görevleri [REFERENCES.md](REFERENCES.md) içinde ayrılmıştır. Depo belgeleri Türkçedir. **Yeni Unity oyunu Rusça ve Türkçe olmalıdır.** Her iki dilde başlıklar, düğmeler, araç ipuçları ve günlükler okunmalı; metin taşmamalı ve dil değişimi oyun durumunu değiştirmemelidir. Mevcut tarayıcı 0.1'in Rusça arayüzü ayrı bir sürümdür.
 
 Sonraki kapsamlı kullanıcı hedefi [DESIGN_V0.2.md](DESIGN_V0.2.md) içinde korunur. Bu görsel belgeyi oyun kuralları için tek kaynak saymayın; güncel uygulama sırası ve açık kararlar ROADMAP.md içindedir.
 
 ## Görsel kimlik
+
+Son iyileştirme talebinin ek kuralları:
+
+- Ekran başına tek baskın odak: **Fransa atlası / savaş hattı / olay belgesi / sonuç raporu**. Her görünümü aynı kart ızgarasına dönüştürmeyin; bilgiye uygun asimetrik düzen kurun ve boş dolgu kullanmayın.
+- Paleti **altı–sekiz tutarlı renk** etrafında toplayın. Serif başlıkları, küçük açıklamalarda ve sayısal bilgilerde okunur sans serif metinle tamamlayın.
+- Bölgelerin görsel karakterlerini ayrıştırın; kararın yerel etkisini haritada gösterin. Henüz hesaplanmayan bir etkiyi görsel olarak varmış gibi sunmayın.
+- Adlandırma, emir, mühür, rapor ve üniformalarda tarihsel özgüllük arayın. Kaynağı doğrulanmamış ayrıntıyı özgün 1789 belgesi olarak sunmayın.
+- Özgün simgeler ve imleçler tek çizim dili taşımalı; oyuncuya yönelik metinde teknik hata ayıklama sözlüğü kullanılmamalı.
+- Başlangıç tarihi kısa girişte açık olmalı. Kayıt yükleme ve dil değişimi hem dünya durumunu hem de doğru Rusça/Türkçe sunumu korumalı.
+
+Bu ekler kabul ölçütüdür; görsel karşılaştırma veya çalışma zamanı doğrulaması tamamlandı iddiası değildir.
+
+## Ses yönü
+
+Sesler kısa ve geri planda kalır: kâğıt, kalem, mühür, emir, yürüyüş, haftalık defter, yaylım, darbe ve sonuç raporu. Tekrar eden tıklamalar ses yığını oluşturmamalı; sessize alma mevcut sesleri de durdurmalıdır. Müzikal zafer melodisi veya yüksek sesli yapay epik müzik bu katmanın amacı değildir.
+
+İlk `CabinetAudio.cs` uygulaması **10 özgün prosedürel foley taslağıdır**; indirilen varlık veya profesyonel tarihsel kayıt içermez. Profesyonel bir kayıt seti, 10–15 tamamlanmış ses kaydı veya Unity'de dinlenerek doğrulanmış sonuç olarak sunulmaz. Sesler geçici tasarım malzemesi olarak işitsel inceleme bekler.
+
+## Görsel kimliğin uygulanması
 
 Fransa'nın siyasi ve askerî kararlarının alındığı bir çalışma masası hissi hedeflenir. Haritalar, belgeler ve insan yüzleri kararın konusunu açıklar; süsleme bu bilgiyi destekler.
 
@@ -96,9 +115,12 @@ Bir gıda veya kaynak ayrıntısı şu sırayı izler:
 
 ## Gelecek arayüz incelemeleri için kabul listesi
 
+Etkin aşamada yalnızca mevcut temeldeki özellikler görsel olarak iyileştirilir ve doğrulanır. Eksik bir sistemin bu listede bulunması, onu bu aşamada ekleme talimatı değildir. Öncelik; yarı stilize tarihsel diorama hissi, açık seçim ve emir geri bildirimi, harita/rapor tutarlılığı ve iki dilde okunurluktur. Savaş hissi hızlı tıklamadan çok anlamlı taktik kararları desteklemelidir.
+
 Bu liste tasarım değerlendirmesini tutarlı kılmak içindir; ek bir kullanıcı izni veya onay zorunluluğu oluşturmaz. Uygulanmayan mekanikler değerlendirmede “henüz uygulanmadı” olarak işaretlenir.
 
 - [ ] Ana kampanya alanı Fransa haritası; panel açılması konum bağlamını ortadan kaldırmıyor.
+- [ ] Rusça ve Türkçe metinler eksiksiz ve taşmadan okunuyor; kayıtlı günlükler dil değişimine uyuyor.
 - [ ] Etkin harita katmanı, renklerin anlamı, seçili bölge ve ordu konumu ayırt ediliyor.
 - [ ] Panel kapatıldığında harita seçimi ve görünümü korunuyor; dar ekranda bağlam kaybolmuyor.
 - [ ] Siyasette her gösterge somut bir güce bağlanıyor; lider, nüfuz, tutum, talep ve radikalleşme bulunuyor.
@@ -112,3 +134,8 @@ Bu liste tasarım değerlendirmesini tutarlı kılmak içindir; ek bir kullanıc
 - [ ] Kırmızı uyarılar ve harita anlamları yalnızca renge bağlı değil; dokular yazıyı veya işaretleri örtmüyor.
 - [ ] Fantastik/ortaçağ arayüz kalıpları kullanılmıyor; tarihsel eser iddialarında kaynak ve dönem doğrulanmış.
 - [ ] Hedeflenen tasarım, çalışan özellik ve tarihsel bilgi birbirinden açıkça ayrılmış.
+- [ ] Ekran başına tek baskın odak ve bölgelere özgü görsel karakter var; tekrarlanan boş kartlar kullanılmıyor.
+- [ ] Emir, mühür, rapor, simge ve imleçler ortak tarihsel görsel dil taşıyor; oyuncuya teknik hata ayıklama terimleri gösterilmiyor.
+- [ ] Başlangıç tarihi girişi ve yerel karar geri bildirimi anlaşılır; kayıtlı dünya dil değişiminden etkilenmiyor.
+- [ ] Sesler Unity'de dinlenerek değerlendirildi; aşırı üst üste binme yok ve sessize alma çalışıyor.
+- [ ] Ekran görüntüleri açıklamasız/kör incelemeden geçti; odak, dönem ve sonraki eylem anlaşılabiliyor.

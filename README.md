@@ -4,13 +4,33 @@
 
 Fransız Devrimi'nin başlangıcında geçen bir strateji oyununun ilk oynanabilir prototipi. Bölgeleri yönetin; hazineyi, halkın hoşnutsuzluğunu ve ordunun ihtiyaçlarını dengeleyin; taktik çatışmalarda birliklerinize komuta edin.
 
-> Depo belgelerinin ve ekip iletişiminin ana dili **Türkçe**. Mevcut oyun arayüzü **Rusça**; arayüzün Türkçeleştirilmesi henüz yapılmadı. Bu sürüm bağımsız bir HTML/CSS/JavaScript prototipidir, Unity projesi değildir.
+> **Güncel proje Unity'de; oyun dilleri Rusça ve Türkçe.** Unity 6000.3.23f1 kuruldu, lisans etkinleştirildi, `Main.unity` açıldı ve Play modunda sefer haritası çizildi. Bu denemede görülen TacticalBattle başlatma hatası kaynakta düzeltildi; **düzeltme sonrası yeniden derleme ve açılış henüz doğrulanmadı**. Tam oyun akışı, görsel inceleme ve Windows oyun derlemesi tamamlanmış sayılmaz. Tarayıcı 0.1, önceden doğrulanmış Rusça referans olarak korunur. Belgeler Türkçedir.
 
-## Hızlı başlangıç
+Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut temelin görünümü, okunurluğu, kontrolleri ve oyun hissi. **Kullanıcının isteğiyle geliştirme durduruldu; kalan gereksinimler [POLISH_PLAN.md](POLISH_PLAN.md) içine kaydediliyor.** Yeni mekanik veya ekonomi genişletmesi bu aşamanın kapsamında değil.
+
+## Unity temelinin durumu
+
+Kaynaklarda 12 bölgeli kabartma atlas, belge panelleri, siyasi güçler ve hesap defteri, taktik savaş, Rusça/Türkçe metinler ve kayıt bağlantısı bulunur. Görsel iyileştirmeler; yumuşak ordu hareketini, seçilen bölge vurgusunu, emirlerin bölgedeki geri bildirimini, sayı geçişlerini ve son günlük kaydının vurgulanmasını kapsar. Tarayıcıdaki ikinci hafta ekmek dilekçesi Unity'ye aktarılmıştır. On prosedürel foley sesi hazırlanmıştır; bunlar tamamlanmış ses varlıkları değildir.
+
+Saf C# çekirdeği bağımsız derleyiciyle kontrol edildi. Editor'de ilk Play denemesi yapıldı; görülen TacticalBattle hatasının son kaynak düzeltmesi yeniden denenmedi. 14 NUnit editör testi kaynakta bulunur ve **Unity Test Runner içinde henüz çalıştırılmadı**. Kaynakların bulunması ve haritanın çizilmesi, tamamlanmış oyun akışı veya görsel kalite kanıtı değildir. Güncel doğrulamalar [STATUS.md](STATUS.md) içinde tutulur.
+
+Unity için Rusça/Türkçe gereksinimi; menüler, emirler, araç ipuçları, olaylar, kayıtla geri gelen günlükler ve savaş mesajlarını kapsar. Dil değiştirmek sefer durumunu değiştirmemelidir. Yerelleştirme anahtarları içeriğe, çeviriler kaynak dosyalarına aittir.
+
+## Unity projesini açma
+
+1. Windows'ta kök dizindeki **`OPEN_UNITY.cmd`** dosyasını açın. Başlatıcı `Unity/` projesini hedefler ve Node.js kullanır.
+2. Bu bilgisayardaki Editor: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
+3. `Assets/Scenes/Main.unity` sahnesini açın. Son düzeltmeden sonra Play denemesinin tekrarı, testler ve Windows derlemesi bekleyen doğrulamalardır.
+
+İlk başlatmada alınan `No valid Unity Editor license found` hatasının ardından kullanıcı lisansı etkinleştirdi. Editor açıldı; lisans şu anda bekleyen engel değildir.
+
+Başka bir bilgisayarda Unity Hub'a deponun **`Unity/` alt klasörünü** ekleyin ve Unity 6000.3.23f1 ile açın. Ayrıntılar [Unity/README.md](Unity/README.md) içinde.
+
+## Hızlı başlangıç — doğrulanmış tarayıcı 0.1
 
 **Gereksinimler:** Node.js 20 veya üzeri, güncel bir masaüstü tarayıcısı ve Git. CI ortamında Node.js 24 kullanılır. Çalışma zamanı paket bağımlılığı yoktur; `npm install` gerekmez.
 
-Depo özeldir. Klonlamadan önce GitHub hesabınıza depo erişimi verilmiş olmalıdır.
+Depo, proje sahibinin onayıyla **herkese açıktır (Public)**; klonlamak için özel depo erişimi gerekmez.
 
 ```sh
 git clone https://github.com/DvaGamer/power-above-all.git
@@ -22,7 +42,7 @@ Tarayıcıda **http://127.0.0.1:1789** adresini açın. Sunucu yalnızca yerel b
 
 **Windows alternatifi:** `START.cmd` dosyasına çift tıklayın. Başlatıcı sunucuyu gizli bir arka plan işlemi olarak çalıştırır ve tarayıcıyı açar. Aynı oyun sunucusu zaten çalışıyorsa yeniden kullanılır. Arka plan sunucusu ilgili Node işlemi sonlandırılana veya bilgisayar kapanana kadar çalışır.
 
-## İlk deneme
+## İlk deneme — tarayıcı 0.1
 
 1. Haritada bir bölgeye tıklayın. Sol panelde temel üretim, vergi ve hoşnutsuzluk bilgileri görünür.
 2. Ekmek dağıtın, olağanüstü vergi toplayın veya ordunuzun bulunduğu bölgede asker alın. Her emir, her bölgede haftada bir kez kullanılabilir.
@@ -46,7 +66,7 @@ Mevcut Rusça arayüzdeki temel düğmeler:
 
 Öğretici senaryoda hedef, sekiz hafta sonunda pozitif hazineye ve en az bir askere sahip olmak, ortalama hoşnutsuzluğu 55'in altında tutmaktır. Ardından serbest oyuna devam edilebilir. Zorluk şimdilik düşüktür; amaç sistemlerin birlikte çalışmasını sınamaktır.
 
-## Mevcut özellikler
+## Doğrulanmış tarayıcı 0.1 özellikleri
 
 - Seçilebilir 12 şematik bölge; bölge ve hoşnutsuzluk harita katmanları.
 - Haftalık vergiler, üretim, tüketim, asker maaşları ve kaynak yetersizliğinin sonuçları.
@@ -56,7 +76,7 @@ Mevcut Rusça arayüzdeki temel düğmeler:
 - Veri yapısı doğrulanan otomatik ve elle kayıt.
 - Farklı ekran boyutlarına uyum sağlayan arayüz ve oyun içi yardım.
 
-## Kayıtlar
+## Tarayıcı 0.1 kayıtları
 
 Otomatik kayıt emirlerden, savaş sonuçlarından ve haftalık hesaplamalardan sonra güncellenir. **Kaydet** ayrıca bağımsız bir elle kayıt noktası oluşturur; **Yükle** bu noktayı geri getirir.
 
@@ -64,7 +84,7 @@ Kayıtlar tarayıcının `localStorage` alanındadır; GitHub'a veya ekip arkada
 
 Tamamlanmamış savaş kaydedilmez; sayfa yenilenirse çatışma öncesindeki sefer durumu geri gelir. Yeni sefer başlatma onayından sonra mevcut ilerleme ve elle kayıt değiştirilir.
 
-## Kapsam ve bilinen sınırlamalar
+## Tarayıcı 0.1 kapsamı ve bilinen sınırlamalar
 
 Harita tarihî bir atlas değildir: bölge sınırları şematik, nüfus ve ekonomi değerleri kurgusaldır. Korsika gösterilir, ancak seçilebilir bir bölge değildir. Mayıs 1789'da bu çatışmaların gerçekten yaşandığı iddia edilmez. Oyuncunun bir kraliyet konseyini yönetmesi de oyun tasarımı varsayımıdır.
 
@@ -75,8 +95,8 @@ Henüz kapsamlı karakter ve hanedan sistemi, devletler arası diplomasi, inşaa
 Başlamadan önce [katkı rehberini](CONTRIBUTING.md) okuyun. Bir görevi üstlenin, kendi dalınızda çalışın ve değişikliği pull request ile paylaşın.
 
 - [STATUS.md](STATUS.md): tamamlanan işler, doğrulamalar ve sıradaki görevler.
-- [ROADMAP.md](ROADMAP.md): bir sonraki aşama için seçenekler ve onay bekleyen plan.
-- [DESIGN_V0.2.md](DESIGN_V0.2.md): bağlantılı siyaset, ekonomi, bölgeler, ikmal ve alay savaşı hedefi.
+- [ROADMAP.md](ROADMAP.md): etkin Visual & Feel Polish Pass ve geleceğe bırakılan mekanikler.
+- [DESIGN_V0.2.md](DESIGN_V0.2.md): gelecekteki bağlantılı siyaset, ekonomi, bölge, ikmal ve alay savaşı tasarımı.
 - [REFERENCES.md](REFERENCES.md): dört kalıcı oyun tasarımı referansı.
 - [ART_DIRECTION.md](ART_DIRECTION.md): beş görsel referans ve tarihî çalışma atlası yönü.
 - [CHANGELOG.md](CHANGELOG.md): sürümlere göre değişiklikler.
@@ -89,6 +109,8 @@ Başlamadan önce [katkı rehberini](CONTRIBUTING.md) okuyun. Bir görevi üstle
 
 | Dosya | Sorumluluk |
 | --- | --- |
+| `Unity/` | Geliştirilmekte olan Unity temeli; editör ve oyun derlemesi henüz doğrulanmadı |
+| `OPEN_UNITY.cmd`, `open-unity.cjs` | Unity proje başlatıcısı |
 | `index.html` | Arayüz iskeleti ve şematik harita |
 | `styles.css` | Görsel tasarım ve ekran boyutlarına uyum |
 | `simulation.js` | Arayüzden bağımsız sefer simülasyonu |
@@ -98,7 +120,7 @@ Başlamadan önce [katkı rehberini](CONTRIBUTING.md) okuyun. Bir görevi üstle
 | `tests/simulation.test.cjs` | Sefer kurallarının otomatik testleri |
 | `tests/browser-smoke.js` | Playwright CLI ile tarayıcı denemesi |
 
-## Doğrulama
+## Tarayıcı 0.1 doğrulaması
 
 ```sh
 npm test

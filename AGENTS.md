@@ -15,6 +15,8 @@ Never implement the first obvious solution. For major features, generate 3 mater
 
 ### Etkin aşama: 0.2 Visual & Feel Polish Pass
 
+5 Eylül 2026: Kullanıcı bütün istekleri plana kaydedip durmamızı istedi. Geliştirme durduruldu; yeni talimat gelmeden devam etmeyin. Güncel tam kontrol listesi ve yeniden başlama noktası `POLISH_PLAN.md`; olay sistemi açıkça polish sonrasına bırakıldı (`EVENT_DIRECTION.md`).
+
 Yeni mekanik eklemeyin. Mevcut harita → emir → hafta → olay → yürüyüş → savaş → sonuç döngüsünü iyileştirin. Ekonomi kurallarını koruyun; nedenleri daha açık gösterin. Harita, tipografi, belge panelleri, mevcut birliklerin hareket/ateş/geri çekilme hissi, sakin animasyonlar ve sefer-savaş geçişi önceliklidir. Önceki genişletilmiş sistem hedefleri gelecek iş listesidir. Unity kararı geçerlidir; aktarımı yeni sistem eklemek için gerekçe olarak kullanmayın.
 
 Yeni bir mekanik en az bir başka ana sistemle etkileşmelidir. Amaç mekanik sayısını artırmak değil, oyuncunun geçmiş kararının bugünkü sonucunu anlayabilmesidir:

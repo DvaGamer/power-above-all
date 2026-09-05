@@ -399,6 +399,46 @@
       "key": "core.scope",
       "ru": "Основа кампании: четыре политические силы и четыре вымышленных персонажа. Автономные интриги и семь полных фракций ещё не реализованы.",
       "tr": "Sefer temeli: dört siyasi güç ve dört kurgusal karakter. Bağımsız entrikalar ve yedi tam siyasi güç henüz uygulanmadı."
+    },
+    {
+      "key": "error.petition.none",
+      "ru": "Это обращение уже решено или ещё не поступило.",
+      "tr": "Bu talep zaten karara bağlandı veya henüz gelmedi."
+    },
+    {
+      "key": "error.petition.choice",
+      "ru": "Неизвестное решение по обращению.",
+      "tr": "Talep için bilinmeyen karar."
+    },
+    {
+      "key": "error.petition.food",
+      "ru": "Чтобы открыть запасы, нужно 60 продовольствия.",
+      "tr": "Stokları açmak için 60 gıda gerekiyor."
+    },
+    {
+      "key": "error.petition.pending",
+      "ru": "Сначала примите решение по обращению о хлебе.",
+      "tr": "Önce ekmek talebini karara bağlayın."
+    },
+    {
+      "key": "log.petition.arrived",
+      "ru": "Поступило обращение о хлебе. Совет ожидает вашего решения.",
+      "tr": "Ekmek talebi geldi. Konsey kararınızı bekliyor."
+    },
+    {
+      "key": "log.petition.relief",
+      "ru": "Открыты запасы: продовольствие −60; горожане +15, представители +5; недовольство всех областей −8.",
+      "tr": "Stoklar açıldı: gıda −60; kentli desteği +15, temsilci desteği +5; tüm bölgelerde huzursuzluk −8."
+    },
+    {
+      "key": "log.petition.negotiate",
+      "ru": "Достигнуто соглашение: представители +12, корона −8; недовольство Парижа −10.",
+      "tr": "Uzlaşma sağlandı: temsilci desteği +12, kraliyet desteği −8; Paris huzursuzluğu −10."
+    },
+    {
+      "key": "log.petition.refuse",
+      "ru": "Резервы сохранены: корона +8, горожане −10; недовольство всех областей +5.",
+      "tr": "Rezervler korundu: kraliyet desteği +8, kentli desteği −10; tüm bölgelerde huzursuzluk +5."
     }
   ]
 }

@@ -44,6 +44,7 @@ namespace PowerAboveAll
         public List<LogEntry> Journal = new List<LogEntry>();
         public List<string> ResolvedBattles = new List<string>();
         public bool SubsidyParis;
+        public bool PendingPetition, PetitionResolved;
     }
     public sealed class ActionResult
     {
@@ -212,8 +213,34 @@ namespace PowerAboveAll
             else {r.Unrest=Clamp(r.Unrest+5);army.Approval=Clamp(army.Approval-6);general.Relationship=Clamp(general.Relationship-4);s.Power=Clamp(s.Power-6);}
             return Record(s,won?"log.battle.victory":"log.battle.defeat","region."+target,N(casualties),N(s.Troops));
         }
+        // Port of browser 0.1's single grain-petition event, not a new event system.
+        public static ActionResult ChoosePetition(CampaignState s,string id)
+        {
+            if(!s.PendingPetition||s.PetitionResolved)return Result(false,"error.petition.none");
+            if(id!="relief"&&id!="negotiate"&&id!="refuse")return Result(false,"error.petition.choice");
+            if(id=="relief"&&s.Food<60)return Result(false,"error.petition.food");
+            var urban=Faction(s,"urban");var assembly=Faction(s,"assembly");var crown=Faction(s,"crown");
+            if(id=="relief")
+            {
+                s.Food-=60;urban.Approval=Clamp(urban.Approval+15);assembly.Approval=Clamp(assembly.Approval+5);
+                foreach(var r in s.Regions)r.Unrest=Clamp(r.Unrest-8);
+            }
+            else if(id=="negotiate")
+            {
+                assembly.Approval=Clamp(assembly.Approval+12);crown.Approval=Clamp(crown.Approval-8);
+                Region(s,"ile").Unrest=Clamp(Region(s,"ile").Unrest-10);
+            }
+            else
+            {
+                crown.Approval=Clamp(crown.Approval+8);urban.Approval=Clamp(urban.Approval-10);
+                foreach(var r in s.Regions)r.Unrest=Clamp(r.Unrest+5);
+            }
+            s.PendingPetition=false;s.PetitionResolved=true;
+            return Record(s,"log.petition."+id);
+        }
         public static ActionResult NextWeek(CampaignState s)
         {
+            if(s.PendingPetition)return Result(false,"error.petition.pending");
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
             var f=Forecast(s);bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
@@ -242,6 +269,7 @@ namespace PowerAboveAll
             }
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
+            if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -250,6 +278,9 @@ namespace PowerAboveAll
         public static void Validate(CampaignState s)
         {
             Require(s!=null);Require(s.Week>=0&&s.Week<=MaximumWeek&&s.Moves>=0&&s.Moves<=2);
+            if(s.Week<2)Require(!s.PendingPetition&&!s.PetitionResolved);
+            else if(s.Week==2)Require(s.PendingPetition!=s.PetitionResolved);
+            else Require(!s.PendingPetition&&s.PetitionResolved);
             foreach(int n in new[]{s.Gold,s.Food,s.MilitarySupplies,s.Manpower,s.Troops})Require(n>=0&&n<=MaximumStock);
             Require(Definition(s.ArmyRegionId)!=null&&Definition(s.SelectedRegionId)!=null);
             Require(Percent(s.Morale)&&Percent(s.Supply)&&Percent(s.Fatigue)&&Percent(s.Power));

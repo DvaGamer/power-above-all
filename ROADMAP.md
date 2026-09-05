@@ -1,6 +1,41 @@
-# Power Above All — v0.2 uygulama planı
+# Power Above All — 0.2 Visual & Feel Polish Pass
 
-**Durum: taslak; teknoloji ve oyuncu kimliği için proje sahibinin seçimi bekleniyor.** Yeni oyun özelliklerinin uygulanmasına henüz başlanmadı. Türkçe ekip belgeleri ve tasarım gereksinimlerinin kaydı mevcut kapsamda tamamlanır.
+**Çalışma durduruldu.** Kullanıcının tüm son istekleri, kabul ölçütleri ve yeniden başlama noktası [POLISH_PLAN.md](POLISH_PLAN.md) içinde toplandı. Kullanıcının yeni talimatı olmadan uygulamaya devam edilmez. Olay sistemi polish sonrasındadır.
+
+**Güncel durum:** Unity seçildi; ilk temel aktarım sürüyor. Yeni oyun **Rusça ve Türkçe** olacak. Unity editöründe çalışma, görseller ve oyun derlemesi henüz doğrulanmadı. Doğrulanmış tarayıcı 0.1 kullanılabilir kalır.
+
+**Etkin kapsam: mevcut temelin görsel kalitesi ve oyun hissi. Yeni mekanik veya ekonomi genişletmesi yok.** Önceki geniş kapsamlı tasarım, aşağıda gelecekteki işler olarak korunmuştur. Kullanıcı mevcut durumun GitHub'a anlık görüntü olarak yüklenmesini istedi; yükleme sonucu STATUS.md içine tamamlandıktan sonra yazılır.
+
+## Etkin aşamanın adımları
+
+| Adım | İş | Doğrulama |
+| --- | --- | --- |
+| 1 — Unity temelini açmak | Mevcut aktarımın derleme ve entegrasyon hatalarını gidermek. | Editörde açılış ve çalışma; saf C# kontrolü tek başına yeterli değildir. |
+| 2 — Harita ve belgeler | Mevcut haritanın, panellerin ve göstergelerin hiyerarşisini iyileştirmek. | Harita bağlamı korunur; etiketler okunur; örnek bilgi çalışan sistem gibi gösterilmez. |
+| 3 — Savaşın görünümü ve hissi | Mevcut alay seçimlerini, emir geri bildirimini ve tarihsel diorama görünümünü iyileştirmek. | Kontroller anlaşılır; taktik kararlar görünür; yüksek tıklama hızı gerektiren sunumdan kaçınılır. |
+| 4 — İki dil | Mevcut metinleri Rusça ve Türkçede kontrol etmek. | Eksik anahtar, taşma ve yanlış biçimlendirme yok; dil değiştirme seferi veya kayıtları değiştirmez. |
+| 5 — Çalıştırma ve paylaşım | Unity editörü/testleri, görsel inceleme ve derleme kanıtlarını kaydetmek; kontrol edilmiş aşamayı paylaşmak. | Gerçekte yapılan kontroller ile henüz yapılmayanlar ayrı belirtilir. |
+
+Bu aşama yeni özerk karakter, diplomasi, kaynak zinciri, ikmal ağı veya savaş sistemi eklemek için kullanılmaz. Mevcut temelde hatalı davranışı düzeltmek ve var olan bilgiyi daha iyi göstermek kapsam içindedir.
+
+## Son görsel iyileştirme talebinin kabul ölçütleri
+
+Aşağıdakiler hedef ve inceleme ölçütleridir; tamamlanmış özellik listesi değildir:
+
+- Adlar, emirler, mühürler, askerî raporlar ve üniformalar Fransa/1789 kimliğine uygun olmalı; tarihsel ayrıntılar kaynakla doğrulanmalı.
+- Her bölgenin görsel karakteri bulunmalı. Farklı ekranlar aynı kart dizisini tekrarlamak yerine bilgiye uygun, gerektiğinde asimetrik düzen kullanmalı; boş süs alanı eklenmemeli.
+- Her ekranda tek baskın odak bulunmalı: seferde Fransa atlası, savaşta birlik hattı, olayda belge, sonuçta askerî rapor.
+- Altı–sekiz tutarlı renk, serif başlıklar ve okunur sans serif yardımcı metinler; ortak çizim dilinde özgün simgeler ve imleçler kullanılmalı.
+- Oyuncu metinlerinde hata ayıklama terimleri bulunmamalı; kararın etkisi ilgili bölgede görünmeli.
+- Başlangıç tarihi kısa girişte anlaşılmalı; kayıt/yükleme dünyayı korumalı ve Rusça/Türkçe dil değişimi kayıtlı içeriğe doğru uygulanmalı.
+- Ekran görüntüleri açıklayıcı sunum olmadan incelenmeli: odak, dönem ve bir sonraki eylem anlaşılabiliyor mu? Bu kör inceleme yapılmadan tamamlandı sayılmamalı.
+- Hafif kâğıt, kalem, mühür, emir ve savaş geri bildirimleri; sessize alma ve tekrar ses yığılmasına karşı sınırlama bulunmalı. Yüksek sesli yapay epik müzik hedeflenmiyor.
+
+`CabinetAudio.cs`, geçici olarak özgün biçimde üretilen **10 prosedürel foley taslağı** içerir. Bu, 10–15 profesyonel ses kaydının hazırlanmış olduğu veya seslerin Unity içinde dinlenerek doğrulandığı anlamına gelmez. Sahneye bağlama ve işitsel değerlendirme ayrıca doğrulanır.
+
+Tarayıcı 0.1'deki ikinci hafta `grain-petition` kararı, Unity aktarımının mevcut özellik eşitliği kontrolüdür. Bu kararın geri getirilmesi yeni olay sistemi, yeni olay türü veya yeni süre sınırı ekleme yetkisi değildir; üç mevcut seçenek, zamanın karar beklemesi ve kayıtta tek sefer çözülmesi korunur. Doğrulama sonucu STATUS.md içinde ayrıca kaydedilir.
+
+**Olay sistemi için zamanlama kararı kesinleşti:** dünya koşullarına tepki veren olaylar **görsel iyileştirmeden sonra** ele alınacak. Tepki, kriz, fırsat ve zincir sınıfları; öncelik/tekrar kontrolü ve gelecekteki 30–50 nitelikli durum hedefi [EVENT_DIRECTION.md](EVENT_DIRECTION.md) içinde kaydedildi. Şimdi yalnızca mevcut sabit ikinci hafta kararının eşitliği korunur; yeni olay yöneticisi eklenmez.
 
 ## Kararların güncel durumu
 
@@ -9,21 +44,21 @@
 - Oyuncunun amacı kişisel siyasi hayatta kalma ve devlet üzerindeki kontrolünü artırmaktır.
 - Harita sürekli bağlam sağlar; ayrıntılar belge benzeri panellerde açılır.
 - Savaş kontrol birimi alaydır. Warcraft III yalnızca emirlerin tepkiselliği için referanstır.
-- Bir sonraki aşama dört bağlantılı geliştirmeyi kapsar: siyasi güçler/karakterler, bölgeler/harita kipleri, alay savaşı/moral/düzenler ve ikmal.
+- Motor Unity; yeni oyunda Rusça ve Türkçe zorunlu.
+- Bir sonraki aşama Visual & Feel Polish Pass; dört bağlantılı sistemin genişletilmesi gelecekteki iş listesinde.
 - Önceki “yalnızca siyaset veya savaş veya ekonomi” yol ayrımı, yeni v0.2 hedefiyle geçersiz olmuştur.
 
 Ana gereksinimler [DESIGN_V0.2.md](DESIGN_V0.2.md), görsel kurallar [ART_DIRECTION.md](ART_DIRECTION.md), referans görevleri [REFERENCES.md](REFERENCES.md) içindedir.
 
-## Açık kalan seçimler
+## Açık kalan tasarım kararı
 
-1. **Teknoloji:** mevcut tarayıcıda sınırlı v0.2 veya şimdi Unity'ye geçiş.
-2. **Oyuncu kimliği:** kurgusal nüfuzlu konsey üyesi, XVI. Louis veya Jacques Necker.
+**Oyuncu kimliği:** kurgusal nüfuzlu konsey üyesi, XVI. Louis veya Jacques Necker seçenekleri henüz kesinleşmedi. Bu durum motor seçiminin açık olduğu anlamına gelmez; mevcut görsel iyileştirme aşaması bu seçenekleri tamamlanmış oyun rolleri olarak sunmaz.
 
-Öneri: **bir sınırlı tarayıcı v0.2 + kurgusal konsey üyesi**. Böylece siyasi amaç ve nedensel döngü sınanır. Unity'ye geçildiğinde arayüz ve uygulama kodunun bir kısmının yeniden yazılacağı kabul edilmelidir. Hemen Unity seçilirse ilk teslimat, açılıp derlenebilen proje ve mevcut çalışan döngünün taşınması olur.
+Önceki “bir tarayıcı aşaması daha” önerisi, kullanıcının hemen Unity kararıyla geçersiz oldu. Tarayıcı 0.1, mevcut doğrulanmış sürüm ve karşılaştırma kaynağı olarak tutulur.
 
-## Önerilen ilk kapsam
+## Gelecekteki geniş kapsam — etkin aşamaya dahil değil
 
-Aşağıdakiler plan önerisidir; uzun vadeli tasarım belgesinin kapsamını silmez:
+Aşağıdakiler önceki kapsamlı planın korunan hedefleridir; Visual & Feel Polish Pass sırasında yeni özellik olarak uygulanmaz. Bazılarının temeli aktarılmış olabilir; bu, bütün hedefin tamamlandığı anlamına gelmez:
 
 - Mevcut 12 bölge üzerinde çalışma; Paris–Champagne ekseninde odaklı bir öğretici kriz.
 - Başlangıç için dört siyasi güç: taht, temsilciler, kent halkı, ordu. Her birinin lideri; ayrıca oyuncu karakteri.
@@ -37,7 +72,7 @@ Aşağıdakiler plan önerisidir; uzun vadeli tasarım belgesinin kapsamını si
 
 Kesin asker sayıları, denge değerleri ve senaryo süresi ilk ölçüm ve rol seçiminden sonra belirlenir. Hanedan ağacı, yüzlerce ürün, tam dış politika ve çok oyunculu mod bu teslimata dahil edilmez.
 
-## Uygulama sırası ve kontrol noktaları
+## Gelecekteki sistem genişletmesinin kontrol noktaları
 
 | Adım | Teslimat | Tamamlanma ölçütü |
 | --- | --- | --- |
@@ -51,7 +86,7 @@ Kesin asker sayıları, denge değerleri ve senaryo süresi ilk ölçüm ve rol 
 
 Adımlar ayrı kontrol noktalarıdır; dört sistemin birbirinden kopuk dört ayrı prototipe dönüşmesi hedeflenmez. Arayüz adımında geçici örnekler kullanılırsa açıkça tasarım örneği olarak işaretlenir.
 
-## Örnek kabul senaryosu
+## Gelecekteki bağlı sistemler için örnek kabul senaryosu
 
 Oyuncu Paris'te ekmeği sübvanse eder. Kent desteği artar, gelecekteki gıda/para yükümlülüğü doğar. Bunu karşılamak için Champagne üzerinde baskıyı artırır. Yerel direnç vergi veya ikmal akışını bozar. Ordu daha düşük ikmal ve moralle çatışmaya girer. Yenilgi ya da pahalı zafer komutanın tutumunu ve saraydaki rakiplerin nüfuzunu değiştirir.
 
@@ -68,6 +103,6 @@ Bu zincir sabit turda zorla başlatılan bir senaryo olmamalıdır. Sistem koşu
 
 ## Ekip iş bölümü
 
-Teknoloji ve rol seçildikten sonra somut Issues açılır. Çekirdek simülasyon, harita/arayüz, taktik savaş ve içerik/araştırma görevleri ayrı kapsamlarla yürütülebilir. Dosya sahipliği kalıcı değildir; paylaşılan veri sözleşmesi değişiklikleri önceden kararlaştırılır.
+Unity seçildi. Etkin aşamada işler mevcut temelin entegrasyonu, görsel düzen, kontrol hissi ve iki dilde doğrulama olarak sınırlandırılır. Gelecekteki mekanikler ayrı görevlerde tutulur. Dosya sahipliği kalıcı değildir; paylaşılan veri sözleşmesi değişiklikleri önceden kararlaştırılır.
 
-Her kontrol noktasında oynanabilir sürüm, kısa değişiklik kaydı ve doğrulama sonucu sunulur. Aynı PR'a ilgisiz özellikler eklenmez. Takvim, seçilen teknoloji ve arkadaşların üstleneceği işler netleşmeden kesinleştirilmez.
+Her kontrol noktasında eldeki çalıştırılabilir sürüm, kısa değişiklik kaydı ve gerçek doğrulama sonucu sunulur. Unity sürümü henüz çalıştırılmadıysa bu durum açıkça belirtilir. Aynı PR'a ilgisiz özellikler eklenmez. Takvim, editör doğrulaması ve arkadaşların üstleneceği işler netleşmeden kesinleştirilmez.

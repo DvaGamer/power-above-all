@@ -1,10 +1,12 @@
 # Power Above All — v0.2 tasarım tanımı
 
-Bu belge, proje sahibinin yeni oyun tasarımı talebini Türkçe olarak kaydeder. **Bir sonraki hedef, birbirine bağlı dört geliştirmedir: siyasi güçler ve karakterler, bölgesel harita katmanları, moral ve düzen içeren alay savaşları, ordu ikmali.** Önceki “yalnızca siyaset, savaş veya ekonomi dallarından birini seçme” yaklaşımı bu taleple değiştirilmiştir.
+**Güncel durum: gelecekteki kapsamlı tasarım.** Son kullanıcı kararıyla motor **Unity**, yeni oyunun dilleri **Rusça ve Türkçe** olarak seçildi. İlk temel aktarım sürüyor; Unity çalışma zamanı henüz doğrulanmadı. **Etkin sonraki aşama 0.2 Visual & Feel Polish Pass; yeni mekanik veya ekonomi genişletmesi yok.** Bu belgedeki dört bağlı sistem, gelecekteki geliştirmeler için korunur; hemen uygulanacak görev listesi değildir.
+
+Belge, önceki kapsamlı talebi Türkçe olarak kaydeder: siyasi güçler ve karakterler, bölgesel harita katmanları, moral ve düzen içeren alay savaşları, ordu ikmali. Önceki “yalnızca siyaset, savaş veya ekonomi dallarından birini seçme” yaklaşımı artık kullanılmaz.
 
 Buradaki kapsam, istenen tasarımın tamamını korur. Sonraki uygulama adımları ve v0.2'de hangi ayrıntıların hangi sırada yapılacağı [ROADMAP.md](ROADMAP.md) içinde belirlenir. Uzun vadeli kapsamın burada bulunması, tüm ayrıntıların ilk v0.2 tesliminde tamamlanmış olacağı anlamına gelmez; yol haritasındaki aşamalar da bu tasarım taleplerini iptal etmez.
 
-**Henüz kararlaştırılmamış konular:** kullanılacak motor ve oyuncunun somut siyasi kimliği. Mevcut tarayıcı prototipi, yeni sürümün motorunun seçildiği anlamına gelmez. İlk taslaktaki kraliyet konseyi rolü, nihai oyuncu kimliği olarak kesinleşmiş değildir. Bu belge tasarım kaydıdır; kod değişikliği yapıldığını bildirmez.
+**Henüz kararlaştırılmamış konu:** oyuncunun somut siyasi kimliği. İlk taslaktaki kraliyet konseyi rolü, nihai oyuncu kimliği olarak kesinleşmiş değildir. Motor seçimi tamamlandı: Unity. Doğrulanmış tarayıcı 0.1 kullanılabilir kalır; bu belgenin kapsamı Unity'de tamamlanmış özellikleri göstermez.
 
 ## 1. Kimlik, dönem ve temel ilke
 
@@ -252,9 +254,9 @@ Dönüşte kısa rapor, ardından harita gösterilir. **Örnek rapor:** Reims'te
 
 Bu, istenen sonuç sunumunun örneğidir; gerçekleşmiş savaş veya mevcut denge değeri değildir. Huzursuzluk azalırken yerel hoşnutsuzluğun artması gibi farklı sonuçlar ayrı göstergelere ve açık nedenlere bağlanmalıdır. Sonuçlar sefere yalnızca bir kez uygulanır; haritadaki ordu, bölge ve siyasi durum aynı raporla tutarlı güncellenir.
 
-## 12. Bir sonraki geliştirme hedefi
+## 12. Gelecekteki kapsamlı geliştirme hedefi
 
-Sonraki kilometre taşı dört bağlı yükseltmeden oluşur:
+Görsel iyileştirme aşamasından sonraki planlamada değerlendirilecek dört bağlı yükseltme:
 
 | Yükseltme | Diğer sistemlerle kurulması gereken bağlantı |
 | --- | --- |
@@ -265,4 +267,4 @@ Sonraki kilometre taşı dört bağlı yükseltmeden oluşur:
 
 Bu hedefler bağımsız menü özellikleri olarak tamamlanmış sayılmaz. Bir sonraki sürümün değerlendirmesinde siyasi bir kararın ekonomiden bölgeye, ikmalden savaşa ve tekrar siyasi güce uzanan sonucu takip edilebilmelidir.
 
-Uygulama sırası, ilk teslimin sınırları ve test adımları [ROADMAP.md](ROADMAP.md) içinde yönetilir. Motor ve oyuncunun somut siyasi kimliği karara bağlanmayı bekler. Sayısal örnekler tasarım niyetini taşır; uygulama, tarihsel doğruluk veya tamamlanmış dengeleme iddiası değildir.
+Uygulama sırası, ilk teslimin sınırları ve test adımları [ROADMAP.md](ROADMAP.md) içinde yönetilir. Unity seçildi; oyuncunun somut siyasi kimliği karara bağlanmayı bekler. Sayısal örnekler tasarım niyetini taşır; uygulama, tarihsel doğruluk veya tamamlanmış dengeleme iddiası değildir. Etkin Visual & Feel Polish Pass yeni sistem eklemez.

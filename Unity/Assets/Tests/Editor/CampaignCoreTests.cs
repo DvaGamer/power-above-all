@@ -107,6 +107,7 @@ namespace PowerAboveAll.Tests
                 s=>s.Gold=-1,s=>s.Morale=float.NaN,s=>s.Supply=float.PositiveInfinity,s=>s.Moves=3,
                 s=>s.SelectedRegionId="invalid",s=>s.Regions.RemoveAt(0),s=>s.Regions[0].Id=s.Regions[1].Id,
                 s=>s.Factions[0].LeaderId="missing",s=>s.Characters[0].FactionId="army",s=>s.Journal=null,
+                s=>s.PendingPetition=true,s=>s.PetitionResolved=true,
                 s=>s.ResolvedBattles.Add("battle-0-2-ile-provence"),
                 s=>{s.ResolvedBattles.Add("battle-0-2-ile-champagne");s.ResolvedBattles.Add("battle-0-2-ile-champagne");}
             };
@@ -117,9 +118,45 @@ namespace PowerAboveAll.Tests
         {
             Func<CampaignState> run=()=>{
                 var s=CampaignCore.Create();CampaignCore.Act(s,"subsidy","ile");
-                for(int i=0;i<200;i++){CampaignCore.Act(s,"bread",CampaignCore.Regions[i%12].Id);Assert.IsTrue(CampaignCore.NextWeek(s).Ok);s=Clone(s);CampaignCore.Validate(s);}return s;
+                for(int i=0;i<200;i++){if(s.PendingPetition)CampaignCore.ChoosePetition(s,"negotiate");CampaignCore.Act(s,"bread",CampaignCore.Regions[i%12].Id);Assert.IsTrue(CampaignCore.NextWeek(s).Ok);s=Clone(s);CampaignCore.Validate(s);}return s;
             };
             var a=run();Assert.AreEqual(200,a.Week);Assert.LessOrEqual(a.Journal.Count,40);Assert.AreEqual(Snapshot(a),Snapshot(run()));
+        }
+        [Test] public void PetitionBlocksWeekAndUnaffordableChoiceIsAtomicAfterLoading()
+        {
+            var s=CampaignCore.Create();CampaignCore.NextWeek(s);Assert.IsFalse(s.PendingPetition);
+            CampaignCore.NextWeek(s);Assert.IsTrue(s.PendingPetition);Assert.IsFalse(s.PetitionResolved);
+            s=Clone(s);CampaignCore.Validate(s);string before=Snapshot(s);
+            Assert.IsFalse(CampaignCore.NextWeek(s).Ok);Assert.AreEqual(before,Snapshot(s));
+            Assert.IsFalse(CampaignCore.ChoosePetition(s,"unknown").Ok);Assert.AreEqual(before,Snapshot(s));
+            s.Food=59;before=Snapshot(s);Assert.IsFalse(CampaignCore.ChoosePetition(s,"relief").Ok);Assert.AreEqual(before,Snapshot(s));
+            s.Food=60;float urban=s.Factions.Find(f=>f.Id=="urban").Approval;
+            float assembly=s.Factions.Find(f=>f.Id=="assembly").Approval;
+            float unrest=CampaignCore.Region(s,"champagne").Unrest;
+            Assert.IsTrue(CampaignCore.ChoosePetition(s,"relief").Ok);Assert.AreEqual(0,s.Food);
+            Assert.AreEqual(urban+15,s.Factions.Find(f=>f.Id=="urban").Approval);
+            Assert.AreEqual(assembly+5,s.Factions.Find(f=>f.Id=="assembly").Approval);
+            Assert.AreEqual(unrest-8,CampaignCore.Region(s,"champagne").Unrest);
+            s=Clone(s);CampaignCore.Validate(s);before=Snapshot(s);
+            Assert.IsFalse(CampaignCore.ChoosePetition(s,"relief").Ok);Assert.AreEqual(before,Snapshot(s));
+            Assert.IsTrue(CampaignCore.NextWeek(s).Ok);Assert.AreEqual(3,s.Week);Assert.IsFalse(s.PendingPetition);Assert.IsTrue(s.PetitionResolved);
+        }
+        [Test] public void PetitionNonFoodChoicesMatchBrowserEffects()
+        {
+            foreach(string choice in new[]{"negotiate","refuse"})
+            {
+                var s=CampaignCore.Create();CampaignCore.NextWeek(s);CampaignCore.NextWeek(s);
+                int food=s.Food;float crown=s.Factions.Find(f=>f.Id=="crown").Approval;
+                float assembly=s.Factions.Find(f=>f.Id=="assembly").Approval;
+                float urban=s.Factions.Find(f=>f.Id=="urban").Approval;
+                float paris=CampaignCore.Region(s,"ile").Unrest;
+                Assert.IsTrue(CampaignCore.ChoosePetition(s,choice).Ok);Assert.AreEqual(food,s.Food);
+                Assert.AreEqual(crown+(choice=="negotiate"?-8:8),s.Factions.Find(f=>f.Id=="crown").Approval);
+                Assert.AreEqual(assembly+(choice=="negotiate"?12:0),s.Factions.Find(f=>f.Id=="assembly").Approval);
+                Assert.AreEqual(urban+(choice=="refuse"?-10:0),s.Factions.Find(f=>f.Id=="urban").Approval);
+                Assert.AreEqual(paris+(choice=="negotiate"?-10:5),CampaignCore.Region(s,"ile").Unrest);
+                Assert.DoesNotThrow(()=>CampaignCore.Validate(s));
+            }
         }
     }
 }

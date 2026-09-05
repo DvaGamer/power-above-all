@@ -2,6 +2,20 @@
 
 ## Geçerli kararlar
 
+- DUR: Kullanıcı “окей сохрани все что я сказал в план и на этом остановись” dedi. Root POLISH_PLAN.md içine bütün güncel polish ayrıntılarını, kapsamı, olaylarınsonrayaertelenmesini ve yenidenbaşlamanoktasını kaydetti. Yeniuygulama/testbaşlatma yok; yalnızkaydetme+Gitkontrolnoktası tamamlanır. Kullanıcıdevamdemedenyenidenbaşlama.
+- Son gerçek Unity durumu: LisansaktivasyonusonrasıPID7912 ileMainaçıldı; yerelPlaydüğmesi tıklanınca kampanya/TRarayüz ekrandagörüldü. İlkPlayUnityException: TacticalBattle fieldinitializer MaterialPropertyBlock. Battleajanıallocation'ıBegin içinealdı. Kullanıcıdurduğu içinfixsonrasıyenidenPlaydoğrulanmadı. EditörünPlay/pausehâli yenidenbaşlangıçtakontroledilmeli. EkrangörüntüsüTemp/codex-shot-2026-09-05_23-25-34.png.
+- GerçekUnityDLLleriyleRoslyn:8Runtime+BuildToolsEditor kaynakbaşarılıderlendi. Helper output/verify-unity-compile.cjs, çıktıDLLlerignored. UnityTestRunner/playerbuild/sonfixruntimekontrolü henüz yapılmadı.
+
+- Unity Editor 6000.3.23f1 kurulumu tamamlandı, görünür proje açma işlemi PID13512 başlatıldı; HubMSIX AppID UnityTechnologies.UnityHub_2vrhnee42bhxm!UnityHub ileaçıldı. Editorlog açıkça “No valid Unity Editor license found. Please activate your license.” diyor. Kullanıcıya Hubgiriş/aktivasyon gerektiği söylendi. Bu yüzden Unity içi görsel/oynatma/build henüz doğrulanamaz; aynı gerçek DLL'lerle Roslyn kaynakderleme kontrolü simulationajanına verildi.
+- Güncel kaynakentegrasyon: GameApp+L+Main.unity+BuildTools+OPEN_UNITY; atlas/emir/hafta/ikidil/kayıt/battlecallback ve PetitionDocument. Map.Pulse Act'tesonuca bağlandı. BattleFeedback isimleri audio'ya eşlendi. Çift sonuçsesi kaldırıldı, petitionüstüRU/TR eklendi, battleüstbanddolduruldu. İncelemede kalan iki sorun: mevcut yürüyüş ikmal/yorgunluk maliyeti savaş sonrasında uygulanıyor; taktikrapordaki moral sonuçpolitikasından sonra tekrar değişiyor. Bunlar render/play doğrulamasında giderilecek, tamamlanmış polish sayılmıyor.
+- Kullanıcı trigger-driven Event Director işini açıkça **polish sonrasına** koydu. EVENT_DIRECTION.md gelecek tasarım; mevcut week2grainpetition üçseçimle Unityçekirdeğine taşındı. 14NUnitkaynaktesti var; gerçekUnitytestrunner henüzçalışmadı.
+
+- Kullanıcı son kontrol sırasında açıkça **Public bırak** dedi. GitHub görünürlüğü artık PUBLIC olarak onaylıdır; eski private talebi geçersizdir. Unity'yi görünür açıp canlı izlemek istiyor; kurulum bitince editör proje ile başlatılacak.
+
+- GitHub ara kaydı gerçekten yüklendi: main `cb200f1`, https://github.com/DvaGamer/power-above-all . İlk denemede kabuk tırnakları komit mesajını kesti; henüz gönderilmeden --amend -F ile düzeltildi, sonra push başarılı oldu.
+- Unity Editor 6000.3.23f1 resmî Windows yükleyicisi indiriliyor (3935 MiB); hedef C:/Users/USER/Tools/Unity/6000.3.23f1. Hub MSIX kurulu fakat doğrudan paket içindeki cli/unity.exe çalıştırması erişim reddediyor. Bu lisans hatası olarak yorumlanmadı. Editor kurulumu ayrı doğrulanacak.
+- Root GameApp/L/scene/manifest/buildtools/OPEN_UNITY oluşturdu. Henüz Unity derleme/görsel kontrol tamamlanmadı. Ajanlar mevcut harita/UI ve battle görsel polish; simulation ajanı özgün hafif prosedürel sesler hazırlıyor. Tarayıcıdaki grain-petition olayı yeni çekirdekte henüz yok: parite açığı açıkça kaydedilmeli.
+
 - SON KAPSAM: Kullanıcı mevcut durumu hemen özel GitHub'a yüklemeyi ve ardından “0.2 Visual & Feel Polish Pass” istedi. Yeni mekanik yok; ekonomi değişmez. Mevcut döngünün harita/UI/savaş/geri bildirim/animasyon/olay/geçiş/metin kalitesi iyileştirilir. Unity kararı geçerli. Üç alt ajan bu sınıra yönlendirildi; genişleme tasarımı gelecek iş listesi oldu.
 
 - Kullanıcı bundan sonra bağımsız görevlerde daima mümkün olduğunca çok subagent kullanımını istedi. Şu an4slotun tamamı kullanılıyor: rootentegrasyon+3Unitymodül. Ajan bitirince bağımsız test/gözdengeçirme/verifikasyona yönlendir.

@@ -34,12 +34,20 @@ namespace PowerAboveAll
         };
         private readonly Dictionary<string, MeshRenderer> provinces = new Dictionary<string, MeshRenderer>();
         private readonly Dictionary<string, List<Vector2>> cells = new Dictionary<string, List<Vector2>>();
+        private readonly Dictionary<string, Color> provinceColors = new Dictionary<string, Color>();
         private readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
         private List<Vector2> mainland;
         private Camera atlasCamera;
         private Transform selectionRoot, routeRoot, armyRoot;
         private Material borderMat, goldMat, roadMat;
         private string selectedId, armyId;
+        private int lastWeek = -1, lastMoves = -1;
+        private Vector3 armyFrom, armyTarget;
+        private float armyMoveStarted;
+        private bool armyPositioned;
+        private string pulseId;
+        private float pulseStarted = -10f;
+        private LineRenderer pulseRing;
         private bool built;
 
         public void Build(Camera camera)
@@ -87,12 +95,15 @@ namespace PowerAboveAll
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 go.AddComponent<MeshCollider>().sharedMesh = mesh;
                 provinces.Add(seed.Id, renderer);
+                provinceColors.Add(seed.Id, seed.Ink);
                 BorderOfCell(cell, transform, borderMat, .07f, .05f);
                 MakeCity(seed);
             }
             DrawLine("Coastline", mainland, true, transform, borderMat, .14f, .07f);
             AddEngraving();
             selectionRoot = NewRoot("Selected province"); routeRoot = NewRoot("Dispatch routes"); armyRoot = NewRoot("Army standard");
+            var pulseObject = new GameObject("Order wax imprint");pulseObject.transform.SetParent(transform,false);
+            pulseRing=pulseObject.AddComponent<LineRenderer>();pulseRing.sharedMaterial=goldMat;pulseRing.positionCount=48;pulseRing.loop=true;pulseRing.useWorldSpace=false;pulseRing.widthMultiplier=.1f;pulseRing.enabled=false;
         }
 
         public void Refresh(CampaignState state, string mode)
@@ -109,23 +120,74 @@ namespace PowerAboveAll
                     case "influence": value = region.EliteLoyalty / 100f; break;
                     case "army": value = seed.Id == state.ArmyRegionId ? 1f : .12f; low = Hex("#CEC5A6"); high = Hex("#738F8B"); break;
                     case "food": value = BaseFood(seed.Id) * (1f - region.Unrest / 200f) / 22f; low = Hex("#CEB17A"); high = Hex("#8EA675"); break;
-                    case "tax": value = BaseTax(seed.Id) * (1f - region.Unrest / 150f) / 48f; low = Hex("#CAC1A0"); high = Hex("#B29356"); break;
-                    default: provinces[seed.Id].sharedMaterial.color = seed.Ink; continue;
+                    case "tax": value = BaseTax(seed.Id) * (1f - region.Unrest / 150f) * (.5f + region.Control / 200f) * (.75f + state.Factions.Find(f => f.Id == "assembly").Approval / 200f) / 48f; low = Hex("#CAC1A0"); high = Hex("#B29356"); break;
+                    default: provinces[seed.Id].sharedMaterial.color = seed.Ink; provinceColors[seed.Id] = seed.Ink; continue;
                 }
-                provinces[seed.Id].sharedMaterial.color = Color.Lerp(low, high, Mathf.Clamp01(value));
+                provinceColors[seed.Id] = Color.Lerp(low, high, Mathf.Clamp01(value));
+                provinces[seed.Id].sharedMaterial.color = provinceColors[seed.Id];
             }
-            if (selectedId != state.SelectedRegionId || armyId != state.ArmyRegionId)
+            bool selectionChanged = selectedId != state.SelectedRegionId;
+            bool armyChanged = armyId != state.ArmyRegionId;
+            if (selectionChanged || armyChanged || lastWeek != state.Week || lastMoves != state.Moves)
             {
                 selectedId = state.SelectedRegionId; armyId = state.ArmyRegionId;
-                ClearChildren(selectionRoot); ClearChildren(routeRoot); ClearChildren(armyRoot);
-                if (cells.TryGetValue(selectedId ?? "", out var selectedCell)) BorderOfCell(selectedCell, selectionRoot, goldMat, .19f, .15f);
-                MakeArmy(state.ArmyRegionId);
+                lastWeek = state.Week; lastMoves = state.Moves;
+                ClearChildren(routeRoot);
+                if (selectionChanged)
+                {
+                    ClearChildren(selectionRoot);
+                    if (cells.TryGetValue(selectedId ?? "", out var selectedCell)) BorderOfCell(selectedCell, selectionRoot, goldMat, .19f, .17f);
+                }
+                if (!armyPositioned) { MakeArmy(state.ArmyRegionId); armyTarget = armyFrom = armyRoot.localPosition; armyPositioned = true; armyMoveStarted = Time.unscaledTime - 1f; }
+                else if (armyChanged)
+                {
+                    armyFrom = armyRoot.localPosition;
+                    armyTarget = transform.InverseTransformPoint(RegionWorld(armyId)) + new Vector3(1.35f, 0, .85f);
+                    armyMoveStarted = Time.unscaledTime;
+                }
                 if (selectedId != armyId && selectedId != null && armyId != null)
                 {
                     var check = CampaignCore.CanMarch(state, selectedId);
                     if (check.Ok) DrawRoute(RegionWorld(armyId), RegionWorld(selectedId));
                 }
             }
+        }
+
+        private void Update()
+        {
+            if (!built) return;
+            // Presentation only: the authoritative campaign transition has already completed.
+            if (armyPositioned)
+            {
+                float t = Mathf.Clamp01((Time.unscaledTime - armyMoveStarted) / .85f);
+                float smooth = t * t * (3f - 2f * t);
+                armyRoot.localPosition = Vector3.Lerp(armyFrom, armyTarget, smooth) + Vector3.up * (Mathf.Sin(t * Mathf.PI) * .28f);
+            }
+            foreach (var province in provinces)
+            {
+                var p = province.Value.transform.localPosition;
+                p.y = Mathf.MoveTowards(p.y, province.Key == selectedId ? .085f : 0f, Time.unscaledDeltaTime * .45f);
+                province.Value.transform.localPosition = p;
+                float pulse = province.Key == pulseId ? Mathf.Clamp01(1f - (Time.unscaledTime - pulseStarted) / .95f) : 0f;
+                province.Value.sharedMaterial.color = Color.Lerp(provinceColors[province.Key], Hex("#E3D69F"), pulse * .6f);
+            }
+            float elapsed=Time.unscaledTime-pulseStarted;
+            if(pulseRing&&pulseRing.enabled)
+            {
+                if(elapsed>=.95f)pulseRing.enabled=false;
+                else
+                {
+                    Vector3 center=transform.InverseTransformPoint(RegionWorld(pulseId));float radius=.9f+elapsed*2.3f;
+                    for(int i=0;i<48;i++){float angle=i*Mathf.PI*2f/48;pulseRing.SetPosition(i,center+new Vector3(Mathf.Cos(angle)*radius,.12f,Mathf.Sin(angle)*radius));}
+                    pulseRing.widthMultiplier=.1f*(1f-elapsed/.95f);
+                }
+            }
+        }
+
+        public void Pulse(string id)
+        {
+            if(!built||string.IsNullOrEmpty(id)||!provinces.ContainsKey(id))return;
+            pulseId=id;pulseStarted=Time.unscaledTime;pulseRing.enabled=true;
         }
 
         public Vector3 RegionWorld(string id)
@@ -272,6 +334,23 @@ namespace PowerAboveAll
             }
             Block(city, new Vector3(0,.35f,0), new Vector3(.35f,.7f,.35f), stone, "Bell tower"); Pyramid(city, new Vector3(0,.7f,0), .28f, .4f, roof);
             if (seed.Id == "ile") { Block(city,new Vector3(.4f,.25f,.85f),new Vector3(1.3f,.4f,.3f),ivory,"Palace"); Block(city,new Vector3(.4f,.47f,.85f),new Vector3(1.35f,.09f,.39f),roof,"Palace cornice"); }
+            if(seed.Id=="orleans"||seed.Id=="poitou"||seed.Id=="picardy")
+            {
+                // Engraved strips of cultivated land distinguish the grain provinces.
+                var field=MakeMaterial(Hex("#928A59"));
+                for(int i=0;i<4;i++)Block(city,new Vector3(-1.25f+i*.22f,.015f,1.2f),new Vector3(.09f,.035f,1.05f),field,"Cultivated strip");
+            }
+            if(seed.Id=="guyenne"||seed.Id=="provence")
+            {
+                Block(city,new Vector3(1.45f,.06f,.15f),new Vector3(.19f,.09f,1.3f),stone,"Trading quay");
+                for(int i=0;i<3;i++)Block(city,new Vector3(1.7f,.07f,-.3f+i*.4f),new Vector3(.65f,.08f,.11f),roof,"Harbour pier");
+            }
+            if(seed.Id=="lorraine"||seed.Id=="champagne")
+            {
+                // Frontier towns carry a heavier, square enclosure.
+                Block(city,new Vector3(-.95f,.14f,.2f),new Vector3(.13f,.28f,1.75f),stone,"Western rampart");
+                Block(city,new Vector3(.02f,.14f,-.75f),new Vector3(2f,.28f,.13f),stone,"Northern rampart");
+            }
         }
         private void Block(Transform parent, Vector3 position, Vector3 scale, Material material, string name)
         {

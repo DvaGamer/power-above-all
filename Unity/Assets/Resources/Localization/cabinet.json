@@ -1,0 +1,624 @@
+{
+  "entries": [
+    {
+      "key": "ui.title",
+      "ru": "POWER ABOVE ALL",
+      "tr": "POWER ABOVE ALL"
+    },
+    {
+      "key": "ui.tagline",
+      "ru": "ФРАНЦИЯ · 1789 · ВЛАСТЬ ПРЕВЫШЕ ВСЕГО",
+      "tr": "FRANSA · 1789 · HER ŞEYDEN ÖNCE İKTİDAR"
+    },
+    {
+      "key": "ui.seal",
+      "ru": "♜",
+      "tr": "♜"
+    },
+    {
+      "key": "ui.gold",
+      "ru": "КАЗНА",
+      "tr": "HAZİNE"
+    },
+    {
+      "key": "ui.food",
+      "ru": "ПРОДОВОЛЬСТВИЕ",
+      "tr": "ERZAK"
+    },
+    {
+      "key": "ui.supplies",
+      "ru": "СНАРЯЖЕНИЕ",
+      "tr": "TEÇHİZAT"
+    },
+    {
+      "key": "ui.troops",
+      "ru": "Армия",
+      "tr": "Ordu"
+    },
+    {
+      "key": "ui.power",
+      "ru": "ЛИЧНАЯ ВЛАСТЬ",
+      "tr": "KİŞİSEL İKTİDAR"
+    },
+    {
+      "key": "ui.unrest",
+      "ru": "Недовольство",
+      "tr": "Huzursuzluk"
+    },
+    {
+      "key": "ui.weekly",
+      "ru": "{0} / нед.",
+      "tr": "{0} / hafta"
+    },
+    {
+      "key": "ui.stock",
+      "ru": "государственный запас",
+      "tr": "devlet deposu"
+    },
+    {
+      "key": "ui.reserve",
+      "ru": "Резерв: {0}",
+      "tr": "Yedek: {0}"
+    },
+    {
+      "key": "ui.personal",
+      "ru": "ваша опора при дворе",
+      "tr": "saraydaki dayanağınız"
+    },
+    {
+      "key": "ui.country",
+      "ru": "среднее по Франции",
+      "tr": "Fransa ortalaması"
+    },
+    {
+      "key": "ui.language",
+      "ru": "RU / TR",
+      "tr": "TR / RU"
+    },
+    {
+      "key": "ui.help.short",
+      "ru": "?",
+      "tr": "?"
+    },
+    {
+      "key": "ui.mode.control",
+      "ru": "Контроль",
+      "tr": "Denetim"
+    },
+    {
+      "key": "ui.mode.unrest",
+      "ru": "Недовольство",
+      "tr": "Huzursuzluk"
+    },
+    {
+      "key": "ui.mode.food",
+      "ru": "Хлеб",
+      "tr": "Tahıl"
+    },
+    {
+      "key": "ui.mode.tax",
+      "ru": "Налоги",
+      "tr": "Vergi"
+    },
+    {
+      "key": "ui.mode.army",
+      "ru": "Армия",
+      "tr": "Ordu"
+    },
+    {
+      "key": "ui.mode.influence",
+      "ru": "Местные элиты",
+      "tr": "Yerel seçkinler"
+    },
+    {
+      "key": "ui.atlas.title",
+      "ru": "К О Р О Л Е В С Т В О   Ф Р А Н Ц И Я",
+      "tr": "F R A N S A   K R A L L I Ğ I"
+    },
+    {
+      "key": "ui.atlas.subtitle",
+      "ru": "Атлас государственного совета · май 1789",
+      "tr": "Devlet Konseyi atlası · Mayıs 1789"
+    },
+    {
+      "key": "ui.atlas.atlantic",
+      "ru": "Атлантический\nокеан",
+      "tr": "Atlas\nOkyanusu"
+    },
+    {
+      "key": "ui.atlas.mediterranean",
+      "ru": "Средиземное море",
+      "tr": "Akdeniz"
+    },
+    {
+      "key": "ui.atlas.channel",
+      "ru": "Ла-Манш",
+      "tr": "Manş Denizi"
+    },
+    {
+      "key": "ui.atlas.north",
+      "ru": "СЕВЕР",
+      "tr": "KUZEY"
+    },
+    {
+      "key": "ui.compass",
+      "ru": "✥",
+      "tr": "✥"
+    },
+    {
+      "key": "ui.atlas.scale",
+      "ru": "12 областей",
+      "tr": "12 bölge"
+    },
+    {
+      "key": "ui.legend.control",
+      "ru": "Красный — слабая власть; зелёный — устойчивый контроль.",
+      "tr": "Kırmızı: zayıf yönetim. Yeşil: güçlü denetim."
+    },
+    {
+      "key": "ui.legend.unrest",
+      "ru": "Красный — высокий риск мятежа; зелёный — спокойствие.",
+      "tr": "Kırmızı: yüksek isyan riski. Yeşil: sakinlik."
+    },
+    {
+      "key": "ui.legend.food",
+      "ru": "Зелёный — больше зерна после потерь от волнений.",
+      "tr": "Yeşil: huzursuzluk kayıpları sonrası daha fazla tahıl."
+    },
+    {
+      "key": "ui.legend.tax",
+      "ru": "Золото — больший расчётный налоговый доход.",
+      "tr": "Altın: hesaplanan vergi geliri daha yüksek."
+    },
+    {
+      "key": "ui.legend.army",
+      "ru": "Синий — область, где расположена ваша армия.",
+      "tr": "Mavi: ordunuzun bulunduğu bölge."
+    },
+    {
+      "key": "ui.legend.influence",
+      "ru": "Зелёный — лояльные местные элиты; красный — оппозиция.",
+      "tr": "Yeşil: sadık yerel seçkinler. Kırmızı: muhalefet."
+    },
+    {
+      "key": "ui.legend.political",
+      "ru": "Исторические названия; условные игровые границы.",
+      "tr": "Tarihsel adlar; oyun için sadeleştirilmiş sınırlar."
+    },
+    {
+      "key": "ui.province.dispatch",
+      "ru": "ОБЛАСТНАЯ ДЕПЕША",
+      "tr": "BÖLGE RAPORU"
+    },
+    {
+      "key": "ui.control",
+      "ru": "Контроль",
+      "tr": "Denetim"
+    },
+    {
+      "key": "ui.elite",
+      "ru": "Лояльность элит",
+      "tr": "Seçkinlerin sadakati"
+    },
+    {
+      "key": "ui.population",
+      "ru": "Население",
+      "tr": "Nüfus"
+    },
+    {
+      "key": "ui.million",
+      "ru": "{0} млн",
+      "tr": "{0} milyon"
+    },
+    {
+      "key": "ui.tax.base",
+      "ru": "Базовый налог",
+      "tr": "Temel vergi"
+    },
+    {
+      "key": "ui.food.base",
+      "ru": "Базовый урожай",
+      "tr": "Temel hasat"
+    },
+    {
+      "key": "ui.orders",
+      "ru": "РАСПОРЯЖЕНИЯ СОВЕТА",
+      "tr": "KONSEY EMİRLERİ"
+    },
+    {
+      "key": "ui.order.bread",
+      "ru": "Раздать хлеб",
+      "tr": "Ekmek dağıt"
+    },
+    {
+      "key": "ui.order.bread.detail",
+      "ru": "−40 хлеба · волнения −15.\nПоддержка горожан +2.",
+      "tr": "−40 erzak · huzursuzluk −15.\nKentli desteği +2."
+    },
+    {
+      "key": "ui.order.tax",
+      "ru": "Чрезвычайный сбор",
+      "tr": "Olağanüstü vergi"
+    },
+    {
+      "key": "ui.order.tax.detail",
+      "ru": "+100 ливров · волнения +12.\nЛояльность элит −4.",
+      "tr": "+100 livre · huzursuzluk +12.\nSeçkin sadakati −4."
+    },
+    {
+      "key": "ui.order.recruit",
+      "ru": "Набрать 200 солдат",
+      "tr": "200 asker topla"
+    },
+    {
+      "key": "ui.order.recruit.detail",
+      "ru": "−120 казны, −20 хлеба,\n−15 снаряжения, −200 резерва.",
+      "tr": "−120 hazine, −20 erzak,\n−15 teçhizat, −200 yedek."
+    },
+    {
+      "key": "ui.order.subsidy",
+      "ru": "Субсидировать Париж",
+      "tr": "Paris'i destekle"
+    },
+    {
+      "key": "ui.order.subsidy.detail",
+      "ru": "−20 хлеба каждую неделю.\nУспокаивает столицу.",
+      "tr": "Her hafta −20 erzak.\nBaşkenti yatıştırır."
+    },
+    {
+      "key": "ui.order.subsidy.stop",
+      "ru": "Отменить субсидию",
+      "tr": "Desteği kes"
+    },
+    {
+      "key": "ui.order.subsidy.stop.detail",
+      "ru": "Хлеб остаётся в казённых запасах.\nПариж и горожане недовольны.",
+      "tr": "Erzak devlet deposunda kalır.\nParis ve kentliler tepki gösterir."
+    },
+    {
+      "key": "ui.army.dispatch",
+      "ru": "ПОХОДНАЯ ВЕДОМОСТЬ",
+      "tr": "SEFER DEFTERİ"
+    },
+    {
+      "key": "ui.moves",
+      "ru": "Походы за неделю",
+      "tr": "Haftalık hareket"
+    },
+    {
+      "key": "ui.morale",
+      "ru": "Боевой дух",
+      "tr": "Moral"
+    },
+    {
+      "key": "ui.supply",
+      "ru": "Снабжение",
+      "tr": "İkmal"
+    },
+    {
+      "key": "ui.fatigue",
+      "ru": "Усталость",
+      "tr": "Yorgunluk"
+    },
+    {
+      "key": "ui.army.here",
+      "ru": "Армия в этой области",
+      "tr": "Ordu bu bölgede"
+    },
+    {
+      "key": "ui.army.battle",
+      "ru": "Вступить в сражение",
+      "tr": "Muharebeye gir"
+    },
+    {
+      "key": "ui.army.march",
+      "ru": "Отправить армию",
+      "tr": "Orduyu gönder"
+    },
+    {
+      "key": "ui.army.here.detail",
+      "ru": "Выберите соседнюю область на карте, чтобы проложить маршрут.",
+      "tr": "Rota çizmek için haritada komşu bir bölge seçin."
+    },
+    {
+      "key": "ui.cabinet",
+      "ru": "ЛИЧНЫЙ КАБИНЕТ · СЕКРЕТНО",
+      "tr": "ÖZEL KALEM · GİZLİ"
+    },
+    {
+      "key": "ui.tab.council",
+      "ru": "Силы",
+      "tr": "Güçler"
+    },
+    {
+      "key": "ui.tab.economy",
+      "ru": "Счета",
+      "tr": "Hesaplar"
+    },
+    {
+      "key": "ui.tab.journal",
+      "ru": "Хроника",
+      "tr": "Günlük"
+    },
+    {
+      "key": "ui.council.title",
+      "ru": "Опоры вашей власти",
+      "tr": "İktidarınızın dayanakları"
+    },
+    {
+      "key": "ui.council.intro",
+      "ru": "У каждого союзника своя цена. Ваши приказы меняют их поддержку.",
+      "tr": "Her müttefikin bir bedeli var. Emirleriniz desteklerini değiştirir."
+    },
+    {
+      "key": "ui.approval",
+      "ru": "Поддержка",
+      "tr": "Destek"
+    },
+    {
+      "key": "ui.influence",
+      "ru": "Влияние",
+      "tr": "Nüfuz"
+    },
+    {
+      "key": "ui.radicalism",
+      "ru": "Радикализм",
+      "tr": "Radikallik"
+    },
+    {
+      "key": "ui.character.traits",
+      "ru": "Амбиции {0} · Способности {1}\nОтношение к вам {2}",
+      "tr": "Hırs {0} · Yetkinlik {1}\nSize yaklaşımı {2}"
+    },
+    {
+      "key": "ui.economy.title",
+      "ru": "Цена порядка",
+      "tr": "Düzenin bedeli"
+    },
+    {
+      "key": "ui.economy.intro",
+      "ru": "Прогноз на следующую неделю. Казна, хлеб и армия связаны одной цепью.",
+      "tr": "Gelecek haftanın tahmini. Hazine, tahıl ve ordu aynı zincirin halkalarıdır."
+    },
+    {
+      "key": "ui.economy.treasury",
+      "ru": "ЛИВРЫ · ЕЖЕНЕДЕЛЬНО",
+      "tr": "LİVRE · HAFTALIK"
+    },
+    {
+      "key": "ui.economy.tax",
+      "ru": "Налоговые поступления",
+      "tr": "Vergi gelirleri"
+    },
+    {
+      "key": "ui.economy.army",
+      "ru": "Армия и снаряжение",
+      "tr": "Ordu ve teçhizat"
+    },
+    {
+      "key": "ui.economy.balance",
+      "ru": "Остаток за неделю",
+      "tr": "Haftalık net"
+    },
+    {
+      "key": "ui.economy.grain",
+      "ru": "ХЛЕБ · ЕЖЕНЕДЕЛЬНО",
+      "tr": "TAHIL · HAFTALIK"
+    },
+    {
+      "key": "ui.economy.production",
+      "ru": "Производство",
+      "tr": "Üretim"
+    },
+    {
+      "key": "ui.economy.population",
+      "ru": "Население",
+      "tr": "Nüfus"
+    },
+    {
+      "key": "ui.economy.rations",
+      "ru": "Армейские пайки",
+      "tr": "Ordu tayınları"
+    },
+    {
+      "key": "ui.economy.subsidy",
+      "ru": "Парижская субсидия",
+      "tr": "Paris desteği"
+    },
+    {
+      "key": "ui.economy.chain",
+      "ru": "Следствия приказов",
+      "tr": "Emirlerin sonuçları"
+    },
+    {
+      "key": "ui.economy.chain.detail",
+      "ru": "Хлеб → настроение улицы → контроль → налоги.\n\nСнабжение → боевой дух → исход сражения → ваша власть.",
+      "tr": "Ekmek → sokaktaki hava → denetim → vergi.\n\nİkmal → moral → muharebenin sonucu → iktidarınız."
+    },
+    {
+      "key": "ui.economy.supply.detail",
+      "ru": "Поход расходует хлеб и снаряжение. Беспокойные области утомляют армию сильнее. Еженедельное содержание включает пополнение военных запасов.",
+      "tr": "Sefer erzak ve teçhizat tüketir. Huzursuz bölgeler orduyu daha çok yorar. Haftalık giderlere askeri depoların yenilenmesi dahildir."
+    },
+    {
+      "key": "ui.economy.subsidy.note",
+      "ru": "Помощь Парижу становится ожиданием. Её отмена экономит хлеб, но усиливает оппозицию.",
+      "tr": "Paris'e yardım bir beklenti yaratır. Kesilmesi erzak tasarrufu sağlar, fakat muhalefeti güçlendirir."
+    },
+    {
+      "key": "ui.economy.paris",
+      "ru": "Открыть депешу из Парижа",
+      "tr": "Paris raporunu aç"
+    },
+    {
+      "key": "ui.journal.title",
+      "ru": "След ваших решений",
+      "tr": "Kararlarınızın izi"
+    },
+    {
+      "key": "ui.save",
+      "ru": "Запись",
+      "tr": "Kaydet"
+    },
+    {
+      "key": "ui.load",
+      "ru": "Открыть",
+      "tr": "Yükle"
+    },
+    {
+      "key": "ui.new",
+      "ru": "Новая",
+      "tr": "Yeni"
+    },
+    {
+      "key": "ui.welcome",
+      "ru": "Выберите область. Франции нужен порядок — вам нужна власть.",
+      "tr": "Bir bölge seçin. Fransa'nın düzene, sizin iktidara ihtiyacınız var."
+    },
+    {
+      "key": "ui.shortcuts",
+      "ru": "Карта: щелчок по области · Колесо: прокрутка депеши · RU / TR: язык",
+      "tr": "Harita: bölgeye tıkla · Fare tekeri: raporu kaydır · RU / TR: dil"
+    },
+    {
+      "key": "ui.next",
+      "ru": "Следующая неделя  →",
+      "tr": "Sonraki hafta  →"
+    },
+    {
+      "key": "ui.week",
+      "ru": "НЕДЕЛЯ {0} · СОВЕТ ПРОДОЛЖАЕТ РАБОТУ",
+      "tr": "HAFTA {0} · KONSEY ÇALIŞMAYA DEVAM EDİYOR"
+    },
+    {
+      "key": "ui.date",
+      "ru": "{0} {1} {2}",
+      "tr": "{0} {1} {2}"
+    },
+    {
+      "key": "ui.month.1",
+      "ru": "января",
+      "tr": "Ocak"
+    },
+    {
+      "key": "ui.month.2",
+      "ru": "февраля",
+      "tr": "Şubat"
+    },
+    {
+      "key": "ui.month.3",
+      "ru": "марта",
+      "tr": "Mart"
+    },
+    {
+      "key": "ui.month.4",
+      "ru": "апреля",
+      "tr": "Nisan"
+    },
+    {
+      "key": "ui.month.5",
+      "ru": "мая",
+      "tr": "Mayıs"
+    },
+    {
+      "key": "ui.month.6",
+      "ru": "июня",
+      "tr": "Haziran"
+    },
+    {
+      "key": "ui.month.7",
+      "ru": "июля",
+      "tr": "Temmuz"
+    },
+    {
+      "key": "ui.month.8",
+      "ru": "августа",
+      "tr": "Ağustos"
+    },
+    {
+      "key": "ui.month.9",
+      "ru": "сентября",
+      "tr": "Eylül"
+    },
+    {
+      "key": "ui.month.10",
+      "ru": "октября",
+      "tr": "Ekim"
+    },
+    {
+      "key": "ui.month.11",
+      "ru": "ноября",
+      "tr": "Kasım"
+    },
+    {
+      "key": "ui.month.12",
+      "ru": "декабря",
+      "tr": "Aralık"
+    },
+    {
+      "key": "ui.help.kicker",
+      "ru": "КОРОЛЕВСКИЙ СОВЕТ · ЛИЧНАЯ ИНСТРУКЦИЯ",
+      "tr": "KRALİYET KONSEYİ · ÖZEL TALİMAT"
+    },
+    {
+      "key": "ui.help.title",
+      "ru": "Держать Францию в руках",
+      "tr": "Fransa'yı elinizde tutmak"
+    },
+    {
+      "key": "ui.help.body",
+      "ru": "Вы — член королевского совета в мае 1789 года. Распоряжайтесь хлебом, налогами и армией, сохраняя собственную власть.\n\n1. Выберите область на карте и прочитайте её депешу слева.\n2. Хлеб уменьшает волнения; чрезвычайный налог пополняет казну, но вызывает сопротивление.\n3. Выберите соседнюю с армией область. При высоком недовольстве поход приведёт к бою.\n4. Завершите неделю: изменятся запасы, настроение политических сил и положение армии.\n\nНазвания и эпоха исторические. Границы, персонажи совета и числовые модели упрощены или вымышлены.",
+      "tr": "Mayıs 1789'da kraliyet konseyinin bir üyesisiniz. Kendi iktidarınızı korurken erzağı, vergileri ve orduyu yönetin.\n\n1. Haritada bir bölge seçip soldaki raporunu okuyun.\n2. Ekmek huzursuzluğu azaltır; olağanüstü vergi hazineyi doldurur, ama direnişi artırır.\n3. Orduya komşu bir bölge seçin. Huzursuzluk yüksekse sefer muharebeye dönüşür.\n4. Haftayı bitirin: depolar, siyasi güçlerin tutumu ve ordunun durumu değişir.\n\nDönem ve yer adları tarihseldir. Sınırlar, konsey kişileri ve sayısal modeller sadeleştirilmiş veya kurgusaldır."
+    },
+    {
+      "key": "ui.help.close",
+      "ru": "Вернуться к атласу",
+      "tr": "Atlasa dön"
+    },
+    {
+      "key": "ui.restart.title",
+      "ru": "Начать новую кампанию?",
+      "tr": "Yeni sefer başlatılsın mı?"
+    },
+    {
+      "key": "ui.restart.body",
+      "ru": "Вы вернётесь в май 1789 года. Текущая кампания и её сохранение будут заменены новой кампанией.",
+      "tr": "Mayıs 1789'a dönersiniz. Mevcut sefer ve kayıt dosyası yeni seferle değiştirilecek."
+    },
+    {
+      "key": "ui.cancel",
+      "ru": "Продолжить кампанию",
+      "tr": "Sefere devam et"
+    },
+    {
+      "key": "ui.restart.confirm",
+      "ru": "Начать заново",
+      "tr": "Yeniden başlat"
+    },
+    {
+      "key": "ui.reason.used",
+      "ru": "Выполнено на этой неделе.",
+      "tr": "Bu hafta uygulandı."
+    },
+    {
+      "key": "ui.reason.food",
+      "ru": "Нужно 40 хлеба.",
+      "tr": "40 erzak gerekiyor."
+    },
+    {
+      "key": "ui.reason.army",
+      "ru": "Сначала приведите армию.",
+      "tr": "Önce orduyu buraya getirin."
+    },
+    {
+      "key": "ui.reason.recruit",
+      "ru": "Не хватает запасов или людей.",
+      "tr": "Depolar veya insan gücü yetersiz."
+    },
+    {
+      "key": "ui.journal.latest",
+      "ru": "ПОСЛЕДНЕЕ",
+      "tr": "SON KAYIT"
+    }
+  ]
+}

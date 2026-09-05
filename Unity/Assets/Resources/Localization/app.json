@@ -1,0 +1,11 @@
+{"entries":[
+{"key":"app.welcome","ru":"Версаль, 5 мая 1789. Франция ждёт ваших распоряжений.","tr":"Versay, 5 Mayıs 1789. Fransa emirlerinizi bekliyor."},
+{"key":"app.dispatch","ru":"Военная депеша\n{0}","tr":"Askerî sevk emri\n{0}"},
+{"key":"app.return.victory","ru":"Поле удержано. Рапорт доставлен в Версаль.","tr":"Meydan tutuldu. Rapor Versay'a ulaştı."},
+{"key":"app.return.defeat","ru":"Армия отступила. Версаль ждёт объяснений.","tr":"Ordu çekildi. Versay açıklama bekliyor."},
+{"key":"app.saved","ru":"Бумаги убраны в архив.","tr":"Belgeler arşive kaldırıldı."},
+{"key":"app.loaded","ru":"Архив открыт. Продолжим.","tr":"Arşiv açıldı. Devam edelim."},
+{"key":"app.save.none","ru":"В архиве пока нет записей.","tr":"Arşivde henüz kayıt yok."},
+{"key":"app.save.failed","ru":"Не удалось записать архив. Проверьте свободное место и доступ к папке сохранений.","tr":"Arşiv kaydedilemedi. Boş alanı ve kayıt klasörüne erişimi kontrol edin."},
+{"key":"app.load.failed","ru":"Архив не удалось прочесть. Текущая партия сохранена на экране.","tr":"Arşiv okunamadı. Mevcut sefer ekranda korundu."}
+]}
