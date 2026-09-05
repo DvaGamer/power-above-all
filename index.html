@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#202c28">
+  <title>Power Above All — France, 1789</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="simulation.js"></script>
+  <script defer src="battle.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<svg class="svg-library" aria-hidden="true"><defs>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="m3 7 4 4 5-7 5 7 4-4-2 11H5L3 7Zm3 14h12"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="10" cy="7" rx="7" ry="3"/><path d="M3 7v5c0 4 14 4 14 0V7M3 12v5c0 4 14 4 14 0v-5m3-7v14"/></symbol>
+  <symbol id="i-wheat" viewBox="0 0 24 24"><path d="M12 22V5m0 4C5 10 5 4 5 4s7 0 7 5Zm0 6c-7 1-7-5-7-5s7 0 7 5Zm0-6c7 1 7-5 7-5s-7 0-7 5Zm0 6c7 1 7-5 7-5s-7 0-7 5Zm0-10s-4-3 0-5c4 2 0 5 0 5Z"/></symbol>
+  <symbol id="i-army" viewBox="0 0 24 24"><path d="m4 3 15 18M20 3 5 21M3 17l5 4m9 0 5-4M4 3l1 6 4-3-5-3Zm16 0-1 6-4-3 5-3Z"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2c3 7-3 8 1 11 1-2 3-2 3-5 9 10 0 17-7 13C1 17 7 10 8 7c0 3 2 4 2 4s4-4 2-9Z"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></symbol>
+  <symbol id="i-quill" viewBox="0 0 24 24"><path d="m4 21 13-13M7 17C1 7 17 2 21 3c0 9-5 14-14 14Zm1-3 5 1m-2-4 1-5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M3 12h17m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M4 3h13l4 4v14H3V3h1Zm3 0v7h10V3M7 21v-7h10v7"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-11v1"/></symbol>
+  <symbol id="i-city" viewBox="0 0 24 24"><path d="M3 21h18M5 21V9h4V5h6v4h4v12M9 21v-6h6v6M12 1v4m-5 7h1m8 0h1"/></symbol>
+</defs></svg>
+
+<header class="topbar">
+  <div class="brand"><div class="brand-seal"><svg><use href="#i-crown"/></svg></div><div><div class="brand-name">POWER ABOVE ALL</div><div class="brand-sub">FRANCE · 1789 · ВЛАСТЬ ПРЕВЫШЕ ВСЕГО</div></div></div>
+  <div class="resources" aria-label="Ресурсы государства">
+    <div class="resource"><svg><use href="#i-coins"/></svg><div><span class="resource-label">КАЗНА</span><div><strong id="gold">840</strong><span class="resource-unit">ливров</span></div></div><small id="gold-rate"></small></div>
+    <div class="resource"><svg><use href="#i-wheat"/></svg><div><span class="resource-label">ПРОДОВОЛЬСТВИЕ</span><div><strong id="food">360</strong><span class="resource-unit">ед.</span></div></div><small id="food-rate"></small></div>
+    <div class="resource"><svg><use href="#i-army"/></svg><div><span class="resource-label">АРМИЯ</span><div><strong id="troops">1 200</strong><span class="resource-unit">чел.</span></div></div></div>
+    <div class="resource tension"><svg><use href="#i-flame"/></svg><div><span class="resource-label">НЕДОВОЛЬСТВО</span><div><strong id="unrest">48</strong><span class="resource-unit">/ 100</span></div></div></div>
+  </div>
+  <button class="icon-button" id="help" title="Как играть" aria-label="Как играть"><svg><use href="#i-info"/></svg></button>
+</header>
+
+<nav class="navigation" aria-label="Разделы кампании">
+ <div class="nav-tabs"><button class="nav-tab active" data-tab="map"><svg><use href="#i-map"/></svg>Карта Франции</button><button class="nav-tab" data-tab="economy"><svg><use href="#i-coins"/></svg>Экономика</button><button class="nav-tab" data-tab="politics"><svg><use href="#i-quill"/></svg>Политика</button></div>
+ <div class="scenario-label"><span class="live-dot"></span>КАМПАНИЯ · ВЕСНА 1789</div>
+</nav>
+
+<main class="workspace">
+ <aside class="province-panel">
+  <div class="eyebrow">ВЫБРАННАЯ ОБЛАСТЬ <span id="region-index">01 / 12</span></div>
+  <div class="province-art" aria-hidden="true"><svg viewBox="0 0 260 110"><path d="M0 92 25 87 43 91 72 81 90 87 128 81 167 87 188 82 220 92 260 85v25H0Z" fill="#a59c80" opacity=".3"/><g fill="#7e826c" stroke="#596555" stroke-width="1"><path d="M68 92V49h19v43m67 0V49h19v43M65 49l12-24 13 24m62 0 12-24 12 24M86 92V59h69v33m-59-33 25-24 25 24"/><path d="M112 92V74h17v18" fill="#e0d8be"/><path d="M76 25V11m89 14V11M115 51h10v9h-10"/><path d="M77 12h14l-4 5H77m89-5h14l-4 5h-10" fill="#945245"/></g><g stroke="#78846c" fill="none"><path d="M29 97V59m0 5-9 10m9-3 11 11m-11-3-12 8m199 8V60m0 4 9 10m-9-3-11 11m11-3 12 8"/></g><path d="M0 97h260" stroke="#7c8067"/><path d="M120 94 109 110m15-16 18 16" stroke="#aca488"/></svg></div>
+  <div class="province-heading"><div><h1 id="region-name">Иль-де-Франс</h1><p id="region-city">Париж · столица королевства</p></div><span class="fleur">⚜</span></div>
+  <div id="region-status" class="status-tag">Неспокойно</div>
+  <div class="region-stats"><div><span>Население</span><strong id="region-pop"></strong></div><div><span>Налоговый доход</span><strong id="region-income"></strong></div><div><span>Производство зерна</span><strong id="region-grain"></strong></div></div>
+  <div class="unrest-block"><div><span>Недовольство</span><strong id="region-unrest"></strong></div><div class="meter"><i id="region-unrest-bar"></i></div><p id="region-description"></p></div>
+  <div class="panel-rule"></div><div class="eyebrow">РАСПОРЯЖЕНИЯ</div>
+  <div class="orders"><button id="bread" class="order-button"><svg><use href="#i-wheat"/></svg><span>Раздать хлеб<small>−40 зерна · −15 недовольства</small></span><span class="order-plus">+</span></button><button id="tax" class="order-button"><svg><use href="#i-coins"/></svg><span>Чрезвычайный сбор<small>+100 ливров · +12 недовольства</small></span><span class="order-plus">+</span></button><button id="recruit" class="order-button"><svg><use href="#i-army"/></svg><span>Набрать солдат<small>−120 ливров · −20 зерна · +200 солдат</small></span><span class="order-plus">+</span></button></div>
+  <div class="army-card"><div class="eyebrow"><svg><use href="#i-army"/></svg>КОРОЛЕВСКАЯ АРМИЯ</div><strong id="army-location">Париж</strong><p id="army-caption"></p><button class="primary-button" id="march">Армия в этой области</button></div>
+ </aside>
+
+ <section class="map-section" aria-label="Интерактивная карта Франции">
+  <div class="map-toolbar"><div class="map-caption"><span>ROYAUME DE FRANCE</span><small>Королевство на пороге перемен</small></div><div class="map-modes" aria-label="Слой карты"><button data-layer="political" class="active">Области</button><button data-layer="unrest">Недовольство</button></div></div>
+  <div class="map-container" id="map-container">
+   <svg id="france-map" viewBox="0 0 900 780" role="group" aria-label="Карта игровых областей Франции">
+    <defs>
+     <pattern id="sea-lines" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)"><line x1="0" y1="0" x2="0" y2="9" stroke="#7c9490" stroke-width=".5" opacity=".2"/></pattern>
+     <pattern id="paper-grain" width="37" height="41" patternUnits="userSpaceOnUse"><circle cx="3" cy="8" r=".8" fill="#5f6851" opacity=".12"/><circle cx="20" cy="26" r=".6" fill="#5f6851" opacity=".15"/><path d="m13 5 3 1m13 28 4-1" stroke="#6e7156" opacity=".11"/></pattern>
+     <pattern id="disputed" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="8" stroke="#9c513f" stroke-width="2" opacity=".3"/></pattern>
+     <filter id="land-shadow"><feDropShadow dx="1" dy="3" stdDeviation="5" flood-color="#465953" flood-opacity=".2"/></filter>
+     <path id="france-outline" d="M432 89 465 98 479 119 506 120 524 145 547 145 573 172 604 174 631 200 668 196 679 222 668 257 650 290 654 327 628 348 624 377 646 399 630 422 645 449 637 474 615 489 629 521 653 542 634 563 603 573 579 565 551 582 518 577 486 590 468 611 448 626 420 620 392 609 358 605 329 587 300 580 285 552 289 518 301 479 287 466 295 448 278 422 283 402 262 383 244 362 211 352 187 334 166 322 130 318 97 300 105 288 88 278 95 265 82 253 105 243 137 245 160 253 190 253 216 271 243 269 262 249 256 225 245 202 248 177 269 181 283 216 307 219 337 202 359 185 394 176 400 153 416 144 420 112Z"/>
+     <clipPath id="france-clip"><use href="#france-outline"/></clipPath>
+    </defs>
+    <rect width="900" height="780" fill="#bdccc4"/><rect width="900" height="780" fill="url(#sea-lines)"/>
+    <g class="neighbor-land" fill="#ded9bc" stroke="#a7ad90" stroke-width="1.2"><path d="M0 0H490l-21 32-51 16-23-10-45 15-38-4-20 18-50 8-23-10-30 16-24-9-48 14-40-4-28 16-24-9L0 97Z"/><path d="m432 89 33 9 14 21 27 1 18 25 23 0 26 27 31 2 27 26 37-4 11 26-11 35-18 33 4 37-26 21-4 29 22 22-16 23 15 27-8 25-22 15 14 32 24 21-19 21 8 33 39 24 41 41 53 24 125 10V0H490Z"/><path d="m285 552 15 28 29 7 29 18 34 4 28 11 28 6 20-15 18-21 32-13 20 13-7 33-33 30-40 14-47 25-60 4-34 31-71 30-85 18H0v-92l99-8 67-26 39-16 37-34 22-44Z"/></g>
+    <g class="country-labels"><text x="168" y="44">ANGLETERRE</text><text x="602" y="89">PAYS-BAS</text><text x="602" y="106">AUTRICHIENS</text><text x="779" y="211" transform="rotate(65 779 211)">SAINT-EMPIRE</text><text x="740" y="351">SUISSE</text><text x="718" y="449" transform="rotate(55 718 449)">SAVOIE</text><text x="301" y="706">ESPAGNE</text></g>
+    <g class="sea-labels"><text x="229" y="145" transform="rotate(-15 229 145)">La Manche</text><text x="120" y="467" transform="rotate(-72 120 467)">Océan Atlantique</text><text x="651" y="694">Mer Méditerranée</text></g>
+    <use href="#france-outline" fill="#ddd8ad" filter="url(#land-shadow)"/>
+    <g id="region-shapes" clip-path="url(#france-clip)"></g>
+    <use href="#france-outline" fill="url(#paper-grain)" pointer-events="none"/>
+    <use href="#france-outline" fill="none" stroke="#69745b" stroke-width="2" pointer-events="none"/>
+    <g class="rivers" fill="none" stroke="#819eaa" stroke-width="2.3" opacity=".7" pointer-events="none"><path d="M540 332Q500 280 450 250T366 225Q333 241 301 219"/><path d="M532 425Q510 393 483 406T440 365Q416 334 382 344T310 332Q276 322 224 347"/><path d="M601 365Q576 399 588 435T576 493L588 554"/><path d="M435 569Q408 538 380 525T319 489L301 459"/></g>
+    <g id="mountains" pointer-events="none"></g>
+    <g id="map-labels"></g><g id="army-marker" pointer-events="none"></g>
+    <g class="corsica-inset" transform="translate(766 536)"><rect x="-28" y="-22" width="100" height="136" rx="1" fill="#d3d9c6" stroke="#9aab98" stroke-dasharray="3 4"/><path d="m29-6 5 23 12 12-4 26-13 28-13 11-9-21-7-13 6-28 17-16Z" fill="#cec99f" stroke="#828866"/><text x="21" y="105" text-anchor="middle">CORSE</text></g>
+    <g class="compass" transform="translate(100 634)"><circle r="32"/><circle r="25"/><path d="M0-43 8-7 0 0-8-7ZM0 43l8-36L0 0-8 7ZM-43 0l36-8L0 0l-7 8ZM43 0 7-8 0 0l7 8Z"/><path d="M0-43V43M-43 0h86"/><text x="0" y="-52">N</text></g>
+    <g class="map-scale" transform="translate(341 740)"><path d="M0-5v10m0-5h170m-85-5v10m85-10v10"/><text x="0" y="22">0</text><text x="73" y="22">100</text><text x="150" y="22">200 км</text></g>
+   </svg>
+  </div>
+  <div class="map-bottom"><div class="map-legend"><span><i class="legend-calm"></i>Спокойно</span><span><i class="legend-tense"></i>Брожение</span><span><i class="legend-revolt"></i>Беспорядки</span></div><span class="map-disclaimer">СХЕМАТИЧНАЯ КАРТА · 12 ОБЛАСТЕЙ</span></div>
+  <div class="strategy-overlay" id="strategy-overlay" hidden></div>
+ </section>
+
+ <aside class="chronicle-panel">
+  <div class="eyebrow">ВАША КАМПАНИЯ <span class="edition">I</span></div>
+  <h2>Время перемен</h2><p class="intro-copy">Старый порядок ещё стоит.<br>Но Франция уже просыпается.</p>
+  <div class="objective-card"><div class="eyebrow">ЦЕЛЬ ПЕРВОГО СЦЕНАРИЯ</div><h3>Удержать равновесие</h3><p>Пройдите 8 недель: сохраните положительную казну, армию и недовольство ниже 55.</p><div class="objective-progress"><i id="objective-progress"></i></div><div class="objective-footer"><span id="objective-weeks">0 / 8 недель</span><svg><use href="#i-crown"/></svg></div></div>
+  <div class="event-card"><div class="event-date" id="event-date">5 МАЯ · ВЕРСАЛЬ</div><div class="event-illustration" aria-hidden="true"><svg viewBox="0 0 220 75"><g fill="none" stroke="currentColor"><path d="M12 65h196M23 62V25h174v37M36 62V34h148v28M72 25V13h75v12M85 13l25-10 25 10M18 25h185M77 13h65M102 62V43h15v19"/><path d="M33 34V22m20 40V35m20 27V35m20 27V35m36 27V35m20 27V35m20 27V35m18 27V22M88 25V17m22 8V17m21 8V17M9 68h202"/></g></svg></div><h3 id="event-title">Генеральные штаты</h3><p id="event-copy">В Версале собрались представители трёх сословий. Франция ждёт ответа на финансовый кризис.</p><div id="event-actions"></div></div>
+  <div class="journal-heading"><span class="eyebrow">ХРОНИКА</span><span>✦</span></div><ol id="journal" class="journal"></ol>
+ </aside>
+</main>
+
+<footer class="turnbar"><div class="session-controls"><button id="save"><svg><use href="#i-save"/></svg><span>Сохранить</span></button><button id="load">Загрузить</button><button id="restart" title="Начать новую кампанию">↺</button></div><div class="date-block"><span id="season">ВЕСНА · ХОД 1</span><strong id="date">5 мая 1789</strong></div><button class="end-turn" id="end-turn"><span>Следующая неделя<small>ЭКОНОМИКА И СОБЫТИЯ</small></span><svg><use href="#i-arrow"/></svg></button></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<dialog id="info-dialog"><button class="dialog-close" data-close="info-dialog" aria-label="Закрыть">×</button><div class="eyebrow">POWER ABOVE ALL · НАБРОСОК 0.1</div><h2>Королевство в ваших руках</h2><p>Вы управляете временным советом королевства. Ваша задача — провести Францию через первые восемь недель кризиса.</p><ol class="help-list"><li><b>Выберите область на карте.</b> Слева появятся базовые показатели и распоряжения. Фактические доходы и производство зависят от недовольства.</li><li><b>Успокойте население.</b> Хлеб уменьшает недовольство. Чрезвычайный налог приносит деньги, но усиливает напряжение. Каждое распоряжение доступно раз в неделю в каждой области.</li><li><b>Перемещайте армию.</b> Выберите соседнюю с армией область и отдайте приказ. При недовольстве от 65 произойдёт вымышленная сценарная стычка.</li><li><b>Завершайте недели.</b> При поддержке народа ниже 40 недовольство растёт на 2 за неделю; от 60 — снижается на 1. Присутствие армии дополнительно снижает местное недовольство на 3. Нехватка хлеба и денег усиливает волнения.</li></ol><p class="muted">Дата открытия Генеральных штатов — историческая. Границы игровых областей, ресурсы, полномочия игрока и столкновения упрощены и вымышлены. Корсика показана на карте, но пока недоступна. Это браузерный прототип; строительство, династии и полноценная дипломатия ещё не реализованы.</p><a href="https://en.chateauversailles.fr/discover/history/key-dates/summoning-estates-general-1789" target="_blank" rel="noreferrer">Историческая справка: Версаль ↗</a><button class="primary-button wide" data-close="info-dialog">К карте Франции</button></dialog>
+
+<dialog id="confirm-dialog"><div class="eyebrow">НОВАЯ КАМПАНИЯ</div><h2>Вернуться в май 1789?</h2><p>Текущая кампания и её локальное сохранение будут заменены.</p><div class="dialog-actions"><button class="secondary-button" data-close="confirm-dialog">Продолжить кампанию</button><button class="primary-button" id="confirm-restart">Начать заново</button></div></dialog>
+
+<dialog id="battle-dialog"><div class="battle-header"><div><div class="eyebrow">ТАКТИЧЕСКИЙ НАБРОСОК · СЦЕНАРНАЯ СТЫЧКА</div><h2 id="battle-title">Беспорядки в Нормандии</h2></div><button id="battle-retreat" class="secondary-button">Отступить</button></div><div class="battle-stats"><span><i class="blue-dot"></i>Королевская армия <b id="ally-count">20</b></span><span id="battle-state">Отдайте приказ</span><span><i class="red-dot"></i>Повстанцы <b id="enemy-count">16</b></span></div><canvas id="battle-canvas" width="900" height="440" tabindex="0" aria-label="Поле боя. Щёлкните по полю для перемещения своих солдат; клавиши стрелок также задают позицию."></canvas><div class="battle-controls"><p id="battle-hint">Щёлкните по полю — синие солдаты займут позицию.<br>В пределах дальности они стреляют автоматически.</p><button id="battle-pause" class="secondary-button">Пауза</button><button id="battle-volley" class="primary-button">Прицельный залп</button></div><div id="battle-result" hidden></div></dialog>
+
+<dialog id="result-dialog"><div class="eyebrow">ИТОГ ПЕРВОГО СЦЕНАРИЯ</div><h2 id="result-title"></h2><p id="result-copy"></p><button class="primary-button wide" data-close="result-dialog">Продолжить свободную игру</button></dialog>
+</body>
+</html>
