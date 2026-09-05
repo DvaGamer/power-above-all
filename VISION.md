@@ -115,6 +115,8 @@ Bu sorular tamamlanmış oyunun hedefini belirler; ilk sürümün üretim kapsam
 
 ## Birleştirilecek nihai vizyon
 
+Gece geliştirmesinde kararları somutlaştıran [oynanış ve görsel dünya taslağı](GAME_VISION_DRAFT.md) oluşturuldu. Onaylı yanıtlarla çalışma önerileri açıkça ayrılır. Bu taslak aşağıdaki açık kullanıcı seçimlerini doldurulmuş saymaz.
+
 Yanıtlar yeterince olgunlaştığında bu kayıt şu somut bölümlere dönüştürülecek:
 
 1. Tek paragraflık oyun tanımı ve oyuncuya verilen temel vaat.

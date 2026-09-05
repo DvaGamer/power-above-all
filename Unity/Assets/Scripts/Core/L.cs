@@ -50,7 +50,9 @@ namespace PowerAboveAll
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i] is string argument && entries.ContainsKey(argument)) translated[i] = Text(argument);
-                else if (args[i] is string number && long.TryParse(number, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
+                // Sunumun açık artı işaretini koru; ör. siyasi değişim +5, düz 5 olmamalı.
+                else if (args[i] is string number && !number.StartsWith("+", StringComparison.Ordinal) &&
+                    long.TryParse(number, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
                     translated[i] = integer.ToString("N0", culture);
                 else translated[i] = args[i];
             }

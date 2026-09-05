@@ -1,10 +1,10 @@
-# Power Above All — 0.2 Visual & Feel Polish Pass
+# Power Above All — görsel temel ve bağlantılı oynanış
 
-**Çalışma durduruldu.** Kullanıcının tüm son istekleri, kabul ölçütleri ve yeniden başlama noktası [POLISH_PLAN.md](POLISH_PLAN.md) içinde toplandı. Kullanıcının yeni talimatı olmadan uygulamaya devam edilmez. Olay sistemi polish sonrasındadır.
+**6 Eylül 2026 güncel talimat: geliştirme sürüyor.** Kullanıcı on saatlik özerk çalışma istedi. Önceki durdurma ve yalnız polish sınırı sona erdi. Kullanıcının onaylı yönü [VISION.md](VISION.md), ilk rol kesitinin çalışma varsayımları [ROLE_SLICE.md](ROLE_SLICE.md), güncel kanıt [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
-**Güncel durum:** Unity seçildi; ilk temel aktarım sürüyor. Yeni oyun **Rusça ve Türkçe** olacak. Unity editöründe çalışma, görseller ve oyun derlemesi henüz doğrulanmadı. Doğrulanmış tarayıcı 0.1 kullanılabilir kalır.
+**Güncel durum:** Unity temel aktarımı, ilk sanat paketi ve üç başlangıç rolünün yaşayan sözleri gerçek Windows player ile doğrulandı; oyun Rusça ve Türkçedir. Son rol ve eski rota kapıları 56 Unity testiyle GREEN; aynı yeni build'de altı haftalık ek inceleme de geçti. Ayrıntılar [SESSION_PROGRESS.md](SESSION_PROGRESS.md). Tarayıcı 0.1 referans olarak kalır.
 
-**Etkin kapsam: mevcut temelin görsel kalitesi ve oyun hissi. Yeni mekanik veya ekonomi genişletmesi yok.** Önceki geniş kapsamlı tasarım, aşağıda gelecekteki işler olarak korunmuştur. Kullanıcı mevcut durumun GitHub'a anlık görüntü olarak yüklenmesini istedi; yükleme sonucu STATUS.md içine tamamlandıktan sonra yazılır.
+**Üretim sırası:** görsel temelin korunması → farklı rol ve yükümlülükler → taktik kararların doğruluğu ve gerçek savaş akışı → koşula bağlı siyasi/ekonomik sonuçlar → tekrar oynama ve okunabilirlik. Her kesit test, yeni derleme ve gerçek ekran kanıtıyla kapanır. Aşağıdaki eski polish ayrıntıları bu sıranın tarihsel dayanağıdır; yeni açık talimatın önüne geçmez. Henüz uygulanmayan işler bitmiş özellik gibi anlatılmaz.
 
 ## Etkin aşamanın adımları
 
@@ -16,7 +16,7 @@
 | 4 — İki dil | Mevcut metinleri Rusça ve Türkçede kontrol etmek. | Eksik anahtar, taşma ve yanlış biçimlendirme yok; dil değiştirme seferi veya kayıtları değiştirmez. |
 | 5 — Çalıştırma ve paylaşım | Unity editörü/testleri, görsel inceleme ve derleme kanıtlarını kaydetmek; kontrol edilmiş aşamayı paylaşmak. | Gerçekte yapılan kontroller ile henüz yapılmayanlar ayrı belirtilir. |
 
-Bu aşama yeni özerk karakter, diplomasi, kaynak zinciri, ikmal ağı veya savaş sistemi eklemek için kullanılmaz. Mevcut temelde hatalı davranışı düzeltmek ve var olan bilgiyi daha iyi göstermek kapsam içindedir.
+İlk polish aşamasının yeni sistem eklememe sınırı temel doğrulandıktan sonra tamamlandı. Bundan sonraki küçük eklemeler onaylı üç deneyimi birbirine bağlamalıdır; sırf özellik sayısı için bağımsız sistem kurulmaz.
 
 ## Son görsel iyileştirme talebinin kabul ölçütleri
 

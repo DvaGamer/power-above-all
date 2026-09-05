@@ -45,6 +45,10 @@ namespace PowerAboveAll.Editor
             PlayerSettings.resizableWindow = true;
             PlayerSettings.runInBackground = false;
             PlayerSettings.colorSpace = ColorSpace.Linear;
+            // Bu makinede DX12 kapanışta D3D12Core.dll erişim ihlali üretti.
+            // Aynı player'ın görünür DX11 altı haftalık rotası kareler ve exit0 ile doğrulandı.
+            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, false);
+            PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, new[] { GraphicsDeviceType.Direct3D11 });
             PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             EnsurePlayerRenderResources();

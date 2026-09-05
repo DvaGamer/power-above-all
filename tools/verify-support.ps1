@@ -8,21 +8,56 @@ function ConvertTo-NativeArgument([string]$Value) {
   return '"' + $escaped + '"'
 }
 
-function Invoke-OwnedProcess([string]$FilePath, [string[]]$Arguments, [int]$TimeoutSeconds, [string]$WorkingDirectory, [switch]$Visible) {
+function Invoke-OwnedProcess([string]$FilePath, [string[]]$Arguments, [int]$TimeoutSeconds, [string]$WorkingDirectory, [switch]$Visible, [string]$StdoutPath = '', [string]$StderrPath = '') {
   $nativeArguments = ($Arguments | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
   $windowStyle = 'Hidden'
   if ($Visible) { $windowStyle = 'Normal' }
-  $ownedProcess = Start-Process -FilePath $FilePath -ArgumentList $nativeArguments -WorkingDirectory $WorkingDirectory -WindowStyle $windowStyle -PassThru
+  $startArguments = @{ FilePath = $FilePath; ArgumentList = $nativeArguments; WorkingDirectory = $WorkingDirectory; WindowStyle = $windowStyle; PassThru = $true }
+  foreach ($logPath in @($StdoutPath, $StderrPath)) {
+    if ($logPath -and (Test-Path -LiteralPath $logPath)) { throw "Process log already exists; preserving evidence: $logPath" }
+  }
+  if ($StdoutPath) { $startArguments.RedirectStandardOutput = $StdoutPath }
+  if ($StderrPath) { $startArguments.RedirectStandardError = $StderrPath }
+  $ownedProcess = Start-Process @startArguments
   try {
+    # Windows PowerShell'in yonlendirilmis surecinde ExitCode handle korunmazsa null olabilir.
+    $ownedHandle = $ownedProcess.Handle
     if (-not $ownedProcess.WaitForExit($TimeoutSeconds * 1000)) {
       # Yalniz bu cagrida olusturulan surecin handle'i sonlandirilir.
       $ownedProcess.Kill()
       $ownedProcess.WaitForExit()
       throw "Owned process timed out after ${TimeoutSeconds}s: $FilePath"
     }
+    $ownedProcess.WaitForExit()
     $ownedProcess.Refresh()
+    if ($null -eq $ownedProcess.ExitCode) { throw "Owned process exit code is unavailable: $FilePath" }
     return [int]$ownedProcess.ExitCode
   } finally { $ownedProcess.Dispose() }
+}
+
+function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory) {
+  if (-not (Test-Path -LiteralPath $CheckerPath -PathType Leaf)) { throw "Frame checker missing: $CheckerPath" }
+  $pythonPath = (Get-Command python.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+  $stdoutPath = Join-Path $OutputDirectory 'frames.log'
+  $stderrPath = Join-Path $OutputDirectory 'frames.stderr.log'
+  # Yerel pipeline yerine sahip olunan gizli surec: cikis kodu ve iki akis ayri kanit olur.
+  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder) 300 (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
+  $receiptPath = Join-Path $OutputDirectory 'frames-process.json'
+  [IO.File]::WriteAllText($receiptPath, ([ordered]@{ executable = $pythonPath; exitCode = $frameExit; completedUtc = [DateTime]::UtcNow.ToString('O'); stdout = $stdoutPath; stderr = $stderrPath } | ConvertTo-Json), [Text.Encoding]::UTF8)
+  if ($frameExit -ne 0) { throw "Frame checker exited $frameExit; see frames.log and frames.stderr.log." }
+  $null = Assert-CleanLog $stdoutPath
+  if ((Get-Item -LiteralPath $stderrPath).Length -gt 0) { $null = Assert-CleanLog $stderrPath }
+  $frameReport = Join-Path $Folder 'frames.json'
+  if (-not (Test-Path -LiteralPath $frameReport -PathType Leaf)) { throw 'Frame checker result missing despite native exit 0.' }
+  $parsedFrames = [IO.File]::ReadAllText($frameReport) | ConvertFrom-Json
+  $frames = @($parsedFrames)
+  if ($frames.Count -eq 0) { throw 'Frame checker reported zero frames.' }
+  foreach ($frame in $frames) {
+    if ($frame.width -ne 1440 -or $frame.height -ne 900 -or @($frame.problems).Count -ne 0) { throw "Frame checker reported a broken image: $($frame.name)" }
+  }
+  $sheet = Join-Path $Folder 'contact-sheet.jpg'
+  if (-not (Test-Path -LiteralPath $sheet -PathType Leaf) -or (Get-Item -LiteralPath $sheet).Length -eq 0) { throw 'Frame contact sheet is missing or empty.' }
+  return "$($frames.Count) frames; automated image checks; visual review remains separate"
 }
 
 function Assert-CleanLog([string]$Path) {
@@ -33,6 +68,19 @@ function Assert-CleanLog([string]$Path) {
   $errors = [regex]::Matches($logText, $pattern)
   if ($errors.Count -gt 0) { throw "Error marker '$($errors[0].Value)' in $Path" }
   return $logText
+}
+
+function Get-ReviewGraphicsArguments([ValidateSet('Default', 'Direct3D11', 'Direct3D12')][string]$GraphicsApi = 'Default') {
+  if ($GraphicsApi -eq 'Direct3D11') { return '-force-d3d11' }
+  if ($GraphicsApi -eq 'Direct3D12') { return '-force-d3d12' }
+}
+
+function Assert-ReviewGraphics([string]$LogText, [ValidateSet('Default', 'Direct3D11', 'Direct3D12')][string]$GraphicsApi = 'Default') {
+  # Video cozumleme icin kurulan ikinci D3D11 aygiti ana renderer kaniti degildir.
+  if ($GraphicsApi -eq 'Default') { return }
+  $version = '11'
+  if ($GraphicsApi -eq 'Direct3D12') { $version = '12' }
+  if ($LogText -notmatch ('(?m)^\s*Version:\s+Direct3D\s+' + $version + '(?:\.|\s)')) { throw "Requested $GraphicsApi renderer was not confirmed in player log." }
 }
 
 function Get-EditTestSummary([string]$Path, [int]$ExitCode) {

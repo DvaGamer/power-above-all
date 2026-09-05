@@ -35,6 +35,7 @@ $playerWindow = 'Hidden'
 if ($VisiblePlayer) { $playerWindow = 'Visible (explicit -VisiblePlayer)' }
 Say "Requested player window: $playerWindow; editor/test/helper windows remain hidden."
 try {
+try {
   if (-not (Test-Path -LiteralPath $UnityPath -PathType Leaf)) { throw "Unity executable missing: $UnityPath" }
   if (-not (Test-Path -LiteralPath (Join-Path $ProjectPath 'ProjectSettings\ProjectVersion.txt') -PathType Leaf)) { throw "Not a Unity project: $ProjectPath" }
   if (Test-Path -LiteralPath (Join-Path $ProjectPath 'Temp\UnityLockfile')) { throw "Project lock exists. Leave the user's editor running and select an isolated -ProjectPath, or close that project deliberately before retrying. No process was stopped." }
@@ -95,13 +96,9 @@ if ($gates.Preflight -eq 'PASSED') {
     if ($gates.Player.StartsWith('PASSED')) {
       try {
         $checker = Join-Path $PSScriptRoot 'shot-check.py'
-        if (-not (Test-Path -LiteralPath $checker -PathType Leaf)) { throw "Frame checker missing: $checker" }
-        $checkOutput = @(& python $checker $shotDir 2>&1)
-        $frameExit = $LASTEXITCODE
-        [IO.File]::WriteAllLines((Join-Path $out 'frames.log'), [string[]]$checkOutput, [Text.Encoding]::UTF8)
-        if ($frameExit -ne 0) { throw "Frame checker exited $frameExit; see frames.log." }
-        $gates.Frames = 'PASSED: automated image checks; visual review remains separate'
-        Say 'Frames: PASSED automated checks.'
+        $frameSummary = Invoke-FrameReview $checker $shotDir $out
+        $gates.Frames = "PASSED: $frameSummary"
+        Say "Frames: $frameSummary"
       } catch { Failed 'Frames' $_.Exception.Message }
     } else { $gates.Frames = 'NOT RUN: player gate failed' }
   } else { $gates.Player = 'NOT RUN: tests/build failed'; $gates.Frames = 'NOT RUN: player gate did not run' }
@@ -119,7 +116,10 @@ try {
   $gates.Browser = "PASSED: $($browserCases.Count) tests"
   Say $gates.Browser
 } catch { Failed 'Browser' $_.Exception.Message }
-
+} catch {
+  Failed 'Verifier' ($_.Exception.Message + ' at ' + $_.ScriptStackTrace)
+} finally {
+# Beklenmeyen PowerShell hatasi da tamamlanan/atlanmis kontrolleri raporda birakir.
 $verdict = 'GREEN'
 if ($failures.Count -gt 0) { $verdict = 'RED' }
 elseif (@($gates.Values | Where-Object { -not $_.StartsWith('PASSED') }).Count -gt 0) { $verdict = 'PARTIAL' }
@@ -133,5 +133,6 @@ $reportPath = Join-Path $out 'REPORT.md'
 [IO.File]::WriteAllLines($reportPath, $report, [Text.Encoding]::UTF8)
 [IO.File]::WriteAllText((Join-Path $out 'result.json'), ([ordered]@{ label = $Label; verdict = $verdict; gates = $gates; failures = $failures.ToArray(); artifacts = $out; playerWindow = $playerWindow; elapsedSeconds = $elapsed } | ConvertTo-Json -Depth 5), [Text.Encoding]::UTF8)
 Say "Verdict: $verdict ($reportPath)"
+}
 if ($verdict -eq 'RED') { exit 1 }
 exit 0

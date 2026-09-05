@@ -45,6 +45,20 @@ namespace PowerAboveAll
         public List<string> ResolvedBattles = new List<string>();
         public bool SubsidyParis;
         public bool PendingPetition, PetitionResolved;
+        [System.Runtime.Serialization.OptionalField] public string RoleId;
+        [System.Runtime.Serialization.OptionalField] public int NextMandateWeek;
+        // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
+        [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
+        public MandateObligation Obligation
+        {
+            get { return Mandates != null && Mandates.Count > 0 ? Mandates[0] : null; }
+            set
+            {
+                if (Mandates == null) Mandates = new List<MandateObligation>();
+                Mandates.Clear();
+                if (value != null) Mandates.Add(value);
+            }
+        }
     }
     public sealed class ActionResult
     {
@@ -65,7 +79,7 @@ namespace PowerAboveAll
     }
 
     // Fictional balance data. No engine, rendering, clock or localization dependency.
-    public static class CampaignCore
+    public static partial class CampaignCore
     {
         private const int MaximumStock = 100000000;
         private const int MaximumWeek = 1000000;
@@ -106,7 +120,8 @@ namespace PowerAboveAll
         public static CampaignState Create()
         {
             var s=new CampaignState { Gold=840,Food=360,MilitarySupplies=120,Manpower=2400,Troops=1200,
-                ArmyRegionId="ile",SelectedRegionId="ile",Moves=2,Morale=78,Supply=100,Power=55 };
+                ArmyRegionId="ile",SelectedRegionId="ile",Moves=2,Morale=78,Supply=100,Power=55,
+                RoleId="legacy",Mandates=new List<MandateObligation>() };
             float[] unrest={38,30,42,48,69,47,33,27,41,35,44,52};
             for(int i=0;i<Regions.Length;i++)s.Regions.Add(new RegionState { Id=Regions[i].Id,Unrest=unrest[i],Control=Clamp(95-unrest[i]*.5f),EliteLoyalty=60 });
             float[] influence={72,56,45,58}, approval={65,45,35,60}, radical={12,30,40,15};
@@ -263,6 +278,7 @@ namespace PowerAboveAll
         public static ActionResult NextWeek(CampaignState s)
         {
             if(s.PendingPetition)return Result(false,"error.petition.pending");
+            if(MandateDue(s))return Result(false,"error.mandate.due");
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
             var f=Forecast(s);bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
@@ -298,6 +314,11 @@ namespace PowerAboveAll
         private static bool Key(string value) { return !string.IsNullOrEmpty(value)&&value.Length<=160; }
         private static void Require(bool condition) { if(!condition)throw new ArgumentException("Invalid campaign state."); }
         public static void Validate(CampaignState s)
+        {
+            ValidateBase(s);
+            ValidateRoleState(s);
+        }
+        internal static void ValidateBase(CampaignState s)
         {
             Require(s!=null);Require(s.Week>=0&&s.Week<=MaximumWeek&&s.Moves>=0&&s.Moves<=2);
             if(s.Week<2)Require(!s.PendingPetition&&!s.PetitionResolved);

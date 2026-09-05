@@ -14,7 +14,7 @@ namespace PowerAboveAll
         private Texture2D portraitSheet;
         private float scrollGrabOffset;
         private Font serifFont, sansFont;
-        private bool ready, showHelp, confirmNew;
+        private bool ready, showHelp, confirmNew, pendingMandateTerms;
         private Vector2 provinceScroll, documentScroll;
         private string document = "council";
         private string cachedLanguage;
@@ -36,6 +36,17 @@ namespace PowerAboveAll
         private int observedWeek;
         public bool BlocksMapInput { get { return showHelp || confirmNew; } }
         private static readonly string[] ModeNames = { "control", "unrest", "food", "tax", "army", "influence" };
+
+        public void OpenDocument(string name)
+        {
+            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate")return;
+            document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
+        }
+
+        public void ShowMandateTerms()
+        {
+            OpenDocument("mandate");pendingMandateTerms=true;
+        }
 
         public void Draw(GameApp app)
         {
@@ -457,11 +468,11 @@ namespace PowerAboveAll
         {
             Fill(new Rect(1140,94,300,706),paper);Fill(new Rect(1140,94,1,706),C("#AAB79C"));
             Text(new Rect(1161,109,258,20),T("ui.cabinet"),tiny);Rule(1161,141,257);
-            string[] names={"council","economy","journal"};
+            string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<names.Length;i++)
             {
-                Rect rect=new Rect(1156+i*89,151,87,36);bool selected=document==names[i];if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
-                if(GUI.Button(rect,T("ui.tab."+names[i]),tabStyle)){document=names[i];documentScroll=Vector2.zero;documentContentHeight=584;app.Feedback("paper");}
+                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i];if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
+                if(GUI.Button(rect,T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i]),tabStyle)){OpenDocument(names[i]);app.Feedback("paper");}
             }
             if(document=="journal")
             {
@@ -469,7 +480,7 @@ namespace PowerAboveAll
                 foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
             }
             documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
-            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else Journal(app);
+            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
@@ -492,6 +503,7 @@ namespace PowerAboveAll
                     personHeight=Mathf.Max(personHeight,nameHeight+roleHeight+8);
                 }
                 y+=personHeight+16;
+                if(person!=null){Pair(5,y,236,T("ui.person.relationship"),Number(person.Relationship));y+=32;}
                 Meter(5,y,236,T("ui.approval"),faction.Approval,C("#819168"));y+=46;
                 Pair(5,y,236,T("ui.influence"),Number(faction.Influence));y+=29;Pair(5,y,236,T("ui.radicalism"),Number(faction.Radicalism));y+=36;
                 Paragraph(ref y,T(faction.DemandKey),body,236,10);
@@ -537,6 +549,96 @@ namespace PowerAboveAll
             if(Press(new Rect(4,y,238,41),T("ui.economy.paris")))app.SelectRegion("ile");
             y+=55;documentContentHeight=y;
         }
+
+        private void Mandate(GameApp app)
+        {
+            CampaignState state=app.State;
+            float y=0;
+            Paragraph(ref y,MandatePresentation.RoleName(state.RoleId),heading,242,12);
+            if(string.IsNullOrEmpty(state.RoleId)||state.RoleId=="legacy")
+            {
+                Paragraph(ref y,T("ui.mandate.legacy"),body,238,18);
+                documentContentHeight=y+64;
+                if(Press(new Rect(4,y,238,44),T("ui.mandate.new_role"),true,true))app.BeginRoleSelection();
+                return;
+            }
+            bool active=state.Obligation!=null;
+            MandateTerms terms=active?CampaignCore.GetObligationTerms(state):CampaignCore.GetMandateTerms(state,state.SelectedRegionId);
+            if(terms==null)
+            {
+                Paragraph(ref y,T("ui.mandate.select_region"),body);documentContentHeight=y+12;return;
+            }
+            string patronId=MandatePresentation.PatronId(terms.Kind);
+            var patron=state.Characters.Find(person=>person.Id==patronId);
+            Seal(new Rect(2,y,82,96),MandatePresentation.PortraitIndex(terms.Kind));
+            Text(new Rect(96,y+2,146,20),T("ui.mandate.patron"),tiny);
+            float nameHeight=body.CalcHeight(new GUIContent(T("character."+patronId+".name")),146);
+            Text(new Rect(96,y+26,146,nameHeight),T("character."+patronId+".name"),body);
+            if(patron!=null)Text(new Rect(96,y+nameHeight+36,146,40),T("ui.mandate.patron_relation",Number(patron.Relationship)),small);
+            y+=Mathf.Max(110,nameHeight+84);
+            Paragraph(ref y,T("ui.mandate.identity."+state.RoleId),small,238,18);
+            Rule(4,y,238);y+=17;
+            Paragraph(ref y,MandatePresentation.PrivilegeName(terms.Kind),heading,238,10);
+            // Bu işaret yalnız belgenin koşullarına gider; hiçbir emir vermez.
+            if(Press(new Rect(4,y,238,39),T(active?"ui.mandate.review_obligation":"ui.mandate.review_terms"),true,true))
+                pendingMandateTerms=true;
+            y+=49;
+            Paragraph(ref y,T("ui.mandate.region",T("region."+terms.RegionId)),body,238,10);
+            if(active)
+            {
+                var notice=new GUIStyle(small);notice.normal.textColor=red;
+                Paragraph(ref y,T(CampaignCore.MandateDue(state)?"ui.mandate.active_due":"ui.mandate.active"),notice,238,10);
+                Paragraph(ref y,T("ui.mandate.issued",MandatePresentation.Date(terms.IssuedWeek)),small,238,6);
+            }
+            Paragraph(ref y,T("ui.mandate.due",MandatePresentation.Date(terms.DueWeek)),body,238,10);
+            if(active)Paragraph(ref y,T("ui.mandate.original_region"),small,238,14);
+            if(pendingMandateTerms){documentScroll.y=y;pendingMandateTerms=false;}
+            MandateEffects(ref y,T(active?"ui.mandate.agreed_short":"ui.mandate.now"),terms.Immediate);
+            MandateEffects(ref y,T("ui.mandate.choice.fulfil"),terms.Fulfil);
+            MandateEffects(ref y,T("ui.mandate.choice.break"),terms.Break);
+            Paragraph(ref y,T("ui.mandate.meter_limits"),tiny,238,12);
+            if(!active)Paragraph(ref y,T("ui.mandate.rules",CampaignCore.MandateMinimumPower,
+                CampaignCore.MandateDelayWeeks,CampaignCore.MandateCooldownWeeks),small,238,14);
+            if(active)
+            {
+                string expectedId=CampaignCore.MandateId(state.Obligation);
+                ActionResult fulfil=CampaignCore.CanResolveMandate(state,expectedId,"fulfil");
+                ActionResult broken=CampaignCore.CanResolveMandate(state,expectedId,"break");
+                Paragraph(ref y,T("ui.mandate.stocks",state.Gold,state.Food),small,238,12);
+                if(!fulfil.Ok)Paragraph(ref y,L.Text(fulfil.Key,fulfil.Args),small,238,12);
+                documentContentHeight=y+112;
+                if(Press(new Rect(4,y,238,42),T("ui.mandate.fulfil_early"),fulfil.Ok,true))
+                {app.ResolveMandate(expectedId,"fulfil");return;}
+                y+=50;
+                if(!broken.Ok)Paragraph(ref y,L.Text(broken.Key,broken.Args),small,238,12);
+                if(Press(new Rect(4,y,238,42),T("ui.mandate.action.break"),broken.Ok))
+                {app.ResolveMandate(expectedId,"break");return;}
+                y+=54;
+            }
+            else
+            {
+                ActionResult issue=CampaignCore.CanIssueMandate(state,state.SelectedRegionId);
+                if(!issue.Ok)
+                {
+                    var warning=new GUIStyle(small);warning.normal.textColor=red;
+                    Paragraph(ref y,L.Text(issue.Key,issue.Args),warning,238,12);
+                }
+                if(state.NextMandateWeek>state.Week)
+                    Paragraph(ref y,T("ui.mandate.available_date",MandatePresentation.Date(state.NextMandateWeek)),small,238,12);
+                documentContentHeight=y+64;
+                if(Press(new Rect(4,y,238,44),T("ui.mandate.issue"),issue.Ok,true))
+                {app.IssueMandate();return;}
+                y+=58;
+            }
+            documentContentHeight=y+12;
+        }
+
+        private void MandateEffects(ref float y,string label,MandateEffect effect)
+        {
+            Rule(4,y,238);y+=10;
+            Paragraph(ref y,label,body,238,7);
+            Paragraph(ref y,MandatePresentation.Effects(effect),small,238,14);
+        }
         private void StockProjection(ref float y,string label,int current,int projected,int net)
         {
             Fill(new Rect(1,y,247,100),pale);Fill(new Rect(1,y,3,100),brass);
@@ -564,14 +666,15 @@ namespace PowerAboveAll
             Text(new Rect(161,y,81,height),Signed(value),number);y+=height+9;
         }
         private float JournalEntryHeight(LogEntry entry){return 28+body.CalcHeight(new GUIContent(L.Text(entry.Key,entry.Args)),226)+29;}
-        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
+        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
         private void Journal(GameApp app)
         {
             float y=0;Paragraph(ref y,T("ui.journal.title"),heading,242,19);bool first=true;
             foreach(var entry in app.State.Journal)
             {
                 float height=JournalEntryHeight(entry);
-                bool urgent=entry.Key=="log.shortage"||entry.Key=="log.battle.defeat"||entry.Key=="log.subsidy.failed";
+                bool urgent=entry.Key=="log.shortage"||entry.Key=="log.battle.defeat"||entry.Key=="log.subsidy.failed"||
+                    (entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)&&entry.Key.EndsWith(".break",StringComparison.Ordinal));
                 if(first)
                 {
                     float emphasis=Mathf.Clamp01(1f-(Time.unscaledTime-latestEntryTime)/1.4f);
@@ -617,7 +720,7 @@ namespace PowerAboveAll
             Fill(new Rect(0,0,1440,900),new Color(.07f,.13f,.10f,.74f));Fill(new Rect(445,300,550,290),paper);Border(new Rect(445,300,550,290),brass);
             Text(new Rect(476,328,488,54),T("ui.restart.title"),title);Text(new Rect(476,397,488,76),T("ui.restart.body"),body);
             if(Press(new Rect(476,511,231,43),T("ui.cancel")))confirmNew=false;
-            if(Press(new Rect(722,511,241,43),T("ui.restart.confirm"),true,true)){confirmNew=false;app.NewCampaign();}
+            if(Press(new Rect(722,511,241,43),T("ui.restart.confirm"),true,true)){confirmNew=false;app.BeginRoleSelection();}
         }
         private void OnDestroy(){foreach(var texture in medallions)if(texture)Destroy(texture);if(serifFont)Destroy(serifFont);if(sansFont)Destroy(sansFont);}
     }

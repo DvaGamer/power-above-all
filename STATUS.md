@@ -2,11 +2,11 @@
 
 Son güncelleme: **6 Eylül 2026**. Kullanıcının on saatlik özerk geliştirme talimatıyla çalışma yeniden başladı. Onaylı yeni yön [VISION.md](VISION.md), görsel hedef [ART_DIRECTION.md](ART_DIRECTION.md), gece işleri [NIGHT_QUEUE.md](NIGHT_QUEUE.md) içindedir.
 
-Güncel ana kaynak doğrulaması **GREEN**: `output/verify/baseline-visible-20260905-214616-749-5ef5f22d/REPORT.md`. 23/23 Unity testi, taze Windows player, 20 gerçek kare, 26 durum kontrolü, 3 durum dökümü ve 10/10 tarayıcı çekirdek testi geçti. Önceki izole shader düzeltmesi ana kaynağa taşındı. Kullanıcı kayıt SHA256 değeri aynı kaldı. Tam görsel polish ve ses kabulü henüz bitmedi.
+Son tamamlanmış kapı **GREEN**: `output/verify/roles-visible-20260905-230302-558-1717bcb0/REPORT.md`. 56/56 Unity testi, taze Direct3D11 Windows player, 22 gerçek kare, 29 durum kontrolü, 3 durum dökümü ve 10/10 tarayıcı çekirdek testi geçti. Üç başlangıç rolü ve iki haftalık yükümlülükler çalışıyor; root RU/TR belgeleri gördü. Sanat commit'i `19e5fa8`; rol kesiti ayrı commit hazırlığındadır. Hızlı aktif kayıt [SESSION_PROGRESS.md](SESSION_PROGRESS.md).
 
 **Güncel durum:** Unity 6000.3.23f1; harita → emir → hafta → mevcut dilekçe → yürüyüş → savaş → rapor → dönüş → kayıt/yükleme yeni player'da doğrulandı. Normal inceleme derlemesindeki Development Build filigranı kaldırıldı; geliştirme derlemesi ayrı menüde. `PLAY_GAME.cmd` tamamı geçen en yeni derlemeyi seçer; `node play-game.cjs --check` seçimi oyunu açmadan gösterir.
 
-Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut döngünün sunumu, okunurluğu ve oyun hissi. Yeni mekanik veya ekonomi genişletmesi yok. Unity oyununun dilleri **Rusça ve Türkçe**; belgeler Türkçedir.
+Geçerli aşama: rol kesitinin eski rotalarla kontrolü, ardından **taktik doğruluk ve bağlı siyasi sonuçlar**. [ROLE_SLICE.md](ROLE_SLICE.md) çalışma tercihlerini, [NIGHT_REPORT.md](NIGHT_REPORT.md) son kanıt ve sınırları kaydeder. Uzun testte DX12 çıkış hatası D3D12Core.dll'e kadar izlendi; aynı build görünür DX11 ile 6 hafta/2 geri çekilme/40 kontrolü exit0 tamamladı. Yeni rol build'i açık DX11 varsayılanıyla doğrulandı. Unity oyununun dilleri **Rusça ve Türkçe**; belgeler Türkçedir.
 
 ## Tamamlanan tarayıcı 0.1 işleri
 

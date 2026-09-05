@@ -107,6 +107,20 @@ namespace PowerAboveAll
                 switch (command)
                 {
                     case "new": RequireIdle(app); app.NewCampaign(); break;
+                    case "role-menu": RequireIdle(app); app.BeginRoleSelection(); break;
+                    case "role-cancel":
+                        if (!app.ChoosingRole || !app.CanCancelRoleSelection) throw new InvalidOperationException("No existing campaign to resume.");
+                        app.CancelRoleSelection(); break;
+                    case "role-start":
+                        RequireChoice(value, "crown", "assembly", "army");
+                        if (!app.ChoosingRole) throw new InvalidOperationException("Open role selection before accepting an appointment.");
+                        app.StartCampaign(value); break;
+                    case "mandate":
+                        RequireIdle(app); RequireChoice(value, "issue", "fulfil", "break");
+                        if (value == "issue") app.IssueMandate();
+                        else app.ResolveMandate(CampaignCore.MandateId(app.State.Obligation), value);
+                        break;
+                    case "mandate-terms": RequireIdle(app); app.GetComponent<CabinetHud>().ShowMandateTerms(); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
@@ -117,8 +131,8 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal");
-                        Field(typeof(CabinetHud), "document").SetValue(app.GetComponent<CabinetHud>(), value); break;
+                        RequireChoice(value, "council", "economy", "journal", "mandate");
+                        app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
                         string[] scroll = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -165,7 +179,9 @@ namespace PowerAboveAll
             int space = value.IndexOf(' ');
             if (space < 1 || space == value.Length - 1) throw new InvalidDataException("expect requires a field and value: " + value);
             string key = value.Substring(0, space), expected = value.Substring(space + 1).Trim();
-            object actual = key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
+            object actual = key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
+                key == "HasObligation" ? app.State.Obligation != null :
+                key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
                 key == "Language" ? L.Language : key == "Mode" ? app.Mode : key == "ResolvedBattleCount" ?
                 app.State.ResolvedBattles.Count : Field(typeof(CampaignState), key).GetValue(app.State);
             string observed = Convert.ToString(actual, CultureInfo.InvariantCulture);

@@ -12,7 +12,7 @@ function Reject([scriptblock]$Action, [string]$Name) {
   try { $null = & $Action } catch { $rejected = $true }
   Check $rejected $Name
 }
-foreach ($file in @('verify.ps1', 'verify-support.ps1', 'verify-support.tests.ps1')) {
+foreach ($file in @('verify.ps1', 'verify-support.ps1', 'verify-support.tests.ps1', 'review-player.ps1', 'player-crash-evidence.ps1', 'frame-check.tests.ps1', 'frame-invocation-probe.ps1')) {
   $parseTokens = $null; $parseErrors = $null
   $null = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $file), [ref]$parseTokens, [ref]$parseErrors)
   Check ($parseErrors.Count -eq 0) "PowerShell parser: $file $parseErrors"
@@ -20,10 +20,21 @@ foreach ($file in @('verify.ps1', 'verify-support.ps1', 'verify-support.tests.ps
 Check ((ConvertTo-NativeArgument 'C:\a b\') -eq '"C:\a b\\"') 'Trailing backslash is escaped inside quoted Windows argument'
 Check ((ConvertTo-NativeArgument 'a"b') -eq '"a\"b"') 'Embedded quote is escaped'
 Reject { ConvertTo-NativeArgument "bad`nargument" } 'Newline argument rejected'
+Check (@(Get-ReviewGraphicsArguments 'Default').Count -eq 0) 'Default graphics adds no override'
+Check ((Get-ReviewGraphicsArguments 'Direct3D11') -eq '-force-d3d11') 'Direct3D11 uses the explicit native override'
+Reject { Get-ReviewGraphicsArguments '-batchmode' } 'Unrecognized graphics override is rejected'
+Assert-ReviewGraphics "Direct3D:`n    Version: Direct3D 11.0 [level 11.1]" 'Direct3D11'
+Check $true 'Requested primary graphics version is accepted'
+Reject { Assert-ReviewGraphics "Direct3D:`n    Version: Direct3D 12.0`nD3D11 device created for Microsoft Media Foundation video decoding." 'Direct3D11' } 'Secondary video decoding device cannot prove requested primary renderer'
 Check ((Invoke-OwnedProcess (Join-Path $PSHOME 'powershell.exe') @('-NoProfile', '-Command', 'exit 7') 10 $PSScriptRoot) -eq 7) 'Owned helper process preserves a nonzero exit code'
 $repo = Split-Path -Parent $PSScriptRoot
 $fixtureDir = Join-Path $repo ('output\verify-support-tests-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $fixtureDir | Out-Null
+$childStdout = Join-Path $fixtureDir 'child-output.log'
+$childStderr = Join-Path $fixtureDir 'child-error.log'
+$childExit = Invoke-OwnedProcess (Join-Path $PSHOME 'powershell.exe') @('-NoProfile', '-Command', '[Console]::Out.WriteLine("sample output"); [Console]::Error.WriteLine("sample error"); exit 9') 10 $PSScriptRoot -StdoutPath $childStdout -StderrPath $childStderr
+Check ($childExit -eq 9 -and [IO.File]::ReadAllText($childStdout).Contains('sample output') -and [IO.File]::ReadAllText($childStderr).Contains('sample error')) "Owned subprocess preserves stdout, stderr and nonzero exit without parent native pipeline (exit=$childExit)"
+Reject { Invoke-OwnedProcess (Join-Path $PSHOME 'powershell.exe') @('-NoProfile', '-Command', 'exit 0') 10 $PSScriptRoot -StdoutPath $childStdout } 'Existing process evidence is not overwritten'
 function Fixture([string]$Name, [string]$Text) {
   $path = Join-Path $fixtureDir $Name
   [IO.File]::WriteAllText($path, $Text, [Text.Encoding]::UTF8)
@@ -56,6 +67,7 @@ Reject { Get-ReviewPlan $duplicateScript } 'Duplicate artifacts rejected'
 $earlyQuit = Fixture 'early-quit.script' "new`nexpect Week 0`nshot sample`nquit`nwait 1`nquit"
 Reject { Get-ReviewPlan $earlyQuit } 'Early quit rejected'
 Reject { Assert-ReviewResult $fixtureDir $plan 0 } 'Missing completion receipt rejected'
+Reject { Assert-ReviewResult $fixtureDir $plan -1073741819 } 'Native access violation remains a failed player result'
 $fixturePlayer = Fixture 'fixture.exe' 'Verification fixture only; never executed.'
 $fixtureManaged = Join-Path $fixtureDir 'fixture_Data\Managed'
 New-Item -ItemType Directory -Path $fixtureManaged | Out-Null
