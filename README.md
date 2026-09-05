@@ -1,92 +1,113 @@
 # Power Above All
 
-**Франция. Май 1789 года. Власть превыше всего.**
+**Fransa. Mayıs 1789. Her şeyin üstünde iktidar.**
 
-Первый играбельный набросок стратегии: карта Франции, распоряжения областям, казна, снабжение армии, политическая поддержка и отдельная тактическая стычка.
+Fransız Devrimi'nin başlangıcında geçen bir strateji oyununun ilk oynanabilir prototipi. Bölgeleri yönetin; hazineyi, halkın hoşnutsuzluğunu ve ordunun ihtiyaçlarını dengeleyin; taktik çatışmalarda birliklerinize komuta edin.
 
-## Запустить
+> Depo belgelerinin ve ekip iletişiminin ana dili **Türkçe**. Mevcut oyun arayüzü **Rusça**; arayüzün Türkçeleştirilmesi henüz yapılmadı. Bu sürüm bağımsız bir HTML/CSS/JavaScript prototipidir, Unity projesi değildir.
 
-На Windows дважды щёлкните **`START.cmd`**. Он запустит скрытый локальный сервер и откроет игру в браузере. Нужен Node.js 20 или новее; на рабочем ПК он уже установлен. Установка пакетов и интернет не нужны. Повторный запуск использует уже работающий сервер.
+## Hızlı başlangıç
 
-Альтернативный запуск через локальный сервер (нужен Node.js 20 или новее):
+**Gereksinimler:** Node.js 20 veya üzeri, güncel bir masaüstü tarayıcısı ve Git. CI ortamında Node.js 24 kullanılır. Çalışma zamanı paket bağımlılığı yoktur; `npm install` gerekmez.
 
-```text
+Depo özeldir. Klonlamadan önce GitHub hesabınıza depo erişimi verilmiş olmalıdır.
+
+```sh
+git clone https://github.com/DvaGamer/power-above-all.git
+cd power-above-all
 npm start
 ```
 
-Затем откройте **http://127.0.0.1:1789**. Сервер слушает только локальный адрес. При таком запуске для остановки нажмите Ctrl+C в его терминале. Фоновый сервер, запущенный через START.cmd, работает до завершения процесса Node или перезагрузки ПК.
+Tarayıcıda **http://127.0.0.1:1789** adresini açın. Sunucu yalnızca yerel bilgisayardan erişilebilir. Terminalden çalıştırdıysanız durdurmak için `Ctrl+C` kullanın.
 
-## Первый поход
+**Windows alternatifi:** `START.cmd` dosyasına çift tıklayın. Başlatıcı sunucuyu gizli bir arka plan işlemi olarak çalıştırır ve tarayıcıyı açar. Aynı oyun sunucusu zaten çalışıyorsa yeniden kullanılır. Arka plan sunucusu ilgili Node işlemi sonlandırılana veya bilgisayar kapanana kadar çalışır.
 
-1. Выберите область на карте. Левая панель покажет её состояние.
-2. Раздайте хлеб, соберите чрезвычайный налог или наберите солдат в области с армией. Каждый приказ — один раз в неделю на область.
-3. Чтобы сразу попробовать бой, выберите **Шампань** и нажмите **«Вступить в сражение»**. Это вымышленное столкновение для проверки механики.
-4. На поле боя щёлкните мышью, чтобы задать позицию всем своим синим солдатам. В пределах дальности они стреляют автоматически. Доступны прицельный залп, пауза и отступление. При фокусе на поле стрелки меняют позицию, пробел ставит паузу.
-5. Примите результат боя, чтобы вернуть потери и перемещение армии в кампанию.
-6. Нажмите **«Следующая неделя»**. На второй неделе появится событие совета; прежде чем двигать время, выберите решение.
+## İlk deneme
 
-Цель учебного сценария: через восемь недель иметь положительную казну, ненулевую армию и среднее недовольство ниже 55. Затем можно продолжить свободную игру. Баланс намеренно мягкий; это проверка игровых систем, а не готовая сложная кампания.
+1. Haritada bir bölgeye tıklayın. Sol panelde temel üretim, vergi ve hoşnutsuzluk bilgileri görünür.
+2. Ekmek dağıtın, olağanüstü vergi toplayın veya ordunuzun bulunduğu bölgede asker alın. Her emir, her bölgede haftada bir kez kullanılabilir.
+3. Savaşı hemen denemek için **Champagne / Şampanya** bölgesini seçip çatışmaya girin. Bu, mekaniği göstermek için kurgulanmış bir karşılaşmadır.
+4. Savaş alanına tıklayarak mavi askerlerinize ortak bir mevzi belirleyin. Menzile girince otomatik ateş ederler. Nişanlı salvo, duraklatma ve geri çekilme düğmelerini kullanabilirsiniz. Savaş alanı odaktayken yön tuşları mevziyi değiştirir, boşluk tuşu duraklatır.
+5. Sonucu onaylayarak kayıpları ve ordunun konumunu sefer haritasına aktarın.
+6. Sonraki haftaya geçin. İkinci haftadaki konsey olayını çözmeden zaman ilerlemez.
 
-## Сохранения
+Mevcut Rusça arayüzdeki temel düğmeler:
 
-- Автосохранение обновляется после приказов, результатов сражения и недель.
-- **«Сохранить»** создаёт отдельную ручную точку; **«Загрузить»** возвращает её.
-- Хранилище — `localStorage` текущего браузера. Оно не синхронизируется с GitHub.
-- Режим `file://` и `http://127.0.0.1:1789` имеют разные хранилища. Выберите один способ запуска для своей кампании.
-- Незавершённый бой не сохраняется. После перезагрузки восстанавливается кампания перед столкновением.
-- Начало новой кампании заменяет текущий прогресс и ручное сохранение после подтверждения.
+| Türkçe karşılığı | Ekrandaki metin |
+| --- | --- |
+| Şampanya | Шампань |
+| Ekmek dağıt | Раздать хлеб |
+| Olağanüstü vergi | Чрезвычайный сбор |
+| Asker al | Набрать солдат |
+| Orduyu gönder | Отправить армию |
+| Çatışmaya gir | Вступить в сражение |
+| Sonraki hafta | Следующая неделя |
+| Kaydet / Yükle | Сохранить / Загрузить |
 
-## Что реализовано
+Öğretici senaryoda hedef, sekiz hafta sonunda pozitif hazineye ve en az bir askere sahip olmak, ortalama hoşnutsuzluğu 55'in altında tutmaktır. Ardından serbest oyuna devam edilebilir. Zorluk şimdilik düşüktür; amaç sistemlerin birlikte çalışmasını sınamaktır.
 
-- 12 выбираемых игровых областей, карта с политическим слоем и слоем недовольства.
-- Недельная экономика: налоги, производство, потребление, жалование, последствия дефицита.
-- Два перехода армии за неделю, проверка соседства, набор солдат.
-- Поддержка короны, представителей сословий и народа; одно сценарное событие с тремя решениями.
-- Тактический бой с мушкетной стрельбой, групповым приказом и результатом в кампании.
-- Ручное и автоматическое сохранение с проверкой структуры данных.
-- Адаптивный интерфейс и встроенная справка.
+## Mevcut özellikler
 
-## Что пока упрощено
+- Seçilebilir 12 şematik bölge; bölge ve hoşnutsuzluk harita katmanları.
+- Haftalık vergiler, üretim, tüketim, asker maaşları ve kaynak yetersizliğinin sonuçları.
+- Haftada iki ordu hareketi, komşuluk denetimi ve asker alımı.
+- Taht, zümre temsilcileri ve halk için üç destek göstergesi; üç seçenekli bir konsey olayı.
+- Tüfekli birlikler, ortak hareket emri ve sefer haritasına dönen sonuçlarıyla taktik çatışma.
+- Veri yapısı doğrulanan otomatik ve elle kayıt.
+- Farklı ekran boyutlarına uyum sağlayan arayüz ve oyun içi yardım.
 
-Это **браузерный прототип, не Unity-проект**. Границы областей схематичны, население и экономические числа вымышлены. Корсика показана, но не является выбираемой областью. Столкновения являются сценарной условностью и не утверждают наличие таких боёв в мае 1789 года. Режим управления советом королевства — игровое допущение.
+## Kayıtlar
 
-Нет полного дерева персонажей, династий, дипломатии государств, строительства, технологического развития, морских сражений, нескольких автономных государств или сетевой игры. В бою одна группа мушкетёров на сторону; местность пока декоративная. Эти ограничения не скрыты за неработающими кнопками.
+Otomatik kayıt emirlerden, savaş sonuçlarından ve haftalık hesaplamalardan sonra güncellenir. **Kaydet** ayrıca bağımsız bir elle kayıt noktası oluşturur; **Yükle** bu noktayı geri getirir.
 
-## Как следить за разработкой
+Kayıtlar tarayıcının `localStorage` alanındadır; GitHub'a veya ekip arkadaşlarına aktarılmaz. Farklı tarayıcılar ve farklı adresler ayrı kayıt alanları kullanır. Tutarlı bir deneyim için her zaman `http://127.0.0.1:1789` adresinden oynayın.
 
-- [STATUS.md](STATUS.md) — текущий этап, завершённые проверки, следующие задачи.
-- [REFERENCES.md](REFERENCES.md) — постоянные ориентиры: Warcraft III, Total War, Europa Universalis V, Crusader Kings III.
-- [CHANGELOG.md](CHANGELOG.md) — изменения по версиям.
-- История Git — зафиксированные этапы работы.
-- GitHub Actions — автоматическая проверка ядра после загрузки изменений.
-- `output/playwright/` — локальные снимки браузерных проверок, не включаются в Git.
+Tamamlanmamış savaş kaydedilmez; sayfa yenilenirse çatışma öncesindeki sefer durumu geri gelir. Yeni sefer başlatma onayından sonra mevcut ilerleme ve elle kayıt değiştirilir.
 
-Приватный репозиторий: https://github.com/DvaGamer/power-above-all
+## Kapsam ve bilinen sınırlamalar
 
-## Структура
+Harita tarihî bir atlas değildir: bölge sınırları şematik, nüfus ve ekonomi değerleri kurgusaldır. Korsika gösterilir, ancak seçilebilir bir bölge değildir. Mayıs 1789'da bu çatışmaların gerçekten yaşandığı iddia edilmez. Oyuncunun bir kraliyet konseyini yönetmesi de oyun tasarımı varsayımıdır.
 
-```text
-index.html                 интерфейс и схематическая карта
-styles.css                 оформление и адаптивная вёрстка
-simulation.js              независимое ядро кампании
-app.js                     связь интерфейса с ядром
-battle.js                  тактическое моделирование и Canvas
-server.cjs                 необязательный локальный сервер
-launch.cjs                 запуск сервера и открытие браузера
-tests/simulation.test.cjs   автоматические проверки ядра
-tests/browser-smoke.js     сценарий проверки через Playwright CLI
-```
+Henüz kapsamlı karakter ve hanedan sistemi, devletler arası diplomasi, inşaat, teknoloji ağacı, deniz savaşları, birden çok özerk devlet veya çok oyunculu mod yoktur. Savaşta her tarafta tek tür asker ve ortak kumanda edilen bir grup vardır; arazi dekoratiftir.
 
-## Проверить код
+## Ekip ve ilerleme
 
-```text
+Başlamadan önce [katkı rehberini](CONTRIBUTING.md) okuyun. Bir görevi üstlenin, kendi dalınızda çalışın ve değişikliği pull request ile paylaşın.
+
+- [STATUS.md](STATUS.md): tamamlanan işler, doğrulamalar ve sıradaki görevler.
+- [ROADMAP.md](ROADMAP.md): bir sonraki aşama için seçenekler ve onay bekleyen plan.
+- [DESIGN_V0.2.md](DESIGN_V0.2.md): bağlantılı siyaset, ekonomi, bölgeler, ikmal ve alay savaşı hedefi.
+- [REFERENCES.md](REFERENCES.md): dört kalıcı oyun tasarımı referansı.
+- [ART_DIRECTION.md](ART_DIRECTION.md): beş görsel referans ve tarihî çalışma atlası yönü.
+- [CHANGELOG.md](CHANGELOG.md): sürümlere göre değişiklikler.
+- [NOTES.md](NOTES.md): teknik kararlar ve geliştirme notları.
+- [Issues](https://github.com/DvaGamer/power-above-all/issues): görevler ve öneriler.
+- [Actions](https://github.com/DvaGamer/power-above-all/actions): otomatik denetimler.
+- Git geçmişi: tamamlanıp kaydedilen geliştirme adımları.
+
+## Dosya yapısı
+
+| Dosya | Sorumluluk |
+| --- | --- |
+| `index.html` | Arayüz iskeleti ve şematik harita |
+| `styles.css` | Görsel tasarım ve ekran boyutlarına uyum |
+| `simulation.js` | Arayüzden bağımsız sefer simülasyonu |
+| `app.js` | Harita etkileşimi, arayüz ve simülasyon bağlantısı |
+| `battle.js` | Taktik savaş simülasyonu ve Canvas çizimi |
+| `server.cjs`, `launch.cjs` | Yerel sunucu ve başlatıcı |
+| `tests/simulation.test.cjs` | Sefer kurallarının otomatik testleri |
+| `tests/browser-smoke.js` | Playwright CLI ile tarayıcı denemesi |
+
+## Doğrulama
+
+```sh
 npm test
 node --check app.js
 node --check battle.js
 ```
 
-Браузерный сценарий предназначен для отдельной тестовой сессии: он начинает новую кампанию и заменяет её сохранения. Использовать `playwright-cli run-code --filename=tests/browser-smoke.js` только в тестовом браузере. Текущее расположение снимков в этом сценарии настроено для рабочей машины и при переносе может потребовать изменения.
+GitHub Actions diğer JavaScript giriş dosyalarının sözdizimini de denetler. Tarayıcı testi ayrı bir test oturumunda çalıştırılmalıdır; seferi sıfırlar ve o oturumun kayıtlarını değiştirir. Ayrıntılar [katkı rehberindedir](CONTRIBUTING.md#tarayıcı-kontrolü).
 
-## Историческая основа
+## Tarihî dayanak
 
-Открытие Генеральных штатов в Версале 5 мая 1789 года подтверждено [официальной исторической справкой Версаля](https://en.chateauversailles.fr/discover/history/key-dates/summoning-estates-general-1789). Сюжетные последствия решений в игре являются альтернативной историей.
+Genel Meclis'in (États généraux) 5 Mayıs 1789'da Versailles'da açılması, [Versailles Sarayı'nın resmî tarih sayfasıyla](https://en.chateauversailles.fr/discover/history/key-dates/summoning-estates-general-1789) doğrulanmıştır. Oyuncu kararlarının sonuçları alternatif tarih kapsamında değerlendirilir.

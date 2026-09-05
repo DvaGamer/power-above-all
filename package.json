@@ -2,6 +2,6 @@
   "name": "power-above-all",
   "version": "0.1.0",
   "private": true,
-  "description": "Standalone playable sketch of a France-focused strategy game set in 1789",
+  "description": "1789 Fransasında geçen, ekonomi ve taktik savaş içeren oynanabilir strateji prototipi",
   "scripts": { "start": "node server.cjs", "test": "node --test tests/simulation.test.cjs" }
 }

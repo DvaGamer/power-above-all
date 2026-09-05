@@ -33,7 +33,7 @@ async (page) => {
   assert((await read()).army === 'normandy', 'Army moves into adjacent quiet region');
   await page.locator('[data-tab=economy]').click();
   assert(await page.locator('.economy-table').isVisible(), 'Economy visible');
-  await page.screenshot({ path: 'C:/Users/USER/projects/power-above-all/output/playwright/economy.png' });
+  await page.screenshot({ path: 'output/playwright/economy.png' });
   await page.locator('[data-tab=politics]').click();
   assert(await page.locator('.faction-card').count() === 3, 'Three political factions');
   await page.locator('#back-to-map').click();
@@ -54,7 +54,7 @@ async (page) => {
   await page.locator('#march').click();
   assert(await page.locator('#battle-dialog').isVisible(), 'Tactical dialog opens');
   await page.locator('#battle-pause').click();
-  await page.screenshot({ path: 'C:/Users/USER/projects/power-above-all/output/playwright/battle.png' });
+  await page.screenshot({ path: 'output/playwright/battle.png' });
   await page.locator('#battle-retreat').click();
   await page.locator('#battle-result button').click();
   s = await read();
@@ -71,10 +71,10 @@ async (page) => {
   assert(s.army === 'champagne', 'Player can win the demonstration battle');
   await page.locator('#restart').click();
   await page.locator('#confirm-restart').click();
-  await page.screenshot({ path: 'C:/Users/USER/projects/power-above-all/output/playwright/desktop.png' });
+  await page.screenshot({ path: 'output/playwright/desktop.png' });
   await page.setViewportSize({ width: 390, height: 844 });
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Mobile has no horizontal overflow');
-  await page.screenshot({ path: 'C:/Users/USER/projects/power-above-all/output/playwright/mobile.png', fullPage: true });
+  await page.screenshot({ path: 'output/playwright/mobile.png', fullPage: true });
   await clickRegion('poitou');
   assert((await read()).selected === 'poitou', 'Mobile map selection');
   await page.setViewportSize({ width: 1440, height: 960 });

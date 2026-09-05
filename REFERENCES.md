@@ -1,32 +1,61 @@
-# Power Above All — игровые референсы
+# Power Above All — oyun referansları
 
-Эти четыре игры и серии указаны пользователем. Они являются постоянными ориентирами дизайна, а не перечнем уже реализованных функций.
+Bu belge, proje sahibinin başlangıçta seçtiği dört sistem referansını ve sonradan belirlediği beş görsel/arayüz referansını birlikte korur. Yeni görsel yön, önceki savaş sunumu varsayımlarını aşağıda belirtildiği şekilde günceller. Bunlar geliştirme hedefleridir; özelliklerin tamamı mevcut prototipte bulunmuyor.
 
-## Warcraft III — бой
-Использовать как ориентир для отзывчивого управления, выделения группы, приоритетов целей, контрюнитов, активных способностей командиров и ценности сохранённых ветеранов. Для Франции конца XVIII века адаптировать к мушкетам, построениям, кавалерии, артиллерии, морали и офицерским приказам. Строительство базы во время боя — отдельное будущее решение; экономика кампании должна ограничивать подкрепления.
+## Sistem referansları
 
-## Total War — кампания и глобальная карта
-Использовать как ориентир для пространственных решений: города, маршруты, положение армий, местность, снабжение, осады и переход в тактическое сражение. Вернуть в кампанию точный результат боя: потери, отступление, опыт и контроль территории. Франция — центр карты и содержания; масштаб мира увеличивать только после рабочего регионального цикла.
+### Warcraft III — komutların tepkiselliği
 
-## Europa Universalis V — экономика
-Использовать как ориентир для связи населения, потребления, производства, рынков, торговли и инфраструктуры. Армия зависит от хозяйства и снабжения. Начать с небольшого числа товаров и прозрачных причин изменения показателей. Не воспроизводить всю сложность оригинала в первом прототипе.
+Pratikte korunacak referans, seçime ve komuta hızlı yanıt veren kontrol hissidir. Seçimin, verilen emrin ve sonucunun açıkça görülmesi hedeflenir. Yeni yön doğrultusunda oyuncu tek tek askerleri kontrol etmez; komutların hedefi alaylar ve birlik düzenleridir. Önceki bireysel asker kontrolü varsayımı geçersizdir. Komutanların kişisel özellikleri ve emir yeteneklerinin savaşa etkisi ayrıca tasarlanacaktır. Savaşın düzeni ve görsel dili için aşağıdaki Napoleon: Total War referansı esas alınır.
 
-## Crusader Kings III — политика и дипломатия
-Использовать как ориентир для личных интересов персонажей, отношений, амбиций, связей, наследования и политических последствий военных решений. Адаптировать к революционной Франции: двор, сословия, депутаты, министры, генералы, политические клубы и меняющиеся институты. Феодальные вассальные отношения не переносить механически в 1789 год.
+### Total War — sefer ve dünya haritası
 
-## Собственная концепция
-Название: **Power Above All**. Франция, старт 5 мая 1789 года. Тема — личная власть, расчёт, влияние и цена решений во время разрушения старого порядка. Игрок в первом наброске условно управляет советом королевства; окончательная роль персонажа потребует отдельной проработки.
+Şehirler, güzergâhlar, orduların konumu, arazi, ikmal, kuşatmalar ve taktik savaşa geçiş gibi harita üzerindeki kararlar için referans alınır. Savaşın kayıplar, geri çekilme, deneyim ve bölge kontrolü üzerindeki sonuçları sefere eksiksiz aktarılmalıdır. Haritanın ve içeriğin merkezinde Fransa yer alır; dünyanın kapsamı ancak bölgesel oyun döngüsü çalışır hâle geldikten sonra genişletilmelidir.
 
-Главный цикл: политическое решение → хозяйственные последствия → военная возможность → сражение → изменение влияния, ресурсов и положения персонажей.
+### Europa Universalis V — ekonomi
 
-## Правила использования
-- При добавлении крупной механики записывать, какой референс она использует и как связана с остальными системами.
-- Заимствовать принципы и ощущения; названия, тексты, код, карты, графику и звук этих игр не копировать.
-- Различать исторические факты, авторские игровые упрощения и будущие функции.
-- Первый браузерный набросок проверяет цикл и интерфейс. Он не означает, что все четыре системы уже реализованы.
+Nüfus, tüketim, üretim, pazarlar, ticaret ve altyapı arasındaki ilişkiler için referans alınır. Ordu, ekonomiye ve ikmale bağımlıdır. Başlangıçta az sayıda ürün kullanılmalı ve göstergelerin neden değiştiği oyuncuya açıkça anlatılmalıdır. İlk prototipte özgün oyunun tüm karmaşıklığını yeniden üretmek hedeflenmez.
 
-## Исторический источник первого сценария
-Открытие Генеральных штатов: 5 мая 1789 года, Версаль. Официальный источник прочитан через qwen-web scrape:
+### Crusader Kings III — siyaset ve diplomasi
+
+Karakterlerin kişisel çıkarları, ilişkileri, hırsları, bağlantıları, veraset ve askerî kararların siyasi sonuçları için referans alınır. Bu yaklaşım devrim dönemi Fransa'sına uyarlanmalıdır: saray, toplumsal zümreler, temsilciler, bakanlar, generaller, siyasi kulüpler ve değişen kurumlar. Feodal vasallık ilişkileri 1789'a doğrudan taşınmamalıdır.
+
+## Görsel ve arayüz referansları
+
+Bu beş referans, yeni ekranların bilgi düzenini ve oyuncuya hangi kararları görünür kılacağını belirler. İlgili oyunların arayüzlerini birebir kopyalamak anlamına gelmez.
+
+Bu yönler kullanıcının metin açıklamalarından kaydedildi; referans görsel dosyası veya ekran görüntüsü sunulmadı. Görsel karşılaştırmayla doğrulanmış uygulama sonuçları değildir.
+
+| Referans | Power Above All için uygulanacak yön |
+| --- | --- |
+| **Europa Universalis V** | Harita ana çalışma alanıdır. Bölge renkleri, ordu konumları ve tehlikeler okunur olmalı; bölge/siyasi kontrol, ordu, tehlike, ekonomi ve nüfuz katmanları arasında geçiş yapılmalıdır. Ayrıntı panelleri açıldığında harita bağlamı görünür kalır. |
+| **Victoria 3** | İç siyaset, gerçek siyasi ve toplumsal güçler üzerinden gösterilir. Her gücün nüfuzu, oyuncuya karşı tutumu, lideri, talepleri ve radikalleşmesi görünür olmalıdır. Yalnızca üç soyut destek çubuğu nihai tasarım sayılmaz. |
+| **Crusader Kings III** | Karakter ve olay ekranlarında portre, ad, kişisel tutum ve çıkarlar birlikte görünür. Karar, belirli bir kişiye veya belirli kişilerin taleplerine bağlanır. |
+| **Napoleon: Total War** | Taktik savaş alaylar, hatlar, menzil, kanatlar, moral, süvari ve topçu üzerine kurulur. Oyuncu tek tek askerleri yönetmez. Birliğin düzeni ve görevi görsel olarak anlaşılır olmalıdır. |
+| **Anno 1800** | Ekonomi neden-sonuç ilişkisiyle okunur: ekmek nereden geliyor, açık nerede oluşuyor, gelecek hafta neden kötüleşecek? Oyuncunun temel sorunu iki saniyede fark etmesi bir tasarım hedefidir; ölçülmüş bir sonuç değildir. |
+
+Malzeme ve uygulama kuralları [ART_DIRECTION.md](ART_DIRECTION.md) dosyasında tanımlanır. Koyu yeşil, parşömen tonları, mat altın, kırmızı ve serif yazı karakterleri korunur; bilgi hiyerarşisi zenginleştirilir.
+
+## Oyunun kendi yaklaşımı
+
+Güncel kapsamlı hedef [DESIGN_V0.2.md](DESIGN_V0.2.md) içindedir. Ana ilke çok sayıda bağımsız mekanik değil, oyuncunun siyasi kararından başlayıp ekonomiyi, bölgeyi, ikmali ve savaşı etkileyerek tekrar kişisel iktidara dönen anlaşılır sonuç zincirleridir.
+
+Adı: **Power Above All**. Mekân Fransa, başlangıç tarihi 5 Mayıs 1789. Ana tema, eski düzen çözülürken kişisel iktidar, çıkar hesabı, nüfuz ve kararların bedelidir. İlk taslakta oyuncu, basitleştirilmiş bir kraliyet konseyini yönetir; nihai oyuncu karakterinin rolü ayrıca tasarlanacaktır.
+
+Temel döngü: siyasi karar → ekonomik sonuçlar → askerî imkânlar → savaş → nüfuzun, kaynakların ve karakterlerin konumlarının değişmesi.
+
+## Kullanım ilkeleri
+
+- Büyük bir mekanik eklerken hangi referanstan yararlanıldığını ve diğer sistemlerle nasıl ilişki kurduğunu kaydedin.
+- Tasarım ilkelerinden ve oyun hissinden esinlenin; bu oyunların adlarını, metinlerini, kodlarını, haritalarını, görsellerini ve seslerini kopyalamayın.
+- Tarihsel gerçekleri, oyun için yapılan basitleştirmeleri ve gelecekte eklenecek özellikleri birbirinden ayırın.
+- İlk tarayıcı taslağı, oyun döngüsünü ve arayüzü sınar. Dört referanstaki sistemlerin tamamının uygulanmış olduğu anlamına gelmez.
+- Tasarım çakışmalarında yeni kullanıcı yönünü uygulayın: harita ana çalışma alanı, siyasette somut güçler ve kişiler, savaşta alay kontrolü, ekonomide açık neden-sonuç anlatımı.
+
+## İlk senaryonun tarihsel kaynağı
+
+Genel Meclis (États généraux), 5 Mayıs 1789'da Versay'da açıldı. Aşağıdaki resmî kaynak `qwen-web scrape` ile okundu:
+
 https://en.chateauversailles.fr/discover/history/key-dates/summoning-estates-general-1789
 
-Карта наброска — укрупнённые игровые области, не исторический атлас. Значения ресурсов и сценарные стычки вымышлены.
+Taslak harita, büyük ölçekli oyun bölgelerinden oluşur; tarih atlası değildir. Kaynak miktarları ve senaryodaki çatışmalar oyun için kurgulanmıştır.

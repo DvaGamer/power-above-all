@@ -1,0 +1,404 @@
+{
+  "entries": [
+    {
+      "key": "region.brittany",
+      "ru": "Бретань",
+      "tr": "Bretagne"
+    },
+    {
+      "key": "region.normandy",
+      "ru": "Нормандия",
+      "tr": "Normandiya"
+    },
+    {
+      "key": "region.picardy",
+      "ru": "Пикардия",
+      "tr": "Picardie"
+    },
+    {
+      "key": "region.ile",
+      "ru": "Иль-де-Франс",
+      "tr": "Île-de-France"
+    },
+    {
+      "key": "region.champagne",
+      "ru": "Шампань",
+      "tr": "Champagne"
+    },
+    {
+      "key": "region.lorraine",
+      "ru": "Лотарингия",
+      "tr": "Lorraine"
+    },
+    {
+      "key": "region.burgundy",
+      "ru": "Бургундия",
+      "tr": "Burgonya"
+    },
+    {
+      "key": "region.orleans",
+      "ru": "Орлеане",
+      "tr": "Orléanais"
+    },
+    {
+      "key": "region.poitou",
+      "ru": "Пуату",
+      "tr": "Poitou"
+    },
+    {
+      "key": "region.guyenne",
+      "ru": "Гиень",
+      "tr": "Guyenne"
+    },
+    {
+      "key": "region.languedoc",
+      "ru": "Лангедок",
+      "tr": "Languedoc"
+    },
+    {
+      "key": "region.provence",
+      "ru": "Прованс",
+      "tr": "Provence"
+    },
+    {
+      "key": "city.brittany",
+      "ru": "Ренн",
+      "tr": "Rennes"
+    },
+    {
+      "key": "city.normandy",
+      "ru": "Руан",
+      "tr": "Rouen"
+    },
+    {
+      "key": "city.picardy",
+      "ru": "Амьен",
+      "tr": "Amiens"
+    },
+    {
+      "key": "city.ile",
+      "ru": "Париж",
+      "tr": "Paris"
+    },
+    {
+      "key": "city.champagne",
+      "ru": "Реймс",
+      "tr": "Reims"
+    },
+    {
+      "key": "city.lorraine",
+      "ru": "Нанси",
+      "tr": "Nancy"
+    },
+    {
+      "key": "city.burgundy",
+      "ru": "Дижон",
+      "tr": "Dijon"
+    },
+    {
+      "key": "city.orleans",
+      "ru": "Орлеан",
+      "tr": "Orléans"
+    },
+    {
+      "key": "city.poitou",
+      "ru": "Пуатье",
+      "tr": "Poitiers"
+    },
+    {
+      "key": "city.guyenne",
+      "ru": "Бордо",
+      "tr": "Bordeaux"
+    },
+    {
+      "key": "city.languedoc",
+      "ru": "Тулуза",
+      "tr": "Toulouse"
+    },
+    {
+      "key": "city.provence",
+      "ru": "Марсель",
+      "tr": "Marsilya"
+    },
+    {
+      "key": "faction.crown",
+      "ru": "Корона",
+      "tr": "Kraliyet"
+    },
+    {
+      "key": "faction.assembly",
+      "ru": "Представители сословий",
+      "tr": "Zümre temsilcileri"
+    },
+    {
+      "key": "faction.urban",
+      "ru": "Городское население",
+      "tr": "Kentli halk"
+    },
+    {
+      "key": "faction.army",
+      "ru": "Армия",
+      "tr": "Ordu"
+    },
+    {
+      "key": "faction.crown.demand",
+      "ru": "Сохранить доходы и полномочия короны.",
+      "tr": "Kraliyet gelirlerini ve yetkilerini koru."
+    },
+    {
+      "key": "faction.assembly.demand",
+      "ru": "Объяснять налоги и учитывать требования представителей.",
+      "tr": "Vergileri açıkla ve temsilcilerin taleplerini dikkate al."
+    },
+    {
+      "key": "faction.urban.demand",
+      "ru": "Обеспечить доступный хлеб и предсказуемую помощь.",
+      "tr": "Uygun fiyatlı ekmek ve güvenilir yardım sağla."
+    },
+    {
+      "key": "faction.army.demand",
+      "ru": "Платить жалование, поддерживать снабжение.",
+      "tr": "Maaşları öde, ikmali sürdür."
+    },
+    {
+      "key": "character.valcourt.name",
+      "ru": "Этьен де Валькур",
+      "tr": "Étienne de Valcourt"
+    },
+    {
+      "key": "character.valcourt.position",
+      "ru": "Советник короны · вымышленный персонаж",
+      "tr": "Kraliyet danışmanı · kurgusal karakter"
+    },
+    {
+      "key": "character.valcourt.agenda",
+      "ru": "Удержать полномочия двора и сбор налогов.",
+      "tr": "Sarayın yetkilerini ve vergi gelirlerini korumak."
+    },
+    {
+      "key": "character.morel.name",
+      "ru": "Адриен Морель",
+      "tr": "Adrien Morel"
+    },
+    {
+      "key": "character.morel.position",
+      "ru": "Представитель сословий · вымышленный персонаж",
+      "tr": "Zümre temsilcisi · kurgusal karakter"
+    },
+    {
+      "key": "character.morel.agenda",
+      "ru": "Расширить влияние представителей на решения кабинета.",
+      "tr": "Temsilcilerin kabine kararları üzerindeki etkisini artırmak."
+    },
+    {
+      "key": "character.lefevre.name",
+      "ru": "Жан Лефевр",
+      "tr": "Jean Lefèvre"
+    },
+    {
+      "key": "character.lefevre.position",
+      "ru": "Представитель горожан · вымышленный персонаж",
+      "tr": "Kent temsilcisi · kurgusal karakter"
+    },
+    {
+      "key": "character.lefevre.agenda",
+      "ru": "Получить регулярную помощь продовольствием.",
+      "tr": "Düzenli gıda yardımı sağlamak."
+    },
+    {
+      "key": "character.dumas.name",
+      "ru": "Люсьен Дюма",
+      "tr": "Lucien Dumas"
+    },
+    {
+      "key": "character.dumas.position",
+      "ru": "Командующий · вымышленный персонаж",
+      "tr": "Komutan · kurgusal karakter"
+    },
+    {
+      "key": "character.dumas.agenda",
+      "ru": "Снабжать армию и укреплять собственное влияние победами.",
+      "tr": "Orduyu ikmal etmek ve zaferlerle kendi nüfuzunu artırmak."
+    },
+    {
+      "key": "error.region",
+      "ru": "Неизвестная область.",
+      "tr": "Bilinmeyen bölge."
+    },
+    {
+      "key": "error.used",
+      "ru": "Этот приказ уже выполнен здесь на этой неделе.",
+      "tr": "Bu emir bu bölgede bu hafta zaten uygulandı."
+    },
+    {
+      "key": "error.bread.cost",
+      "ru": "Нужно 40 продовольствия.",
+      "tr": "40 gıda gerekiyor."
+    },
+    {
+      "key": "error.capacity",
+      "ru": "Достигнут предел хранения этого ресурса.",
+      "tr": "Bu kaynak için depolama sınırına ulaşıldı."
+    },
+    {
+      "key": "error.recruit.location",
+      "ru": "Набор доступен в области вашей армии.",
+      "tr": "Asker toplama, ordunuzun bulunduğu bölgede yapılabilir."
+    },
+    {
+      "key": "error.recruit.cost",
+      "ru": "Нужно 120 казны, 20 продовольствия, 15 военных припасов и 200 людских ресурсов.",
+      "tr": "120 hazine, 20 gıda, 15 askerî malzeme ve 200 insan gücü gerekiyor."
+    },
+    {
+      "key": "error.subsidy.location",
+      "ru": "Постоянную хлебную помощь можно назначить только Парижу.",
+      "tr": "Düzenli ekmek yardımı yalnızca Paris için başlatılabilir."
+    },
+    {
+      "key": "error.action",
+      "ru": "Неизвестный приказ.",
+      "tr": "Bilinmeyen emir."
+    },
+    {
+      "key": "error.army.empty",
+      "ru": "Для похода нужны солдаты.",
+      "tr": "Yürüyüş için asker gerekiyor."
+    },
+    {
+      "key": "error.moves",
+      "ru": "Переходы на этой неделе исчерпаны.",
+      "tr": "Bu haftanın hareket hakkı tükendi."
+    },
+    {
+      "key": "error.adjacent",
+      "ru": "Можно перейти только в соседнюю область.",
+      "tr": "Yalnızca komşu bölgeye hareket edilebilir."
+    },
+    {
+      "key": "error.battle.result",
+      "ru": "Некорректный результат сражения.",
+      "tr": "Geçersiz savaş sonucu."
+    },
+    {
+      "key": "error.battle.duplicate",
+      "ru": "Результат этого сражения уже применён.",
+      "tr": "Bu savaşın sonucu zaten uygulandı."
+    },
+    {
+      "key": "error.battle.stale",
+      "ru": "Результат не соответствует текущему походу.",
+      "tr": "Sonuç mevcut yürüyüşle eşleşmiyor."
+    },
+    {
+      "key": "error.week.limit",
+      "ru": "Достигнут технический предел длительности кампании.",
+      "tr": "Sefer süresinin teknik sınırına ulaşıldı."
+    },
+    {
+      "key": "march.battle",
+      "ru": "Вооружённое сопротивление: требуется сражение.",
+      "tr": "Silahlı direniş var: savaş gerekiyor."
+    },
+    {
+      "key": "march.ready",
+      "ru": "Путь открыт. Переход расходует продовольствие и припасы.",
+      "tr": "Yol açık. Yürüyüş gıda ve askerî malzeme tüketir."
+    },
+    {
+      "key": "log.begin",
+      "ru": "5 мая 1789. Начало кампании. Персонажи и численные значения этого наброска вымышлены.",
+      "tr": "5 Mayıs 1789. Sefer başlıyor. Bu taslaktaki karakterler ve sayısal değerler kurgusaldır."
+    },
+    {
+      "key": "log.bread",
+      "ru": "{0}: хлеб роздан. Продовольствие −40; недовольство −15; контроль +2; поддержка горожан +2.",
+      "tr": "{0}: ekmek dağıtıldı. Gıda −40; huzursuzluk −15; kontrol +2; kentli desteği +2."
+    },
+    {
+      "key": "log.tax",
+      "ru": "{0}: чрезвычайный сбор. Казна +100; недовольство +12; лояльность элит −4; поддержка горожан −3.",
+      "tr": "{0}: olağanüstü vergi. Hazine +100; huzursuzluk +12; seçkinlerin sadakati −4; kentli desteği −3."
+    },
+    {
+      "key": "log.recruit",
+      "ru": "{0}: набрано 200 солдат. Казна −120, хлеб −20, припасы −15, людские ресурсы −200.",
+      "tr": "{0}: 200 asker toplandı. Hazine −120, gıda −20, malzeme −15, insan gücü −200."
+    },
+    {
+      "key": "log.subsidy.start",
+      "ru": "Парижу назначена хлебная помощь: 20 продовольствия каждую неделю. Поддержка зависит от выполнения обещания.",
+      "tr": "Paris'e haftalık 20 gıda yardımı başlatıldı. Destek, sözün tutulmasına bağlı."
+    },
+    {
+      "key": "log.subsidy.stop",
+      "ru": "Хлебная помощь отменена. Париж: недовольство +8; поддержка горожан −8; радикализм +5; власть −2.",
+      "tr": "Ekmek yardımı kaldırıldı. Paris: huzursuzluk +8; kentli desteği −8; radikalleşme +5; iktidar −2."
+    },
+    {
+      "key": "log.subsidy.paid",
+      "ru": "Париж получил 20 продовольствия: недовольство −4, поддержка горожан +3. Еженедельная помощь продолжается.",
+      "tr": "Paris 20 gıda aldı: huzursuzluk −4, kentli desteği +3. Haftalık yardım sürüyor."
+    },
+    {
+      "key": "log.subsidy.failed",
+      "ru": "Хлебная помощь сорвана дефицитом. Париж: недовольство +6; поддержка горожан −8.",
+      "tr": "Gıda açığı yardımı aksattı. Paris: huzursuzluk +6; kentli desteği −8."
+    },
+    {
+      "key": "log.march",
+      "ru": "Армия прибыла: {0}. Продовольствие и припасы израсходованы; усталость выросла.",
+      "tr": "Ordu {0} bölgesine ulaştı. Gıda ve malzeme tüketildi; yorgunluk arttı."
+    },
+    {
+      "key": "log.march.attrition",
+      "ru": "На марше не хватило продовольствия. Потеряно {0} солдат.",
+      "tr": "Yürüyüşte gıda yetersiz kaldı. {0} asker kaybedildi."
+    },
+    {
+      "key": "log.battle.victory",
+      "ru": "Победа: {0}. Потери: {1}; осталось {2} солдат. Контроль усилен; власть +4, поддержка армии +4, горожан −3.",
+      "tr": "Zafer: {0}. Kayıp: {1}; kalan asker: {2}. Kontrol güçlendi; iktidar +4, ordu desteği +4, kentli desteği −3."
+    },
+    {
+      "key": "log.battle.defeat",
+      "ru": "Поражение: {0}. Потери: {1}; осталось {2} солдат. Армия отступила; власть −6, поддержка армии −6.",
+      "tr": "Yenilgi: {0}. Kayıp: {1}; kalan asker: {2}. Ordu geri çekildi; iktidar −6, ordu desteği −6."
+    },
+    {
+      "key": "log.shortage",
+      "ru": "Кризис снабжения ({1}): {0} дезертиров. Боевой дух и поддержка армии снизились.",
+      "tr": "İkmal krizi ({1}): {0} asker firar etti. Moral ve ordunun desteği düştü."
+    },
+    {
+      "key": "log.week",
+      "ru": "Неделя {0}: налоги {1}, армейские расходы {2}, баланс продовольствия {3}.",
+      "tr": "Hafta {0}: vergi {1}, ordu gideri {2}, gıda dengesi {3}."
+    },
+    {
+      "key": "shortage.food",
+      "ru": "нехватка продовольствия",
+      "tr": "gıda açığı"
+    },
+    {
+      "key": "shortage.pay",
+      "ru": "не выплачено жалование",
+      "tr": "ödenmeyen maaşlar"
+    },
+    {
+      "key": "shortage.materials",
+      "ru": "нехватка военных припасов",
+      "tr": "askerî malzeme açığı"
+    },
+    {
+      "key": "core.economy.rule",
+      "ru": "Налоги зависят от недовольства, контроля и поддержки представителей. Военные расходы включают 36 казны на 18 припасов в неделю. Их поставка срывается при нехватке денег.",
+      "tr": "Vergiler huzursuzluk, kontrol ve temsilci desteğine bağlıdır. Ordu giderine haftalık 18 malzeme için 36 hazine dahildir. Para açığında bu teslimat gerçekleşmez."
+    },
+    {
+      "key": "core.scope",
+      "ru": "Основа кампании: четыре политические силы и четыре вымышленных персонажа. Автономные интриги и семь полных фракций ещё не реализованы.",
+      "tr": "Sefer temeli: dört siyasi güç ve dört kurgusal karakter. Bağımsız entrikalar ve yedi tam siyasi güç henüz uygulanmadı."
+    }
+  ]
+}

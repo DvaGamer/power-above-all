@@ -1,4 +1,4 @@
-name: Check prototype
+name: Prototip denetimi
 on:
   push:
   pull_request:
@@ -12,12 +12,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify JavaScript syntax
+      - name: JavaScript sözdizimini denetle
         run: |
           node --check simulation.js
           node --check app.js
           node --check battle.js
           node --check server.cjs
           node --check launch.cjs
-      - name: Test campaign rules
+      - name: Sefer kurallarını test et
         run: npm test
