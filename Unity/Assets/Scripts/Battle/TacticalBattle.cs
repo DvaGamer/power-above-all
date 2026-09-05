@@ -78,6 +78,7 @@ namespace PowerAboveAll
         readonly List<Material> materials = new List<Material>();
         readonly List<Mesh> meshes = new List<Mesh>();
         readonly List<Texture2D> hudTextures = new List<Texture2D>();
+        Texture2D meadowPainting;
         readonly Vector3 convoy = new Vector3(4, 0, 3);
         Camera battleCamera;
         BattleSetup setup;
@@ -85,7 +86,7 @@ namespace PowerAboveAll
         BattleOutcome outcome;
         System.Random rng;
         GameObject world;
-        Material grass, soil, blue, red, cream, wood, iron, skin, leaf, water, gold, smoke, flash;
+        Material grass, soil, blue, red, cream, wood, iron, skin, leaf, leafLight, water, gold, smoke, flash;
         Material blueRing, redRing, orderInk;
         float accumulator, elapsed, playerHold, enemyHold, messageUntil, visualClock, campaignReturnMorale;
         bool paused, ended, delivered;
@@ -93,7 +94,7 @@ namespace PowerAboveAll
         string messageKey = "battle.hint";
         int originalTroops;
         const float Tick = .05f;
-        GUIStyle bodyStyle, titleStyle, smallStyle, cardStyle, buttonStyle;
+        GUIStyle bodyStyle, titleStyle, smallStyle, cardStyle, buttonStyle, chosenButtonStyle, inkSmallStyle, inkCardStyle;
         GUIStyle dispatchTitle, dispatchBody, dispatchSmall, dispatchNumber;
         Font dispatchFont;
         MaterialPropertyBlock smokeProperties;
@@ -121,12 +122,12 @@ namespace PowerAboveAll
             DeployArmy(true, originalTroops);
             DeployArmy(false, Mathf.Max(200, Mathf.RoundToInt(originalTroops * .9f)));
             if (regiments.Count > 0) selected.Add(regiments[0]);
-            battleCamera.rect = ViewLayout.CameraRect(new Rect(0, .18f, 1, .73f));
+            battleCamera.rect = ViewLayout.CameraRect(ViewLayout.BattleViewport);
             battleCamera.orthographic = true;
-            battleCamera.orthographicSize = 37;
+            battleCamera.orthographicSize = 31;
             battleCamera.transform.position = new Vector3(0, 55, -40);
             battleCamera.transform.LookAt(new Vector3(0, 0, 5));
-            battleCamera.backgroundColor = new Color(.69f, .75f, .71f);
+            battleCamera.backgroundColor = Color.Lerp(Paint(0xF3E7CA), Paint(0xA9BA88), .19f);
             foreach (Regiment regiment in regiments) UpdateVisual(regiment, 1);
             if (originalTroops <= 0) Finish(false, false);
         }
@@ -140,8 +141,10 @@ namespace PowerAboveAll
             foreach (Material material in materials) if (material != null) ReleaseObject(material);
             foreach (Mesh mesh in meshes) if (mesh != null) ReleaseObject(mesh);
             foreach (Texture2D texture in hudTextures) if (texture != null) ReleaseObject(texture);
+            if (meadowPainting != null) ReleaseObject(meadowPainting); meadowPainting = null;
             materials.Clear(); meshes.Clear(); regiments.Clear(); selected.Clear(); effects.Clear();
             hudTextures.Clear(); bodyStyle = titleStyle = smallStyle = cardStyle = buttonStyle = null;
+            chosenButtonStyle = inkSmallStyle = inkCardStyle = null;
             dispatchTitle = dispatchBody = dispatchSmall = dispatchNumber = null;
             if (dispatchFont != null) ReleaseObject(dispatchFont); dispatchFont = null;
             accumulator = 0;
@@ -190,7 +193,7 @@ namespace PowerAboveAll
             Vector2 pointer = ViewLayout.ToCanvas(Input.mousePosition);
             float uiY = pointer.y;
             hovered = null;
-            if (pointer.x < 0 || pointer.x > ViewLayout.Width || uiY < 195 || uiY > 733 || ended) return;
+            if (pointer.x < 0 || pointer.x > ViewLayout.Width || uiY < 142 || uiY > 729 || ended) return;
             float best = 46f * ViewLayout.Scale;
             foreach (Regiment regiment in regiments)
             {
@@ -293,7 +296,11 @@ namespace PowerAboveAll
                 float age = visualClock - effect.Born - effect.Delay;
                 if (age < 0) continue;
                 effect.Object.SetActive(true);
-                if (effect.Cue != null) { Feedback?.Invoke(effect.Cue); effect.Cue = null; }
+                if (effect.Cue != null)
+                {
+                    if (!ended) Feedback?.Invoke(effect.Cue);
+                    effect.Cue = null;
+                }
                 if (age >= effect.Lifetime) { ReleaseObject(effect.Object); effects.RemoveAt(i); continue; }
                 if (effect.Projectile) effect.Object.transform.position = Vector3.Lerp(effect.Start, effect.End, age / effect.Lifetime);
                 else if (effect.Flash) effect.Object.transform.localScale = effect.Scale * (1 - age / effect.Lifetime);
@@ -577,25 +584,62 @@ namespace PowerAboveAll
             materials.Add(material); return material;
         }
 
+        static Color Paint(int rgb)
+        {
+            return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
+        }
+
         void CreateMaterials()
         {
-            grass = MakeMaterial("Muted meadow", new Color(.50f, .58f, .38f));
-            soil = MakeMaterial("Warm earth", new Color(.60f, .52f, .35f));
-            blue = MakeMaterial("Royal blue coat", new Color(.19f, .31f, .42f));
-            red = MakeMaterial("Opposing ochre red coat", new Color(.54f, .27f, .21f));
-            cream = MakeMaterial("Linen", new Color(.83f, .79f, .63f));
-            wood = MakeMaterial("Oiled timber", new Color(.32f, .24f, .16f));
-            iron = MakeMaterial("Blackened iron", new Color(.17f, .19f, .18f));
-            skin = MakeMaterial("Miniature face", new Color(.77f, .59f, .43f));
-            leaf = MakeMaterial("Orchard crown", new Color(.30f, .43f, .26f));
-            water = MakeMaterial("Shallow creek", new Color(.38f, .53f, .56f));
-            gold = MakeMaterial("Convoy ochre", new Color(.84f, .67f, .32f));
+            grass = MakeMaterial("Gouache meadow", Color.white);
+            meadowPainting = PaintMeadow(); grass.mainTexture = meadowPainting;
+            soil = MakeMaterial("Warm earth", Paint(0xB79D71));
+            blue = MakeMaterial("Royal blue coat", Paint(0x5F8DA5));
+            red = MakeMaterial("Opposing coral coat", Paint(0xC98270));
+            cream = MakeMaterial("Linen", Paint(0xE9DCB7));
+            wood = MakeMaterial("Oiled timber", Paint(0x655448));
+            iron = MakeMaterial("Blackened iron", Paint(0x243B37));
+            skin = MakeMaterial("Miniature face", Paint(0xCFA584));
+            leaf = MakeMaterial("Orchard crown", Paint(0x4F7361));
+            leafLight = MakeMaterial("Orchard sunlit crown", Paint(0x71936B));
+            water = MakeMaterial("Shallow creek", Paint(0x83B0B6));
+            gold = MakeMaterial("Convoy brass", Paint(0xCAB36F));
             smoke = MakeMaterial("Powder smoke", new Color(.82f, .81f, .73f, .42f), true);
             flash = MakeMaterial("Brief powder flash", new Color(1, .80f, .36f), false, true);
             flash.EnableKeyword("_EMISSION"); flash.SetColor("_EmissionColor", new Color(1, .62f, .18f) * 1.5f);
-            blueRing = MakeMaterial("Friendly formation marker", new Color(.50f, .69f, .72f));
-            redRing = MakeMaterial("Opposing formation marker", new Color(.65f, .37f, .28f));
-            orderInk = MakeMaterial("Field order brass", new Color(.74f, .67f, .44f, .72f), true);
+            blueRing = MakeMaterial("Friendly formation marker", Paint(0x5F8DA5));
+            redRing = MakeMaterial("Opposing formation marker", Paint(0xC98270));
+            orderInk = MakeMaterial("Field order brass", Paint(0xCAB36F));
+        }
+
+        Texture2D PaintMeadow()
+        {
+            // Renk alanları elle yerleştirilir; bu doku savaşın rastgele sayı dizisini kullanmaz.
+            const int size = 256;
+            Color[] pixels = new Color[size * size];
+            Color sage = Paint(0xA9BA88), sun = Paint(0xC6D19F), cool = Paint(0x7F9E80), earth = Paint(0xB79D71);
+            for (int z = 0; z < size; z++) for (int x = 0; x < size; x++)
+            {
+                float px = x * 84f / (size - 1) - 42, pz = z * 68f / (size - 1) - 32;
+                float slope = Mathf.Clamp01(1 - new Vector2((px + 20) / 16, (pz - 15) / 15).magnitude);
+                float foreground = Mathf.Clamp01(1 - new Vector2((px + 13) / 33, (pz + 22) / 16).magnitude);
+                Color colour = Color.Lerp(sage, sun, Mathf.Max(slope * .70f, foreground * .38f));
+                float creekBank = Mathf.Clamp01(1 - Mathf.Abs(px - 6) / 4.1f);
+                colour = Color.Lerp(colour, cool, creekBank * .33f);
+                if (InOrchard(new Vector3(px, 0, pz))) colour = Color.Lerp(colour, cool, .26f);
+                float field = Mathf.Clamp01(Mathf.Min(px - 14, 35 - px)) * Mathf.Clamp01(Mathf.Min(pz + 9, 7 - pz));
+                colour = Color.Lerp(colour, earth, field * .22f);
+                float wash = (Mathf.PerlinNoise(x / 38f + .17f, z / 43f + .61f) - .5f) * .044f;
+                uint grain = unchecked((uint)x * 374761393u + (uint)z * 668265263u);
+                grain = unchecked((grain ^ (grain >> 13)) * 1274126177u); grain ^= grain >> 16;
+                float tooth = ((grain & 1023) / 1023f - .5f) * .018f;
+                pixels[z * size + x] = new Color(colour.r + wash + tooth, colour.g + wash + tooth,
+                    colour.b + wash + tooth, 1);
+            }
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGB24, true) {
+                name = "Authored meadow gouache", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear
+            };
+            texture.SetPixels(pixels); texture.Apply(true, true); return texture;
         }
 
         LineRenderer FieldLine(string name, Transform parent, Material material, int points, float width)
@@ -630,7 +674,7 @@ namespace PowerAboveAll
             {
                 float px = x - 42, pz = z - 32; int index = z * columns + x;
                 vertices[index] = new Vector3(px, TerrainHeight(px, pz), pz);
-                uv[index] = new Vector2(x / (float)columns, z / (float)rows);
+                uv[index] = new Vector2(x / (float)(columns - 1), z / (float)(rows - 1));
             }
             int cursor = 0;
             for (int z = 0; z < rows - 1; z++) for (int x = 0; x < columns - 1; x++)
@@ -643,17 +687,24 @@ namespace PowerAboveAll
             mesh.RecalculateNormals(); meshes.Add(mesh);
             GameObject terrain = new GameObject("Terrain"); terrain.transform.SetParent(world.transform, false);
             terrain.AddComponent<MeshFilter>().sharedMesh = mesh; terrain.AddComponent<MeshRenderer>().sharedMaterial = grass;
-            Primitive("Diorama earth edge", PrimitiveType.Cube, world.transform, new Vector3(0, -1.15f, 2), new Vector3(84, 1.5f, 68), soil);
-            Primitive("Creek north", PrimitiveType.Cube, world.transform, new Vector3(6, -.2f, 20), new Vector3(2.9f, .1f, 30), water);
-            Primitive("Creek south", PrimitiveType.Cube, world.transform, new Vector3(6, -.2f, -18), new Vector3(2.9f, .1f, 28), water);
+            Renderer edge = Primitive("Diorama earth edge", PrimitiveType.Cube, world.transform, new Vector3(0, -1.15f, 2), new Vector3(84, 1.5f, 68), soil).GetComponent<Renderer>();
+            Renderer backing = Primitive("Painted atlas backing", PrimitiveType.Cube, world.transform, new Vector3(0, -1.98f, 2), new Vector3(85.3f, .22f, 69.3f), cream).GetComponent<Renderer>();
+            // Sunum tabanı kendine kara bir gölge şeridi düşürmez; oyun alanı ışığı korunur.
+            edge.shadowCastingMode = backing.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            edge.receiveShadows = backing.receiveShadows = false;
+            BuildCreekReach("Creek north", 5, 36);
+            BuildCreekReach("Creek south", -32, -3);
             Primitive("Crossing dirt", PrimitiveType.Cube, world.transform, new Vector3(6, .035f, 1), new Vector3(6, .06f, 7), soil);
             BuildRuralApproach();
             for (int i = 0; i < 20; i++)
             {
-                float x = -27 + i % 5 * 3.5f, z = -4 + i / 5 * 4;
+                float x = -25.8f + i % 5 * 3.55f, z = -3.4f + i / 5 * 3.7f;
                 float y = TerrainHeight(x, z);
-                Primitive("Orchard trunk", PrimitiveType.Cylinder, world.transform, new Vector3(x, y + .8f, z), new Vector3(.28f, .8f, .28f), wood);
-                Primitive("Orchard foliage", PrimitiveType.Sphere, world.transform, new Vector3(x, y + 2.2f, z), new Vector3(2.2f, 2.3f, 2.2f), leaf);
+                float height = 2.05f + (i % 3) * .16f;
+                Primitive("Orchard trunk", PrimitiveType.Cylinder, world.transform, new Vector3(x, y + .8f, z), new Vector3(.25f, .8f, .25f), wood);
+                Primitive("Orchard shaded crown", PrimitiveType.Sphere, world.transform, new Vector3(x + .22f, y + height, z + .16f), new Vector3(1.9f, 2.2f, 1.8f), leaf);
+                Primitive("Orchard sunlit crown", PrimitiveType.Sphere, world.transform, new Vector3(x - .42f, y + height + .33f, z - .10f), new Vector3(1.5f, 1.55f, 1.65f), leafLight);
+                Primitive("Orchard crown shoulder", PrimitiveType.Sphere, world.transform, new Vector3(x + .56f, y + height + .10f, z - .30f), new Vector3(1.35f, 1.5f, 1.4f), i % 3 == 0 ? leafLight : leaf);
             }
             // Fences are scenery; the clearly marked orchard, hill and creek own terrain rules.
             for (int i = 0; i < 10; i++)
@@ -679,6 +730,30 @@ namespace PowerAboveAll
                 float angle = i * Mathf.PI * 2 / 40;
                 Primitive("Convoy capture boundary", PrimitiveType.Cube, world.transform, convoy + new Vector3(Mathf.Sin(angle) * 6.5f, .12f, Mathf.Cos(angle) * 6.5f), new Vector3(.45f, .1f, .45f), gold);
             }
+        }
+
+        void BuildCreekReach(string name, float start, float end)
+        {
+            // Boyanan kıyı gerçek dere şeridinin içinde kalır; geçit ve yavaşlama hesabı değişmez.
+            const int count = 33;
+            Vector3[] vertices = new Vector3[count * 2];
+            int[] triangles = new int[(count - 1) * 6];
+            for (int i = 0; i < count; i++)
+            {
+                float z = Mathf.Lerp(start, end, i / (float)(count - 1));
+                float centre = 6 + Mathf.Sin(z * .24f) * .13f;
+                float halfWidth = 1.39f + Mathf.Sin(z * .43f + .8f) * .07f;
+                vertices[i * 2] = new Vector3(centre - halfWidth, -.18f, z);
+                vertices[i * 2 + 1] = new Vector3(centre + halfWidth, -.18f, z);
+                if (i == count - 1) continue;
+                int triangle = i * 6, vertex = i * 2;
+                triangles[triangle] = vertex; triangles[triangle + 1] = vertex + 2; triangles[triangle + 2] = vertex + 1;
+                triangles[triangle + 3] = vertex + 1; triangles[triangle + 4] = vertex + 2; triangles[triangle + 5] = vertex + 3;
+            }
+            Mesh mesh = new Mesh { name = name, vertices = vertices, triangles = triangles };
+            mesh.RecalculateNormals(); meshes.Add(mesh);
+            GameObject reach = new GameObject(name); reach.transform.SetParent(world.transform, false);
+            reach.AddComponent<MeshFilter>().sharedMesh = mesh; reach.AddComponent<MeshRenderer>().sharedMaterial = water;
         }
 
         void BuildRuralApproach()
@@ -956,16 +1031,23 @@ namespace PowerAboveAll
         {
             if (bodyStyle != null) return;
             bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 16, wordWrap = true };
-            bodyStyle.normal.textColor = new Color(.91f, .88f, .76f);
-            titleStyle = new GUIStyle(bodyStyle) { fontSize = 23, fontStyle = FontStyle.Bold };
-            smallStyle = new GUIStyle(bodyStyle) { fontSize = 12 };
-            cardStyle = new GUIStyle(bodyStyle) { fontSize = 12 };
+            bodyStyle.normal.textColor = Paint(0xF3E7CA);
+            titleStyle = new GUIStyle(bodyStyle) { fontSize = 25, fontStyle = FontStyle.Bold };
+            smallStyle = new GUIStyle(bodyStyle) { fontSize = 13 };
+            cardStyle = new GUIStyle(bodyStyle) { fontSize = 13 };
+            inkSmallStyle = new GUIStyle(smallStyle); inkSmallStyle.normal.textColor = Paint(0x243B37);
+            inkCardStyle = new GUIStyle(cardStyle); inkCardStyle.normal.textColor = Paint(0x243B37);
             buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = 14, wordWrap = true, border = new RectOffset(0, 0, 0, 0) };
-            buttonStyle.normal.background = HudTexture(new Color(.29f, .34f, .27f));
-            buttonStyle.hover.background = HudTexture(new Color(.39f, .43f, .32f));
-            buttonStyle.active.background = HudTexture(new Color(.48f, .43f, .29f));
-            buttonStyle.normal.textColor = new Color(.94f, .91f, .8f);
+            buttonStyle.normal.background = HudTexture(Paint(0x3B574B));
+            buttonStyle.hover.background = HudTexture(Paint(0x4F7361));
+            buttonStyle.active.background = HudTexture(Paint(0x655D41));
+            buttonStyle.normal.textColor = Paint(0xF3E7CA);
             buttonStyle.hover.textColor = buttonStyle.active.textColor = buttonStyle.normal.textColor;
+            chosenButtonStyle = new GUIStyle(buttonStyle);
+            chosenButtonStyle.normal.background = HudTexture(Paint(0xCAB36F));
+            chosenButtonStyle.hover.background = HudTexture(Paint(0xDDCA8D));
+            chosenButtonStyle.active.background = HudTexture(Paint(0xB79D71));
+            chosenButtonStyle.normal.textColor = chosenButtonStyle.hover.textColor = chosenButtonStyle.active.textColor = Paint(0x243B37);
             dispatchFont = Font.CreateDynamicFontFromOSFont(new[] { "Georgia", "Times New Roman", "Liberation Serif" }, 23);
             titleStyle.font = dispatchFont;
             dispatchTitle = new GUIStyle(titleStyle) { font = dispatchFont, fontSize = 27 };
@@ -987,48 +1069,62 @@ namespace PowerAboveAll
         }
         void Text(Rect rect, string key, GUIStyle style, params object[] args) { GUI.Label(rect, L.Text(key, args), style); }
         bool Button(Rect rect, string key) { return GUI.Button(rect, L.Text(key), buttonStyle); }
+        bool OrderButton(Rect rect, string key, bool current)
+        {
+            bool pressed = GUI.Button(rect, L.Text(key), current ? chosenButtonStyle : buttonStyle);
+            if (current) Panel(new Rect(rect.x + 8, rect.yMax - 3, rect.width - 16, 2), Paint(0x243B37));
+            return pressed;
+        }
 
         public void DrawHud()
         {
             if (!Active) return;
             InitStyles();
             if (ended) { DrawResult(); return; }
-            Panel(new Rect(20, 96, 640, 94), new Color(.15f, .20f, .17f, .94f));
-            Text(new Rect(34, 105, 605, 28), "battle.title", titleStyle);
-            Text(new Rect(34, 136, 605, 22), "battle.objective", cardStyle, Mathf.FloorToInt(playerHold), Mathf.FloorToInt(enemyHold));
-            Text(new Rect(34, 160, 605, 30), "battle.objective_rule", smallStyle);
-            Panel(new Rect(934, 97, 485, 89), new Color(.15f, .20f, .17f, .94f));
-            Text(new Rect(946, 106, 270, 45), "battle.terrain_rules", smallStyle);
+            Panel(new Rect(20, 42, 640, 99), Paint(0x243B37));
+            Panel(new Rect(20, 42, 3, 99), Paint(0xCAB36F));
+            Text(new Rect(34, 48, 605, 31), "battle.title", titleStyle);
+            Text(new Rect(34, 80, 605, 20), "battle.objective", cardStyle, Mathf.FloorToInt(playerHold), Mathf.FloorToInt(enemyHold));
+            Text(new Rect(34, 102, 605, 37), "battle.objective_rule", smallStyle);
+            Panel(new Rect(934, 42, 485, 91), Paint(0x243B37));
+            Text(new Rect(946, 50, 270, 76), "battle.terrain_rules", smallStyle);
             GUI.enabled = !ended;
-            if (Button(new Rect(1230, 105, 176, 31), paused ? "battle.resume" : "battle.pause")) paused = !paused;
-            if (Button(new Rect(1230, 143, 176, 31), "battle.retreat")) Finish(false, true);
+            if (Button(new Rect(1230, 49, 176, 32), paused ? "battle.resume" : "battle.pause")) paused = !paused;
+            if (Button(new Rect(1230, 87, 176, 32), "battle.retreat")) Finish(false, true);
             GUI.enabled = true;
             DrawRegimentLabels();
-            Panel(new Rect(0, 738, 1440, 162), new Color(.13f, .18f, .16f, .99f));
+            Panel(new Rect(0, 738, 1440, 162), Paint(0x243B37));
+            Panel(new Rect(18, 738, 1402, 1), Paint(0xCAB36F));
             for (int i = 0; i < 4 && i < regiments.Count; i++)
             {
                 Regiment regiment = regiments[i]; float x = 18 + i * 215;
-                Panel(new Rect(x, 750, 207, 104), selected.Contains(regiment) ? new Color(.29f, .36f, .28f) : new Color(.20f, .25f, .21f));
+                bool isSelected = selected.Contains(regiment);
+                Panel(new Rect(x, 750, 207, 118), isSelected ? Paint(0xF3E7CA) : Paint(0x304A40));
+                Panel(new Rect(x, 750, 3, 118), isSelected ? Paint(0xCAB36F) : Paint(0x5F8DA5));
                 GUI.enabled = Commandable(regiment);
-                if (GUI.Button(new Rect(x + 5, 754, 197, 25), (i + 1) + "  " + L.Text("battle.kind." + regiment.Kind.ToString().ToLowerInvariant()), buttonStyle)) SelectIndex(i);
+                if (GUI.Button(new Rect(x + 5, 754, 197, 29), (i + 1) + "  " + L.Text("battle.kind." + regiment.Kind.ToString().ToLowerInvariant()), isSelected ? chosenButtonStyle : buttonStyle)) SelectIndex(i);
                 GUI.enabled = true;
-                Text(new Rect(x + 10, 781, 190, 22), "battle.regiment_strength", cardStyle, regiment.Men, L.Text("battle.condition." + regiment.Condition.ToString().ToLowerInvariant()));
-                Text(new Rect(x + 10, 804, 190, 20), "battle.regiment_morale", smallStyle, Mathf.RoundToInt(regiment.Morale), Mathf.RoundToInt(regiment.Cohesion));
-                string ammo = regiment.Kind == Kind.Cavalry ? L.Text("battle.melee") : regiment.Ammo.ToString();
-                Text(new Rect(x + 10, 824, 194, 26), "battle.regiment_reload", smallStyle, ammo, Mathf.CeilToInt(regiment.Reload), Mathf.RoundToInt(regiment.Fatigue));
+                GUIStyle details = isSelected ? inkSmallStyle : smallStyle;
+                Text(new Rect(x + 10, 788, 190, 21), "battle.regiment_strength", isSelected ? inkCardStyle : cardStyle,
+                    regiment.Men, L.Text("battle.condition." + regiment.Condition.ToString().ToLowerInvariant()));
+                Text(new Rect(x + 10, 811, 190, 20), "battle.regiment_morale", details, Mathf.RoundToInt(regiment.Morale), Mathf.RoundToInt(regiment.Cohesion));
+                if (regiment.Kind == Kind.Cavalry)
+                    Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_melee", details, Mathf.RoundToInt(regiment.Fatigue));
+                else Text(new Rect(x + 10, 834, 190, 29), "battle.regiment_reload", details, regiment.Ammo, Mathf.CeilToInt(regiment.Reload), Mathf.RoundToInt(regiment.Fatigue));
             }
             Regiment primary = FirstCommandable();
+            Text(new Rect(892, 742, 527, 20), "battle.orders_header", smallStyle);
             GUI.enabled = primary != null;
-            if (Button(new Rect(892, 749, 166, 30), "battle.formation.line")) OrderFormation(Formation.Line);
-            if (Button(new Rect(1068, 749, 166, 30), "battle.formation.column")) OrderFormation(Formation.Column);
+            if (OrderButton(new Rect(892, 763, 166, 31), "battle.formation.line", primary != null && primary.Formation == Formation.Line)) OrderFormation(Formation.Line);
+            if (OrderButton(new Rect(1068, 763, 166, 31), "battle.formation.column", primary != null && primary.Formation == Formation.Column)) OrderFormation(Formation.Column);
             bool squareAvailable = false;
             foreach (Regiment regiment in selected)
                 if (Commandable(regiment) && regiment.Kind != Kind.Cavalry && regiment.Kind != Kind.Artillery) squareAvailable = true;
             GUI.enabled = squareAvailable;
-            if (Button(new Rect(1244, 749, 175, 30), "battle.formation.square")) OrderFormation(Formation.Square);
+            if (OrderButton(new Rect(1244, 763, 175, 31), "battle.formation.square", primary != null && primary.Formation == Formation.Square)) OrderFormation(Formation.Square);
             GUI.enabled = primary != null;
-            if (Button(new Rect(892, 786, 166, 31), "battle.fire_at_will")) SetFireOrder(true);
-            if (Button(new Rect(1068, 786, 166, 31), "battle.hold_fire")) SetFireOrder(false);
+            if (OrderButton(new Rect(892, 801, 166, 31), "battle.fire_at_will", primary != null && primary.FireAtWill)) SetFireOrder(true);
+            if (OrderButton(new Rect(1068, 801, 166, 31), "battle.hold_fire", primary != null && !primary.FireAtWill)) SetFireOrder(false);
             bool volleyAvailable = false;
             foreach (Regiment regiment in selected)
             {
@@ -1036,23 +1132,24 @@ namespace PowerAboveAll
                 if (Commandable(regiment) && enemy != null && CanAttack(regiment, enemy)) volleyAvailable = true;
             }
             GUI.enabled = !paused && volleyAvailable;
-            if (Button(new Rect(1244, 786, 175, 31), "battle.volley")) OrderVolley();
+            if (Button(new Rect(1244, 801, 175, 31), "battle.volley")) OrderVolley();
             GUI.enabled = true;
             if (primary != null)
             {
-                Text(new Rect(892, 822, 527, 19), "battle.selected_order", smallStyle,
+                Text(new Rect(892, 837, 527, 19), "battle.selected_order", smallStyle,
                     L.Text("battle.formation." + primary.Formation.ToString().ToLowerInvariant()),
                     L.Text(primary.Moving ? "battle.order_march" : primary.FireAtWill ? "battle.fire_at_will" : "battle.hold_fire"));
-                Text(new Rect(892, 842, 527, 20), VolleyReason(primary), smallStyle);
+                Text(new Rect(892, 857, 527, 20), VolleyReason(primary), smallStyle);
             }
-            else Text(new Rect(892, 827, 527, 30), "battle.select_to_command", smallStyle);
-            Text(new Rect(21, 862, 1395, 32), elapsed < messageUntil ? messageKey : "battle.controls", smallStyle);
-            ShowUnavailableReason(new Rect(1244, 749, 175, 30), !squareAvailable, primary == null ? "battle.select_to_command" : "battle.square_infantry");
-            ShowUnavailableReason(new Rect(1244, 786, 175, 31), paused || !volleyAvailable, primary == null ? "battle.select_to_command" : VolleyReason(primary));
+            else Text(new Rect(892, 842, 527, 32), "battle.select_to_command", smallStyle);
+            Text(new Rect(21, 879, 1395, 20), elapsed < messageUntil ? messageKey : "battle.controls", smallStyle);
+            ShowUnavailableReason(new Rect(1244, 763, 175, 31), !squareAvailable, primary == null ? "battle.select_to_command" : "battle.square_infantry");
+            ShowUnavailableReason(new Rect(1244, 801, 175, 31), paused || !volleyAvailable, primary == null ? "battle.select_to_command" : VolleyReason(primary));
             if (paused && !ended)
             {
-                Panel(new Rect(510, 216, 420, 1), new Color(.89f, .83f, .65f, .8f));
-                Text(new Rect(548, 223, 365, 38), "battle.paused", bodyStyle);
+                Panel(new Rect(510, 144, 420, 40), Paint(0x243B37));
+                Panel(new Rect(510, 144, 420, 2), Paint(0xCAB36F));
+                Text(new Rect(536, 151, 370, 30), "battle.paused", bodyStyle);
             }
         }
 
@@ -1092,7 +1189,7 @@ namespace PowerAboveAll
                 if (position.z <= 0) continue;
                 Vector2 canvasPosition = ViewLayout.ToCanvas(position);
                 float x = canvasPosition.x, y = canvasPosition.y;
-                if (y < 195 || y > 715) continue;
+                if (y < 148 || y > 710) continue;
                 Panel(new Rect(x - 78, y - 18, 156, 36), regiment.Player ? new Color(.15f, .26f, .31f, .90f) : new Color(.39f, .23f, .18f, .90f));
                 Text(new Rect(x - 71, y - 17, 145, 18), "battle.strength_label", smallStyle, regiment.Men, Mathf.RoundToInt(regiment.Morale));
                 Text(new Rect(x - 71, y, 145, 20), "battle.condition." + regiment.Condition.ToString().ToLowerInvariant(), smallStyle);
@@ -1103,10 +1200,10 @@ namespace PowerAboveAll
 
         void DrawResult()
         {
-            Panel(new Rect(0, 96, 1440, 804), new Color(.10f, .14f, .12f, .48f));
+            Panel(new Rect(0, 36, 1440, 864), new Color(.10f, .14f, .12f, .48f));
             Panel(new Rect(377, 243, 700, 431), new Color(.08f, .12f, .10f, .32f));
-            Panel(new Rect(370, 236, 700, 431), new Color(.90f, .88f, .78f));
-            Panel(new Rect(370, 236, 6, 431), new Color(.28f, .37f, .35f));
+            Panel(new Rect(370, 236, 700, 431), Paint(0xF3E7CA));
+            Panel(new Rect(370, 236, 6, 431), outcome.Won ? Paint(0x5F8DA5) : Paint(0x58464D));
             Text(new Rect(404, 257, 625, 23), "battle.dispatch_header", dispatchSmall);
             if (!string.IsNullOrEmpty(setup.RegionNameKey))
                 Text(new Rect(404, 280, 625, 20), "battle.dispatch_place", dispatchSmall, L.Text(setup.RegionNameKey));

@@ -1,6 +1,6 @@
 # Gece kuyruğu
 
-Sırayla alınır. Bir turda bir madde. Bitince `[x]`, engellenirse `[!] ENGELLİ - sebep`.
+On saatlik güncel görevde birbirine bağlı maddeler kontrol noktalarıyla sürdürülür. Bitince `[x]`, engellenirse `[!] ENGELLİ - sebep`.
 Kanıtı `NIGHT_LOG.md` içine yaz. Kurallar: `NIGHT_BRIEF.md`.
 
 Kuyruk biterse baştan başlanmaz. Bunun yerine `output/shots/contact-sheet.jpg` incelenir,
@@ -17,11 +17,11 @@ en zayıf ekran seçilir, yeni bir madde olarak sona yazılır ve o yapılır.
 
 ## Savaş ekranı - en büyük kopukluk
 
-- [ ] **02. Savaş paletini sefer haritasının kimliğine bağla.** Parlak yeşil zemin ve düz mavi nehir
+- [x] **02. Savaş paletini sefer haritasının kimliğine bağla.** Parlak yeşil zemin ve düz mavi nehir
   yerine fildişi, soluk orman yeşili, toprak ve mat altın. Zemin tek düz renk olmasın; hafif doku
   ve ton kırılması olsun. Hesap ve zamanlama değişmez. Kabul: 12-15 numaralı karelerde palet sefer
   haritasıyla aynı dili konuşuyor.
-- [ ] **03. Alt komut şeridini oyunun kontrol diline getir.** Gri dikdörtgen düğme sırası yerine
+- [x] **03. Alt komut şeridini oyunun kontrol diline getir.** Gri dikdörtgen düğme sırası yerine
   askerî emir kartı hissi: net durum, hover ve basılı hâli, kullanılamayan emirde sebep metni.
   Kabul: kare 12 ve 13.
 - [ ] **04. Savaş alanına kompozisyon ver.** Yol, tepe, tarla sınırı, orman kenarı ve ufuk;
@@ -32,21 +32,21 @@ en zayıf ekran seçilir, yeni bir madde olarak sona yazılır ve o yapılır.
   gözle görülür fark ve `shot-check.py` çıktısında `moved` değerinin artması.
 - [ ] **06. Duman ve isabet.** Duman birkaç an kalsın, sürüklensin, kademeli dağılsın; sabit daire
   olmasın. İsabet küçük geri tepme veya düzende açılan yerle okunsun. Kabul: kare 13 ve 14.
-- [ ] **07. Savaş raporunu askerî bildiriye çevir.** Sıradan kart yerine kazanan, gerçek mevcut,
+- [x] **07. Savaş raporunu askerî bildiriye çevir.** Sıradan kart yerine kazanan, gerçek mevcut,
   kayıplar, kısa haber ve tek dönüş düğmesi. Kabul: kare 15.
 
 ## Sefer haritası ve panel
 
-- [ ] **08. Harita kiplerini gerçekten ayır.** Denetim, huzursuzluk, vergi ve ordu kipleri tek
+- [x] **08. Harita kiplerini gerçekten ayır.** Denetim, huzursuzluk, vergi ve ordu kipleri tek
   bakışta farklı okunsun; her kipin kendi lejantı ve vurgusu olsun. Kabul: kareler 05, 06, 07 belirgin
   biçimde farklı.
-- [ ] **09. Varsayılan kaydırma çubuğunu ve IMGUI kontrol hissini kaldır.** Sağ panel, sekmeler ve
+- [x] **09. Varsayılan kaydırma çubuğunu ve IMGUI kontrol hissini kaldır.** Sağ panel, sekmeler ve
   düğmeler tek bir kontrol dili izlesin. Kabul: kare 01 ve 09.
 - [ ] **10. Bölgelere görsel karakter.** Paris, liman ve kırsal aynı görünmesin: şehir işareti,
   peyzaj vurgusu veya kısa yerel tanım. Tarihî ayrıntı uydurulmaz. Kabul: kare 01.
 - [ ] **11. Seçili bölgenin hissi.** Hafif yükselme, kontur, yumuşak aydınlanma ve yan belgeyle açık
   bağ. Hover tıklamadan önce etkileşimi göstersin. Kabul: kare 03.
-- [ ] **12. Kullanılamayan her emir sebebini söylesin.** Soluk düğme yetmez: gıda yetersiz, emir
+- [x] **12. Kullanılamayan her emir sebebini söylesin.** Soluk düğme yetmez: gıda yetersiz, emir
   kullanıldı, ordu burada değil, komşu değil, hareket hakkı bitti. Kabul: kare 03 ve 11.
 
 ## Hafta, ekonomi, günlük

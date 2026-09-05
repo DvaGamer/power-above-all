@@ -26,6 +26,7 @@ namespace PowerAboveAll
         private bool dispatchPending;
         private string dispatchKey;
         private GUIStyle dispatchStyle;
+        private GUIStyle languageStyle, battleIdentityStyle;
         private string SavePath
         {
             get
@@ -52,10 +53,12 @@ namespace PowerAboveAll
             QualitySettings.antiAliasing = 4;
             State = CampaignCore.Create();
             Camera = new GameObject("Atlas camera", typeof(Camera), typeof(AudioListener)).GetComponent<Camera>();
+            Camera.clearFlags = CameraClearFlags.SolidColor;
             var light = new GameObject("Afternoon light", typeof(Light)).GetComponent<Light>();
             light.type = LightType.Directional; light.intensity = 1.15f;
             light.transform.rotation = Quaternion.Euler(48, -32, 0);
             light.shadows = LightShadows.Soft;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(.66f, .69f, .61f);
             Map = new GameObject("State atlas").AddComponent<CampaignMap>();
             Map.Build(Camera);
@@ -71,7 +74,7 @@ namespace PowerAboveAll
         }
         private void Update()
         {
-            Camera.rect = ViewLayout.CameraRect(BattleActive ? new Rect(0, .18f, 1, .73f)
+            Camera.rect = ViewLayout.CameraRect(BattleActive ? ViewLayout.BattleViewport
                 : new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
             if (dispatchPending)
             {
@@ -115,12 +118,13 @@ namespace PowerAboveAll
             GUI.matrix = ViewLayout.GuiMatrix;
             if (BattleActive)
             {
-                GUI.color = new Color(.10f, .17f, .13f);
-                GUI.DrawTexture(new Rect(0, 0, 1440, 96), Texture2D.whiteTexture);
+                GUI.color = new Color(.141f, .231f, .216f);
+                GUI.DrawTexture(new Rect(0, 0, 1440, 36), Texture2D.whiteTexture);
+                // Kameranın altındaki aralığı da boya; önceki atlas karesi görünmemeli.
+                GUI.DrawTexture(new Rect(0, 729, 1440, 9), Texture2D.whiteTexture);
                 GUI.color = Color.white;
                 battle.DrawHud();
-                if (GUI.Button(new Rect(1300, 7, 60, 25), "RU")) SetLanguage("ru");
-                if (GUI.Button(new Rect(1365, 7, 60, 25), "TR")) SetLanguage("tr");
+                DrawBattleLanguageBar();
             }
             else
             {
@@ -131,21 +135,57 @@ namespace PowerAboveAll
                 if (State.PendingPetition)
                 {
                     petition.Draw(this);
-                    if (GUI.Button(new Rect(1015, 116, 55, 26), "RU")) SetLanguage("ru");
-                    if (GUI.Button(new Rect(1080, 116, 55, 26), "TR")) SetLanguage("tr");
+                    petition.DrawLanguageControls(this);
                 }
             }
             if (dispatchPending)
             {
-                GUI.color = new Color(.09f, .16f, .12f, .92f);
+                float arrival = Mathf.SmoothStep(0, 1, Mathf.Clamp01((.9f - (dispatchUntil - Time.unscaledTime)) / .28f));
+                GUI.color = new Color(.08f, .14f, .13f, .48f * arrival);
                 GUI.DrawTexture(new Rect(0, 0, 1440, 900), Texture2D.whiteTexture);
+                var document = new Rect(400 + (1 - arrival) * 30, 318, 640, 230);
+                GUI.color = new Color(.04f, .08f, .07f, .22f * arrival);
+                GUI.DrawTexture(new Rect(document.x + 6, document.y + 8, document.width, document.height), Texture2D.whiteTexture);
+                GUI.color = new Color(.953f, .906f, .792f, arrival);
+                GUI.DrawTexture(document, Texture2D.whiteTexture);
+                GUI.color = new Color(.792f, .702f, .435f, arrival);
+                GUI.DrawTexture(new Rect(document.x + 36, document.y + 27, document.width - 72, 2), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(document.x + 36, document.yMax - 28, document.width - 72, 1), Texture2D.whiteTexture);
                 GUI.color = Color.white;
                 if (dispatchStyle == null) dispatchStyle = new GUIStyle(GUI.skin.label) { fontSize = 30, alignment = TextAnchor.MiddleCenter, wordWrap = true };
-                GUI.Label(new Rect(320, 340, 800, 200), L.Text(dispatchKey, "region." + State.SelectedRegionId), dispatchStyle);
+                dispatchStyle.normal.textColor = new Color(.141f, .231f, .216f, arrival);
+                GUI.Label(new Rect(document.x + 36, document.y + 35, document.width - 72, document.height - 70),
+                    L.Text(dispatchKey, "region." + State.SelectedRegionId), dispatchStyle);
             }
             GUI.matrix = old;
         }
         private void Refresh() { Map.Refresh(State, Mode); }
+        private void DrawBattleLanguageBar()
+        {
+            Color paper = new Color(.953f, .906f, .792f), muted = new Color(.69f, .75f, .68f);
+            if (languageStyle == null)
+            {
+                languageStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, alignment = TextAnchor.MiddleCenter };
+                battleIdentityStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, alignment = TextAnchor.MiddleLeft };
+            }
+            battleIdentityStyle.normal.textColor = paper;
+            GUI.Label(new Rect(22, 0, 620, 36), L.Text("app.battle.identity"), battleIdentityStyle);
+            for (int i = 0; i < 2; i++)
+            {
+                string language = i == 0 ? "ru" : "tr";
+                Rect rect = new Rect(1300 + i * 64, 3, 58, 28);
+                bool selected = L.Language == language;
+                languageStyle.normal.textColor = selected ? paper : muted;
+                GUI.Label(rect, i == 0 ? "RU" : "TR", languageStyle);
+                if (selected)
+                {
+                    Color old = GUI.color; GUI.color = new Color(.792f, .702f, .435f);
+                    GUI.DrawTexture(new Rect(rect.x + 10, rect.yMax - 1, rect.width - 20, 2), Texture2D.whiteTexture);
+                    GUI.color = old;
+                }
+                if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) SetLanguage(language);
+            }
+        }
         public void Feedback(string cue)
         {
             if (sound == null) return;

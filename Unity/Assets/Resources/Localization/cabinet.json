@@ -7,8 +7,8 @@
     },
     {
       "key": "ui.tagline",
-      "ru": "ФРАНЦИЯ · 1789 · КОРОЛЕВСКИЙ СОВЕТ",
-      "tr": "FRANSA · 1789 · KRALİYET KONSEYİ"
+      "ru": "ФРАНЦИЯ · 1789",
+      "tr": "FRANSA · 1789"
     },
     {
       "key": "ui.seal",
@@ -487,8 +487,8 @@
     },
     {
       "key": "ui.week",
-      "ru": "НЕДЕЛЯ {0} · СОВЕТ ПРОДОЛЖАЕТ РАБОТУ",
-      "tr": "HAFTA {0} · KONSEY ÇALIŞMAYA DEVAM EDİYOR"
+      "ru": "НЕДЕЛЯ {0}",
+      "tr": "HAFTA {0}"
     },
     {
       "key": "ui.date",

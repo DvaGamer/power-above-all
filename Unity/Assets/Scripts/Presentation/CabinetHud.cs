@@ -8,9 +8,10 @@ namespace PowerAboveAll
     /// <summary>Ministerial marginalia around a permanently visible atlas. Drawn by GameApp after its 1440×900 GUI transform.</summary>
     public sealed class CabinetHud : MonoBehaviour
     {
-        private readonly Color forest = C("#20362E"), deep = C("#192A24"), paper = C("#F0EADB"), pale = C("#E5E1CC"), ink = C("#314333"), muted = C("#65705B"), brass = C("#CAB781"), red = C("#A36451"), rule = C("#CBCBB2");
+        private readonly Color forest = C("#304F43"), deep = C("#243B37"), paper = C("#F3E7CA"), pale = C("#E9DCB7"), ink = C("#243B37"), muted = C("#53604D"), brass = C("#CAB36F"), red = C("#864B45"), rule = C("#C9C29E");
         private GUIStyle body, small, tiny, title, heading, numeral, button, quietButton, lightBody, lightTiny, mapLabel, cityLabel, tabStyle;
         private readonly Texture2D[] medallions = new Texture2D[4];
+        private Texture2D portraitSheet;
         private float scrollGrabOffset;
         private Font serifFont, sansFont;
         private bool ready, showHelp, confirmNew;
@@ -61,18 +62,19 @@ namespace PowerAboveAll
             serifFont = Font.CreateDynamicFontFromOSFont(new[] { "Georgia", "Times New Roman", "Liberation Serif" }, 20);
             sansFont = Font.CreateDynamicFontFromOSFont(new[] { "Arial", "Segoe UI", "DejaVu Sans" }, 16);
             body = Style(14, ink); small = Style(13, muted); tiny = Style(12, muted); title = Style(29, ink, true); heading = Style(21, ink, true); numeral = Style(28, paper);
-            lightBody = Style(14, paper); lightTiny = Style(11, new Color(.69f,.73f,.64f));
-            mapLabel = Style(15, C("#3D5038"), true); mapLabel.alignment = TextAnchor.MiddleCenter;
-            cityLabel = Style(12, C("#667253"), true); cityLabel.fontStyle = FontStyle.Italic; cityLabel.alignment = TextAnchor.MiddleCenter;
+            lightBody = Style(14, paper); lightTiny = Style(12, C("#D0D4B9"));
+            mapLabel = Style(15, ink, true); mapLabel.alignment = TextAnchor.MiddleCenter;
+            cityLabel = Style(12, C("#435C4B"), true); cityLabel.fontStyle = FontStyle.Italic; cityLabel.alignment = TextAnchor.MiddleCenter;
             button = Style(14, paper); button.alignment = TextAnchor.MiddleCenter;
             quietButton = Style(13, ink); quietButton.alignment = TextAnchor.MiddleCenter;
             tabStyle = Style(12, muted); tabStyle.alignment = TextAnchor.MiddleCenter;
+            portraitSheet=Resources.Load<Texture2D>("Art/PoliticalPortraits-v1");
             for(int i=0;i<medallions.Length;i++)medallions[i]=EngravedMedallion(i);
         }
         private GUIStyle Style(int size, Color color, bool serif = false)
         {
             var style = new GUIStyle(GUI.skin.label) { font=serif?serifFont:sansFont,fontSize=size,wordWrap=true,richText=false,padding=new RectOffset(0,0,0,0),margin=new RectOffset(0,0,0,0) };
-            style.normal.textColor=color;return style;
+            style.normal.textColor=style.hover.textColor=style.active.textColor=style.focused.textColor=color;return style;
         }
         private static Color C(string html){ColorUtility.TryParseHtmlString(html,out var color);return color;}
         private static string T(string key,params object[] args){return L.Text(key,args);}
@@ -145,15 +147,17 @@ namespace PowerAboveAll
             enabled=enabled&&GUI.enabled;
             bool over=rect.Contains(Event.current.mousePosition),down=over&&Input.GetMouseButton(0)&&enabled;
             Color fill=primary?forest:pale;
-            if(over&&enabled)fill=primary?C("#405B40"):C("#D9DFC5");
+            if(over&&enabled)fill=primary?C("#416553"):C("#DEE2BD");
             if(down)fill=Color.Lerp(fill,ink,.14f);
-            if(!enabled)fill=Color.Lerp(fill,paper,.5f);
-            Fill(rect,fill);Border(rect,primary?forest:C("#BCC4A8"));
+            if(!enabled)fill=Color.Lerp(pale,paper,.4f);
+            Fill(rect,fill);Border(rect,enabled&&primary?forest:C("#B9BD99"));
             if(over&&enabled)Fill(new Rect(rect.x+1,rect.yMax-2,rect.width-2,1),brass);
-            bool previous=GUI.enabled;GUI.enabled=previous&&enabled;
+            bool previous=GUI.enabled;GUI.enabled=enabled;
+            bool hit=GUI.Button(rect,GUIContent.none,GUIStyle.none);
             var style=new GUIStyle(primary?button:quietButton);if(down)style.contentOffset=new Vector2(0,1);
-            Color old=GUI.color;if(!enabled)GUI.color=new Color(old.r,old.g,old.b,.47f);
-            bool hit=GUI.Button(rect,text,style);GUI.color=old;GUI.enabled=previous;return hit;
+            if(!enabled)style.normal.textColor=muted;
+            // Etkileşim kapalı olsa da emrin adı okunur; Unity'nin ikinci soldurmasını uygulama.
+            GUI.enabled=true;GUI.Label(rect,text,style);GUI.enabled=previous;return hit;
         }
         private Vector2 BeginMatteScroll(Rect viewport,Vector2 scroll,Rect content,int hint)
         {
@@ -279,7 +283,16 @@ namespace PowerAboveAll
         }
         private void Seal(Rect rect,int variant)
         {
-            GUI.DrawTexture(rect,medallions[Mathf.Clamp(variant,0,medallions.Length-1)],ScaleMode.StretchToFill,true);
+            variant=Mathf.Clamp(variant,0,medallions.Length-1);
+            if(portraitSheet)
+            {
+                var uv=new Rect((variant%2)*.5f,variant<2?.5f:0f,.5f,.5f);
+                float aspect=(float)portraitSheet.width/portraitSheet.height;
+                float width=Mathf.Min(rect.width,rect.height*aspect),height=width/aspect;
+                rect=new Rect(rect.x+(rect.width-width)*.5f,rect.y+(rect.height-height)*.5f,width,height);
+                GUI.DrawTextureWithTexCoords(rect,portraitSheet,uv,true);
+            }
+            else GUI.DrawTexture(rect,medallions[variant],ScaleMode.ScaleToFit,true);
         }
 
         private void Top(GameApp app,EconomyForecast forecast)
@@ -289,14 +302,13 @@ namespace PowerAboveAll
             var brand=new GUIStyle(title);brand.fontSize=24;brand.normal.textColor=paper;
             Text(new Rect(82,23,252,31),T("ui.title"),brand);
             var tagline=new GUIStyle(lightTiny){wordWrap=false,clipping=TextClipping.Clip};
-            while(tagline.fontSize>9&&tagline.CalcSize(new GUIContent(T("ui.tagline"))).x>236)tagline.fontSize--;
             Text(new Rect(84,60,236,18),T("ui.tagline"),tagline);
             Resource(0,337,T("ui.gold"),Animated(0,app.State.Gold),T("ui.weekly",Signed(forecast.NetGold)),brass);
             Resource(1,490,T("ui.food"),Animated(1,app.State.Food),T("ui.weekly",Signed(forecast.NetFood)),brass);
             Resource(2,643,T("ui.supplies"),Animated(2,app.State.MilitarySupplies),T("ui.stock"),brass);
             Resource(3,796,T("ui.troops"),Animated(3,app.State.Troops),T("ui.reserve",Number(app.State.Manpower)),brass);
             Resource(4,949,T("ui.power"),Animated(4,app.State.Power),T("ui.personal"),brass);
-            Resource(5,1102,T("ui.unrest"),Animated(5,CampaignCore.AverageUnrest(app.State)),T("ui.country"),C("#C58B70"));
+            Resource(5,1102,T("ui.unrest"),Animated(5,CampaignCore.AverageUnrest(app.State)),T("ui.country"),C("#DEAB94"));
             var language=new Rect(1275,24,72,32);if(Press(language,T("ui.language")))app.SetLanguage(L.Language=="ru"?"tr":"ru");
             if(Press(new Rect(1359,24,54,32),T("ui.help.short"))){showHelp=!showHelp;app.Feedback("paper");}
             CabinetAudio audio=app.GetComponent<CabinetAudio>();
@@ -309,26 +321,28 @@ namespace PowerAboveAll
         }
         private void Resource(int index,float x,string label,string value,string detail,Color accent)
         {
-            Fill(new Rect(x-16,24,1,48),C("#405344"));Text(new Rect(x,16,140,19),label,lightTiny);
+            Fill(new Rect(x-16,24,1,48),C("#60735D"));Text(new Rect(x,16,140,19),label,lightTiny);
             float emphasis=stockDirection[index]==0?0f:Mathf.Clamp01(1f-(Time.unscaledTime-stockChangedAt[index])/.9f);
             bool benefit=index==5?stockDirection[index]<0:stockDirection[index]>0;
             var style=new GUIStyle(numeral);style.normal.textColor=Color.Lerp(accent,benefit?C("#B9CC9D"):C("#DBAA91"),emphasis);
             style.fontSize=value.Length>8?23:28;
+            style.wordWrap=false;
+            while(style.fontSize>18&&style.CalcSize(new GUIContent(value)).x>142)style.fontSize--;
             Text(new Rect(x,34,142,35),value,style);Text(new Rect(x,71,142,17),detail,lightTiny);
             if(emphasis>0f)Fill(new Rect(x,69,140,1),new Color(style.normal.textColor.r,style.normal.textColor.g,style.normal.textColor.b,emphasis*.6f));
         }
         private void Atlas(GameApp app)
         {
-            Fill(new Rect(245,94,895,43),C("#DFE3CE"));Rule(245,136,895);
+            Fill(new Rect(245,94,895,43),C("#DCE1BC"));Rule(245,136,895);
             float modeWidth=895f/ModeNames.Length;
             for(int i=0;i<ModeNames.Length;i++)
             {
                 Rect rect=new Rect(245+i*modeWidth,94,modeWidth,43);bool active=app.Mode==ModeNames[i];
-                if(active){Fill(rect,C("#EFF0DE"));Fill(new Rect(rect.x+12,rect.yMax-3,rect.width-24,3),C("#7D9067"));}
+                if(active){Fill(rect,paper);Fill(new Rect(rect.x+12,rect.yMax-3,rect.width-24,3),C("#4F7361"));}
                 var style=new GUIStyle(tabStyle);if(active)style.normal.textColor=ink;
                 if(GUI.Button(rect,T("ui.mode."+ModeNames[i]),style)){app.SetMode(ModeNames[i]);app.Feedback("paper");}
             }
-            var mapTitle=new GUIStyle(heading);mapTitle.alignment=TextAnchor.MiddleCenter;mapTitle.normal.textColor=C("#49604D");
+            var mapTitle=new GUIStyle(heading);mapTitle.alignment=TextAnchor.MiddleCenter;mapTitle.normal.textColor=ink;
             Text(new Rect(400,149,585,32),T("ui.atlas.title"),mapTitle);
             var caption=new GUIStyle(tiny);caption.alignment=TextAnchor.MiddleCenter;
             Text(new Rect(420,181,545,18),T("ui.atlas.subtitle"),caption);
@@ -338,19 +352,21 @@ namespace PowerAboveAll
                 Vector2 point=ViewLayout.ToCanvas(screen);float x=point.x,y=point.y;
                 if(x<265||x>1118||y<206||y>749)continue;
                 var style=new GUIStyle(mapLabel);if(definition.Id==app.State.SelectedRegionId){style.fontStyle=FontStyle.Bold;style.normal.textColor=C("#2C422C");}
-                float nameOffset=definition.Id=="champagne"?-18f:definition.Id=="lorraine"?12f:0f;
+                float nameOffset=definition.Id=="champagne"?-18f:0f;
                 Text(new Rect(x-83,y-34+nameOffset,166,24),T("region."+definition.Id),style);
                 Text(new Rect(x-65,y+14,130,19),T("city."+definition.Id),cityLabel);
             }
-            var geography=new GUIStyle(cityLabel);geography.fontSize=18;geography.normal.textColor=C("#6F8A7B");
+            var geography=new GUIStyle(cityLabel);geography.fontSize=18;geography.normal.textColor=C("#486F70");
             Text(new Rect(271,448,132,60),T("ui.atlas.atlantic"),geography);
             Text(new Rect(699,714,300,28),T("ui.atlas.mediterranean"),geography);
             Text(new Rect(306,224,180,24),T("ui.atlas.channel"),geography);
             // Brass compass engraved in the sea, not an interactive control.
-            var compass=new GUIStyle(heading);compass.alignment=TextAnchor.MiddleCenter;compass.normal.textColor=C("#6E826A");
+            var compass=new GUIStyle(heading);compass.alignment=TextAnchor.MiddleCenter;compass.normal.textColor=C("#46665E");
             Text(new Rect(280,654,65,25),T("ui.atlas.north"),tiny);Text(new Rect(280,678,65,45),T("ui.compass"),compass);
-            Fill(new Rect(259,769,868,24),new Color(.90f,.92f,.83f,.86f));
-            Text(new Rect(272,773,665,18),T("ui.legend."+app.Mode),tiny);Text(new Rect(956,773,165,18),T("ui.atlas.scale"),tiny);
+            Fill(new Rect(259,769,868,24),C("#E6DFC0"));
+            Fill(new Rect(272,775,13,12),CampaignMap.ModeColor(app.Mode,0));Border(new Rect(272,775,13,12),rule);
+            Fill(new Rect(289,775,13,12),CampaignMap.ModeColor(app.Mode,1));Border(new Rect(289,775,13,12),rule);
+            Text(new Rect(314,773,623,18),T("ui.legend."+app.Mode),tiny);Text(new Rect(956,773,165,18),T("ui.atlas.scale"),tiny);
         }
 
         private void Province(GameApp app)
@@ -465,15 +481,15 @@ namespace PowerAboveAll
                 var person=app.State.Characters.Find(p=>p.Id==faction.LeaderId);
                 Rule(4,y,242);y+=17;
                 Paragraph(ref y,T("faction."+faction.Id),heading,240,12);
-                Seal(new Rect(6,y+2,52,60),faction.Id=="assembly"?1:faction.Id=="urban"?2:faction.Id=="army"?3:0);
-                float personHeight=64;
+                Seal(new Rect(2,y,78,88),faction.Id=="assembly"?1:faction.Id=="urban"?2:faction.Id=="army"?3:0);
+                float personHeight=88;
                 if(person!=null)
                 {
-                    float nameHeight=body.CalcHeight(new GUIContent(T(person.NameKey)),172);
-                    float roleHeight=small.CalcHeight(new GUIContent(T(person.PositionKey)),172);
-                    Text(new Rect(71,y,172,nameHeight),T(person.NameKey),body);
-                    Text(new Rect(71,y+nameHeight+5,172,roleHeight),T(person.PositionKey),small);
-                    personHeight=Mathf.Max(personHeight,nameHeight+roleHeight+5);
+                    float nameHeight=body.CalcHeight(new GUIContent(T(person.NameKey)),154);
+                    float roleHeight=small.CalcHeight(new GUIContent(T(person.PositionKey)),154);
+                    Text(new Rect(89,y+3,154,nameHeight),T(person.NameKey),body);
+                    Text(new Rect(89,y+nameHeight+8,154,roleHeight),T(person.PositionKey),small);
+                    personHeight=Mathf.Max(personHeight,nameHeight+roleHeight+8);
                 }
                 y+=personHeight+16;
                 Meter(5,y,236,T("ui.approval"),faction.Approval,C("#819168"));y+=46;

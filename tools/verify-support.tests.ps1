@@ -46,7 +46,9 @@ Reject { Assert-CleanLog $badLog } 'Runtime exception marker rejected'
 $compilerLog = Fixture 'compile.log' 'Assets/Test.cs(1,2): error CS1002: ; expected'
 Reject { Assert-CleanLog $compilerLog } 'C# compile error marker rejected'
 $plan = Get-ReviewPlan (Join-Path $PSScriptRoot 'shots.script')
-Check ($plan.Captures.Count -eq 20 -and $plan.Assertions -gt 20 -and $plan.States.Count -eq 3) 'Full review has frames, state evidence and assertions'
+Check ($plan.Captures.Count -eq 27 -and $plan.Assertions -gt 20 -and $plan.States.Count -eq 3) 'Full review has frames, state evidence and assertions'
+$journeyPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'long-campaign.script')
+Check ($journeyPlan.Captures.Count -eq 12 -and $journeyPlan.Assertions -gt 25 -and $journeyPlan.States.Count -eq 4) 'Long campaign review parses six-week evidence and save assertions'
 $badScript = Fixture 'unsafe.script' "new`nexpect Week 0`nshot ../human-file`nquit"
 Reject { Get-ReviewPlan $badScript } 'Artifact path traversal rejected'
 $duplicateScript = Fixture 'duplicate.script' "new`nexpect Week 0`nshot sample`nshot sample`nquit"
@@ -65,5 +67,14 @@ $legacyManaged = Join-Path $fixtureDir 'legacy_Data\Managed'
 New-Item -ItemType Directory -Path $legacyManaged | Out-Null
 [IO.File]::WriteAllText((Join-Path $legacyManaged 'PowerAboveAll.Runtime.dll'), 'old harness', [Text.Encoding]::Unicode)
 Reject { Assert-ReviewProtocol $legacyPlayer } 'Legacy runtime assembly is rejected before any launch'
-if ($PlayerPath) { Check ((Assert-ReviewProtocol $PlayerPath).EndsWith('PowerAboveAll.Runtime.dll')) 'Existing real player protocol verified without launch' }
+$fixtureManifest = @(Get-BuildFileManifest $fixtureDir)
+$runtimeEntry = @($fixtureManifest | Where-Object { $_.path -eq 'fixture_Data/Managed/PowerAboveAll.Runtime.dll' })
+Check ($runtimeEntry.Count -eq 1 -and $runtimeEntry[0].size -eq (Get-Item -LiteralPath $fixtureAssembly).Length -and $runtimeEntry[0].sha256 -match '^[a-f0-9]{64}$') 'Manifest includes nested normalized path, size and SHA256'
+Check (@($fixtureManifest | Where-Object { $_.path.Contains('\') -or $_.path.StartsWith('/') }).Count -eq 0) 'Manifest contains relative slash-normalized paths only'
+if ($PlayerPath) {
+  Check ((Assert-ReviewProtocol $PlayerPath).EndsWith('PowerAboveAll.Runtime.dll')) 'Existing real player protocol verified without launch'
+  $realManifest = @(Get-BuildFileManifest (Split-Path -Parent $PlayerPath))
+  Check (@($realManifest | Where-Object { $_.path -eq 'UnityPlayer.dll' -or $_.path -eq 'Power Above All_Data/resources.assets' }).Count -eq 2) 'Real built engine and resource packages are covered by manifest'
+  Write-Output "Actual player manifest: $($realManifest.Count) files hashed without changing the build."
+}
 Write-Output "$testCount safety checks passed. Fixtures preserved: $fixtureDir"

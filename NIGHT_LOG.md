@@ -3,6 +3,8 @@
 En yeni kayıt en alta eklenir. Her tur bir paragraf: ne değişti, kanıt yolu, sırada ne var.
 Kurallar `NIGHT_BRIEF.md`, görevler `NIGHT_QUEUE.md`.
 
+**Güncel sanat kanıtı, 6 Eylül 01:16 İstanbul.** `output/verify/painted-atlas-final-20260905-221432-805-e022084e/REPORT.md` GREEN:25/25Unity,27PNG/26assert/3JSON,10browser,141dosyalıkmanifest. Root iki dilde atlas/savaş, ekonomik hesap, dört portre, dilekçe, sevk ve raporu gördü. Koyu savaş tabanı kenarı, geçişte kalan9pxatlas ve RUbaşlık taşması düzeltildi. Queue02/03/07/08/09/12 tamamlandı; diğer maddeler kendi kabulüne göre sürer. Sonuç sesinin aynı anda çoğalması ve atlanan ses riski koddan düzeltildi, dinleme kalitesi iddia edilmedi. Sıradaki iş rol ayrıcalıkları ve bölgesel/siyasi yükümlülüklerdir.
+
 ---
 
 **5 Eylül 2026, gece kurulumu (Claude oturumu).** Gece çalışmasının zemini kuruldu, oyun kodunda

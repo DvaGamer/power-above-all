@@ -6,6 +6,7 @@ namespace PowerAboveAll
     public static class ViewLayout
     {
         public const float Width = 1440, Height = 900;
+        public static readonly Rect BattleViewport = new Rect(0, .19f, 1, .77f);
         public static float Scale => Mathf.Min(Screen.width / Width, Screen.height / Height);
         public static Vector2 Offset => new Vector2((Screen.width - Width * Scale) * .5f, (Screen.height - Height * Scale) * .5f);
         public static Matrix4x4 GuiMatrix => Matrix4x4.TRS(Offset, Quaternion.identity, new Vector3(Scale, Scale, 1));

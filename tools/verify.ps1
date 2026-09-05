@@ -70,10 +70,11 @@ if ($gates.Preflight -eq 'PASSED') {
       if ($buildExit -ne 0 -or $buildText -notmatch 'Power Above All build succeeded:') { throw "Build failed or missing completion marker (exit $buildExit); see $buildLog" }
       $PlayerPath = Join-Path $buildDir 'Power Above All.exe'
       $assembly = Assert-ReviewProtocol $PlayerPath
-      $buildReceipt = [ordered]@{ sourceProject = $ProjectPath; playerPath = $PlayerPath; assemblyPath = $assembly; builtUtc = [DateTime]::UtcNow.ToString('O'); playerSha256 = (Get-FileHash -LiteralPath $PlayerPath -Algorithm SHA256).Hash; assemblySha256 = (Get-FileHash -LiteralPath $assembly -Algorithm SHA256).Hash }
-      [IO.File]::WriteAllText((Join-Path $out 'build-result.json'), ($buildReceipt | ConvertTo-Json), [Text.Encoding]::UTF8)
+      $buildFiles = @(Get-BuildFileManifest $buildDir)
+      $buildReceipt = [ordered]@{ sourceProject = $ProjectPath; playerPath = $PlayerPath; assemblyPath = $assembly; builtUtc = [DateTime]::UtcNow.ToString('O'); playerSha256 = (Get-FileHash -LiteralPath $PlayerPath -Algorithm SHA256).Hash; assemblySha256 = (Get-FileHash -LiteralPath $assembly -Algorithm SHA256).Hash; manifestVersion = 1; files = $buildFiles }
+      [IO.File]::WriteAllText((Join-Path $out 'build-result.json'), ($buildReceipt | ConvertTo-Json -Depth 5), [Text.Encoding]::UTF8)
       $gates.Build = 'PASSED: fresh build in this run'
-      Say 'Build: PASSED (fresh output and review protocol 2 confirmed).'
+      Say "Build: PASSED (fresh output, review protocol 2, $($buildFiles.Count) shipped-file hashes)."
     } catch { Failed 'Build' $_.Exception.Message }
   } else { $gates.Build = 'NOT RUN: EditMode gate failed' }
 

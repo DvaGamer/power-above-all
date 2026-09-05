@@ -79,7 +79,7 @@ namespace PowerAboveAll
         private bool armyPositioned;
         private const float MarchDuration = .85f;
         private static readonly Vector3 ArmyOffset = new Vector3(1.35f, 0, .85f);
-        private static readonly Color SelectionInk = new Color(.88f, .82f, .63f);
+        private static readonly Color SelectionInk = new Color(.953f, .906f, .792f);
         private string pulseId;
         private float pulseStarted = -10f;
         private LineRenderer pulseRing;
@@ -91,18 +91,18 @@ namespace PowerAboveAll
             built = true; atlasCamera = camera;
             camera.orthographic = true;
             camera.orthographicSize = 33.5f;
-            camera.backgroundColor = Hex("#A7BAB0");
+            camera.backgroundColor = Hex("#83B0B6");
             mainland = new List<Vector2>();
             for (int i = 0; i < Coast.Length; i += 2) mainland.Add(new Vector2(Coast[i], Coast[i + 1]));
             mainland = SoftenCoast(mainland);
             paperGrain = MakePaperGrain();
-            borderMat = MakeMaterial(Hex("#7F846B"));
-            goldMat = MakeMaterial(Hex("#C8AD67"));
-            hoverMat = MakeMaterial(Hex("#B8B493"));
-            roadMat = MakeMaterial(Hex("#506657"));
+            borderMat = MakeMaterial(Hex("#677960"));
+            goldMat = MakeMaterial(Hex("#CAB36F"));
+            hoverMat = MakeMaterial(Hex("#DCCE9F"));
+            roadMat = MakeMaterial(Hex("#536C57"));
             cityInkMat = MakeAtlasMaterial(Color.white);
             cityInkMat.mainTexture = Texture2D.whiteTexture;
-            MakeFlat("Atlas sea", new List<Vector2> { new Vector2(-700,-600),new Vector2(1500,-600),new Vector2(1500,1600),new Vector2(-700,1600) }, Hex("#A7BAB0"), -.22f);
+            MakeFlat("Atlas sea", new List<Vector2> { new Vector2(-700,-600),new Vector2(1500,-600),new Vector2(1500,1600),new Vector2(-700,1600) }, Hex("#83B0B6"), -.22f);
             AddSurroundings();
             var triangles = Triangulate(mainland);
             foreach (Seed seed in Seeds)
@@ -155,18 +155,18 @@ namespace PowerAboveAll
             foreach (Seed seed in Seeds)
             {
                 var region = CampaignCore.Region(state, seed.Id);
-                float value = 0; Color low = Hex("#A76855"), high = Hex("#A5B68A");
+                float value = 0;
                 switch (mode)
                 {
                     case "unrest": value = 1f - region.Unrest / 100f; break;
                     case "control": value = region.Control / 100f; break;
                     case "influence": value = region.EliteLoyalty / 100f; break;
-                    case "army": value = seed.Id == state.ArmyRegionId ? 1f : .12f; low = Hex("#CEC5A6"); high = Hex("#738F8B"); break;
-                    case "food": value = BaseFood(seed.Id) * (1f - region.Unrest / 200f) / 22f; low = Hex("#CEB17A"); high = Hex("#8EA675"); break;
-                    case "tax": value = BaseTax(seed.Id) * (1f - region.Unrest / 150f) * (.5f + region.Control / 200f) * (.75f + state.Factions.Find(f => f.Id == "assembly").Approval / 200f) / 48f; low = Hex("#CAC1A0"); high = Hex("#B29356"); break;
+                    case "army": value = seed.Id == state.ArmyRegionId ? 1f : .12f; break;
+                    case "food": value = BaseFood(seed.Id) * (1f - region.Unrest / 200f) / 22f; break;
+                    case "tax": value = BaseTax(seed.Id) * (1f - region.Unrest / 150f) * (.5f + region.Control / 200f) * (.75f + state.Factions.Find(f => f.Id == "assembly").Approval / 200f) / 48f; break;
                     default: provinceColors[seed.Id] = seed.Ink; continue;
                 }
-                provinceColors[seed.Id] = Color.Lerp(low, high, Mathf.Clamp01(value));
+                provinceColors[seed.Id] = ModeColor(mode,value);
             }
             bool selectionChanged = selectedId != state.SelectedRegionId;
             bool armyChanged = armyId != state.ArmyRegionId;
@@ -303,6 +303,16 @@ namespace PowerAboveAll
         private Transform NewRoot(string name) { var go = new GameObject(name); go.transform.SetParent(transform, false); return go.transform; }
         private static void ClearChildren(Transform root) { for (int i = root.childCount - 1; i >= 0; --i) { var go = root.GetChild(i).gameObject; go.SetActive(false); UnityEngine.Object.Destroy(go); } }
         private static Color Hex(string value) { ColorUtility.TryParseHtmlString(value, out var color); return color; }
+        // Renk açıklaması ile yüzey aynı paleti kullanır; veri hesabı Refresh içinde değişmez.
+        public static Color ModeColor(string mode,float value)
+        {
+            value=Mathf.Clamp01(value);
+            if(mode=="army")return Color.Lerp(Hex("#E9DCB7"),Hex("#83B0B6"),value);
+            if(mode=="food")return Color.Lerp(Hex("#E7CE98"),Hex("#7F9E80"),value);
+            if(mode=="tax")return Color.Lerp(Hex("#F0E1BA"),Hex("#B79D71"),value);
+            Color low=Hex("#C98270"),middle=Hex("#DDCCA0"),high=Hex("#A9BA88");
+            return value<.5f?Color.Lerp(low,middle,value*2):Color.Lerp(middle,high,(value-.5f)*2);
+        }
         private Material MakeMaterial(Color color) { var shader = Shader.Find("Unlit/Color"); if (!shader) shader = Shader.Find("Sprites/Default"); var material = new Material(shader) { color = color }; owned.Add(material); return material; }
         private Material MakeAtlasMaterial(Color color)
         {
@@ -325,7 +335,9 @@ namespace PowerAboveAll
                 // Yerel doku dizisi simülasyonun rastgele sayı akışını tüketmez.
                 noise = unchecked(noise * 1664525u + 1013904223u);
                 // Üst bitler sütunlarda iki satırlık tekrar ve görünür bant üretmez.
-                float shade = .978f + (noise >> 24) / 255f * .022f;
+                float fibre=(noise >> 24)/255f;
+                float wash=.5f+.5f*Mathf.Sin(x*Mathf.PI*2/size+Mathf.Sin(y*Mathf.PI*2/size)*.6f);
+                float shade = .975f + wash*.015f + fibre*.01f;
                 pixels[y * size + x] = new Color(shade, shade, shade, 1f);
             }
             texture.SetPixels(pixels);
@@ -474,19 +486,19 @@ namespace PowerAboveAll
             easternLand.AddRange(Points(660,570,681,562,704,568,728,581,749,599,771,609,786,631,
                 805,649,819,667,840,687,858,709,882,722,922,769,990,817,1100,840,
                 1200,680,1200,-300,470,-300));
-            MakeFlat("Continental margin", easternLand, Hex("#CDCEB7"), -.05f);
+            MakeFlat("Continental margin", easternLand, Hex("#E4DFC0"), -.05f);
             MakeFlat("Iberian margin", SoftenCoast(Points(285,552,300,580,329,587,358,605,392,609,420,620,
                 448,626,468,611,486,590,518,577,526,598,513,614,497,623,488,643,477,660,469,674,
                 456,688,452,706,446,718,457,746,427,790,200,960,-200,960,-200,760,-95,722,
-                18,690,67,657,123,638,163,624,211,619,242,608,272,578)), Hex("#CDCEB7"), -.05f);
+                18,690,67,657,123,638,163,624,211,619,242,608,272,578)), Hex("#E4DFC0"), -.05f);
             MakeFlat("Channel shore", SoftenCoast(Points(-300,-150,510,-150,465,-30,420,12,383,27,355,20,
                 323,46,287,45,261,57,236,54,210,72,174,69,144,85,114,75,95,87,54,91,
-                25,84,-20,101,-70,97,-120,110,-300,115)), Hex("#D3D4BD"), -.05f);
-            MakeFlat("Corsica inset", new List<Vector2> {new Vector2(776,542),new Vector2(786,566),new Vector2(798,584),new Vector2(788,614),new Vector2(776,638),new Vector2(763,628),new Vector2(755,605),new Vector2(763,573)}, Hex("#BDB790"), .02f);
+                25,84,-20,101,-70,97,-120,110,-300,115)), Hex("#E9E1BF"), -.05f);
+            MakeFlat("Corsica inset", new List<Vector2> {new Vector2(776,542),new Vector2(786,566),new Vector2(798,584),new Vector2(788,614),new Vector2(776,638),new Vector2(763,628),new Vector2(755,605),new Vector2(763,573)}, Hex("#C9C296"), .02f);
         }
         private void AddCoastalEngraving()
         {
-            var waterInk = MakeMaterial(Hex("#96AAA0"));
+            var waterInk = MakeMaterial(Hex("#72A0A8"));
             for (int i = 0; i < mainland.Count; i++)
             {
                 Vector2 a = mainland[i], b = mainland[(i + 1) % mainland.Count], middle = (a + b) * .5f;
@@ -510,7 +522,7 @@ namespace PowerAboveAll
             city.SetParent(provinces[seed.Id].transform, false);
             city.localPosition = World(seed.Point, .14f);
             var drawing = new CityEngraving();
-            Color ink = Hex("#53634D"), faint = Hex("#939874"), wall = Hex("#E0DABD");
+            Color ink = Hex("#3E5A4E"), faint = Hex("#8FA079"), wall = Hex("#F3E7CA");
             bool capital = seed.Id == "ile";
             bool coastal = seed.Id == "brittany" || seed.Id == "normandy";
             bool frontier = seed.Id == "lorraine" || seed.Id == "champagne";
@@ -566,8 +578,8 @@ namespace PowerAboveAll
         }
         private static void EngravedHouse(CityEngraving drawing, float x, float baseline, float width, float height, float roofHeight)
         {
-            Color ink = Hex("#53634D"), wall = Hex("#E0DABD"), shade = Hex("#AAA986");
-            Color roof = Hex("#748267"), roofLight = Hex("#9CA68A");
+            Color ink = Hex("#3E5A4E"), wall = Hex("#F3E7CA"), shade = Hex("#B79D71");
+            Color roof = Hex("#60868B"), roofLight = Hex("#A0BEC0");
             float eaves = baseline + height, ridge = eaves + roofHeight;
             float right = x + width, peak = x + width * .40f, depth = .15f;
             drawing.Shape(shade, right,baseline, right+depth,baseline+.09f, right+depth,eaves+.10f, right,eaves);
@@ -594,12 +606,12 @@ namespace PowerAboveAll
         }
         private void AddEngraving()
         {
-            var river = MakeMaterial(Hex("#849F9D"));
+            var river = MakeMaterial(Hex("#64949D"));
             DrawLine("Seine",Points(540,332,511,297,477,280,450,250,398,232,366,225,332,233,301,219),false,transform,river,.12f,.1f);
             DrawLine("Loire",Points(532,425,512,402,483,406,456,390,440,365,417,342,382,344,341,337,310,332,275,328,224,347),false,transform,river,.13f,.1f);
             DrawLine("Rhone",Points(601,365,587,399,588,435,579,472,576,493,588,554),false,transform,river,.14f,.1f);
             DrawLine("Garonne",Points(435,569,408,538,380,525,344,503,319,489,301,459),false,transform,river,.11f,.1f);
-            var mountain = MakeMaterial(Hex("#A4A181"));
+            var mountain = MakeMaterial(Hex("#9B9D72"));
             for(int i=0;i<18;i++)
             {
                 Vector2 p = i<10 ? new Vector2(601+(i%3)*9,386+i*10) : new Vector2(338+(i-10)*19,582+(i%2)*9);
@@ -610,7 +622,7 @@ namespace PowerAboveAll
             for(int i=0;i<17;i++)
             {
                 float z=-28+i*3.6f;
-                DrawLine("Sea engraving",Points(10,z*12+390,23,z*12+390,35,z*12+389),false,transform,MakeMaterial(Hex("#98AFA4")),.04f,-.1f);
+                DrawLine("Sea engraving",Points(10,z*12+390,23,z*12+390,35,z*12+389),false,transform,MakeMaterial(Hex("#72A0A8")),.04f,-.1f);
             }
         }
         private static List<Vector2> Points(params float[] values) { var p=new List<Vector2>();for(int i=0;i<values.Length;i+=2)p.Add(new Vector2(values[i],values[i+1]));return p; }
@@ -626,7 +638,7 @@ namespace PowerAboveAll
                 new Vector3(0,.72f,-.72f), new Vector3(.72f,.82f,-.66f), new Vector3(1.5f,.71f,-.73f),
                 new Vector3(0,.72f,.72f), new Vector3(.72f,.82f,.66f), new Vector3(1.5f,.71f,.73f)
             }, new List<int> { 0,3,1,1,3,4,1,4,2,2,4,5 });
-            cloth.AddComponent<MeshRenderer>().sharedMaterial = MakeMaterial(Hex("#314F55"));
+            cloth.AddComponent<MeshRenderer>().sharedMaterial = MakeMaterial(Hex("#31535B"));
             Block(armyCloth,new Vector3(.75f,.86f,0),new Vector3(.075f,.04f,1.05f),goldMat,"Standard embroidery");
             Block(armyCloth,new Vector3(.75f,.87f,0),new Vector3(1.05f,.04f,.075f),goldMat,"Standard embroidery");
             var ring = new List<Vector2>();

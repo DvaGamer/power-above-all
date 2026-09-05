@@ -85,6 +85,26 @@ function Assert-ReviewProtocol([string]$PlayerPath) {
   return $assemblyPath
 }
 
+function Get-BuildFileManifest([string]$Directory) {
+  $buildRoot = [IO.Path]::GetFullPath($Directory).TrimEnd('\', '/')
+  $rootInfo = Get-Item -LiteralPath $buildRoot
+  if (-not $rootInfo.PSIsContainer -or ($rootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'Build manifest requires an ordinary local directory.' }
+  $pending = New-Object 'Collections.Generic.Stack[string]'
+  $files = New-Object 'Collections.Generic.List[object]'
+  $pending.Push($buildRoot)
+  while ($pending.Count -gt 0) {
+    foreach ($entry in Get-ChildItem -LiteralPath $pending.Pop() -Force) {
+      if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Build contains a link/reparse point: $($entry.FullName)" }
+      if ($entry.PSIsContainer) { $pending.Push($entry.FullName); continue }
+      $relative = $entry.FullName.Substring($buildRoot.Length + 1).Replace('\', '/')
+      # Get-FileHash dosyayi akisla okur; buyuk kaynak paketleri RAM'e yuklenmez.
+      $files.Add([pscustomobject]@{ path = $relative; size = [long]$entry.Length; sha256 = (Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash.ToLowerInvariant() })
+    }
+  }
+  if ($files.Count -eq 0) { throw 'Build manifest cannot be empty.' }
+  return @($files | Sort-Object path)
+}
+
 function Assert-ReviewResult([string]$Folder, $Plan, [int]$ExitCode) {
   if ($ExitCode -ne 0) { throw "Player review exited $ExitCode." }
   $receiptPath = Join-Path $Folder 'shots-result.json'

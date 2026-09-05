@@ -1,5 +1,5 @@
 # Yerlesik oyuncunun yalitilmis sefer ve goruntu denetimi (ASCII).
-# Komutlar: new lang mode select act week march petition save load panel retreat accept
+# Komutlar: new lang mode select act week march petition save load panel scroll retreat accept
 # expect remember same state wait settle shot quit. Son komut quit olmak zorundadir.
 new
 lang ru
@@ -9,10 +9,24 @@ expect Gold 840
 expect Food 360
 expect Language ru
 shot 01-atlas-ru
+scroll document 600
+wait 0.3
+shot 01b-council-lower-ru
+scroll document 1200
+wait 0.3
+shot 01c-council-dumas-ru
+scroll document 0
 lang tr
 wait 0.3
 expect Language tr
 shot 02-atlas-tr
+scroll document 600
+wait 0.3
+shot 02b-council-lower-tr
+scroll document 1200
+wait 0.3
+shot 02c-council-dumas-tr
+scroll document 0
 lang ru
 act bread
 expect Food 320
@@ -46,6 +60,12 @@ shot 08-map-tax
 mode army
 wait 0.3
 shot 09-map-army
+mode food
+wait 0.3
+shot 09b-map-food
+mode influence
+wait 0.3
+shot 09c-map-influence
 mode control
 week
 expect Week 1
@@ -75,6 +95,8 @@ select champagne
 wait 0.3
 shot 14-march-ready
 march
+wait 0.25
+shot 14b-courier-dispatch
 wait 2
 expect BattleActive True
 shot 15-battle-ru

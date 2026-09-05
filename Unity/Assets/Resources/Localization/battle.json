@@ -20,6 +20,8 @@
     { "key": "battle.regiment_strength", "ru": "{0} чел. · {1}", "tr": "{0} asker · {1}" },
     { "key": "battle.regiment_morale", "ru": "Дух {0} · строй {1}", "tr": "Moral {0} · düzen {1}" },
     { "key": "battle.regiment_reload", "ru": "Заряды {0} · {1} с · устал. {2}", "tr": "Atış {0} · {1} sn · yorgun. {2}" },
+    { "key": "battle.regiment_melee", "ru": "Рукопашная · устал. {0}", "tr": "Yakın dövüş · yorgun. {0}" },
+    { "key": "battle.orders_header", "ru": "ПРИКАЗЫ ВЫБРАННЫМ ПОЛКАМ", "tr": "SEÇİLİ BİRLİKLERE EMİRLER" },
     { "key": "battle.melee", "ru": "рукопашная", "tr": "yakın dövüş" },
     { "key": "battle.formation.line", "ru": "Линия", "tr": "Hat" },
     { "key": "battle.formation.column", "ru": "Колонна", "tr": "Kol" },

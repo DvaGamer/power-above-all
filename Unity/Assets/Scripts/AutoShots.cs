@@ -108,7 +108,7 @@ namespace PowerAboveAll
                 {
                     case "new": RequireIdle(app); app.NewCampaign(); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
-                    case "mode": RequireChoice(value, "control", "unrest", "tax", "army"); app.SetMode(value); break;
+                    case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
                     case "act": RequireIdle(app); app.Act(value); break;
                     case "week": RequireIdle(app); app.NextWeek(); break;
@@ -119,6 +119,14 @@ namespace PowerAboveAll
                     case "panel":
                         RequireChoice(value, "council", "economy", "journal");
                         Field(typeof(CabinetHud), "document").SetValue(app.GetComponent<CabinetHud>(), value); break;
+                    case "scroll":
+                        RequireIdle(app);
+                        string[] scroll = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (scroll.Length != 2 || scroll[0] != "document" ||
+                            !float.TryParse(scroll[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float offset) ||
+                            float.IsNaN(offset) || float.IsInfinity(offset) || offset < 0 || offset > 5000)
+                            throw new InvalidDataException("scroll requires document and an offset between 0 and 5000.");
+                        Field(typeof(CabinetHud), "documentScroll").SetValue(app.GetComponent<CabinetHud>(), new Vector2(0, offset)); break;
                     case "retreat":
                         if (!app.BattleActive) throw new InvalidOperationException("Cannot retreat outside battle.");
                         Method(typeof(TacticalBattle), "Finish").Invoke(app.GetComponent<TacticalBattle>(), new object[] { false, true }); break;
@@ -158,7 +166,8 @@ namespace PowerAboveAll
             if (space < 1 || space == value.Length - 1) throw new InvalidDataException("expect requires a field and value: " + value);
             string key = value.Substring(0, space), expected = value.Substring(space + 1).Trim();
             object actual = key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
-                key == "Language" ? L.Language : key == "Mode" ? app.Mode : Field(typeof(CampaignState), key).GetValue(app.State);
+                key == "Language" ? L.Language : key == "Mode" ? app.Mode : key == "ResolvedBattleCount" ?
+                app.State.ResolvedBattles.Count : Field(typeof(CampaignState), key).GetValue(app.State);
             string observed = Convert.ToString(actual, CultureInfo.InvariantCulture);
             if (observed != expected) throw new InvalidOperationException("Expected " + value + ", observed=" + observed);
             assertions++; report.Add("  PASS " + value);
