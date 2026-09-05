@@ -37,3 +37,19 @@ Durum: salt okunur görsel değerlendirme ve öneri. Assets değiştirilmedi, Un
 - Sahneye ek tabela/duvar/çit/taş/bina gelmemeli. Yeni tepe vurgusu tek görünür değişiklik olarak okunmalı. B ve C ancak ayrı değerlendirme ve ayrı kare karşılaştırmasından sonra düşünülebilir.
 
 Bu öneri tek başına 04 maddesinin bütün kapsamını tamamlamış sayılmaz; düz su şeridi ve geometrik geçit için C seçeneği ayrı sonraki aday olarak kalır.
+
+## A uygulaması — kaynak freeze
+
+- Root `0b108de` kontrol noktasından sonra yalnız `TacticalBattle.PaintMeadow` düzenlemesine izin verdi. Üç küçük ton yaklaşımı düşünüldü: yalnız fiziksel eğim vurgusu, sıcak tepe/serin yamaç guaj yıkaması, kesik açık renk kontur darbeleri. İkinci seçildi; birincisi mevcut aydınlatmada zayıf kalabilir, üçüncüsü arazi kuralı sınırı gibi okunabilir.
+- Eski `(16,15)` yarıçaplı radyal açık leke kaldırıldı. Yeni ışık ve gölge yalnız gerçek `(−20,15)/(13,12)` elipsinde; kosinüs yüksekliğinin tepe oranı ve sinüs omzu yönlü geniş karışımlara çevrildi. Dış yüzde 22 içinde yumuşak sıfırlanır. Mevcut sahne ışığıyla uyumlu `(+x,−z)` tarafı güneşlidir; diğer yamaç yeşil/serin kalır, gri halka olmaz.
+- Tepe güneşinin tepe merkezindeki karışımı `.23`, eğim üzerindeki ek karışımı en çok `.32`; karşı yamaç serin karışımı en çok `.64`. Renkler var olan `sun/cool/sage` ailesi. Bahçe maskesinde yeni ışık/gölge uygulanmaz; önceki bahçe yıkaması korunur. Ön plan, dere kıyısı, tarla, gren ve doku yaşam döngüsü kodu aynı.
+- `TerrainHeight`, mesh, ışık, kamera, alaylar, API, simülasyon ve RNG değiştirilmedi. Assets farkı yalnız bu metottadır: 15 eklenen / 2 çıkarılan satır; `git diff --check` temiz. Unity/oyuncu/derleme/commit çalıştırılmadı. Root aynı zafer rotası ve önce/sonra gerçek kareyle kabul edecek; burada görsel kabul iddiası yoktur.
+
+## Gerçek önce/sonra incelemesi
+
+- Önce: `tactical-trust-first-20260905-233324-829-3db06d4c/shots/02-deployment-paused.png`. Sonra: `hill-natural-victory-20260905-234734-753-1141ea63/shots/02-deployment-paused.png` ve `03-issued-orders.png` (hepsi `output/verify/` altında). Üçü de yerel görüntü aracıyla açılıp incelendi; yeni oyuncu başlatılmadı.
+- Tepe artık bahçenin arkasında sola düşen serin yamaç ve sağ/alt tarafta yumuşak aydınlık yüz olarak okunuyor. Önceki geniş soluk lekeye göre hacmi daha belirgin. Kapalı koyu halka, sert renk çemberi veya gri krater oluşmamış; kenar çayıra yumuşakça karışıyor.
+- Açık yeşil zemin, mavi su, koyu bahçe ve sıcak yol arasındaki önceki ilişki korunmuş. Tepe üzerindeki mercan birlikler ile alttaki mavi birlikler kaybolmuyor; tepe tonu yeni taktik işaret gibi öne çıkmıyor. Bahçe üst kenarında göze çarpan sert renk dikişi görülmedi.
+- Sınır: 1440 × 900 bütün karede sonuç hâlâ ölçülü bir alçak tepe. Büyük ve dramatik bir arazi kütlesi veya bütün 04 maddesinin tamamlandığı iddia edilmemeli. İlk bakışta en güçlü işaretler hâlâ bahçe, dere ve hedef halkası; bu korunmalı.
+- **Karar:** Bu dar değişikliği görsel olarak koru; gölgeyi geri almak veya aynı pakette daha da koyulaştırmak gerekmiyor. Daha güçlü bir yamaç karaltısı üstteki alaylarla yarışabilir. Sonraki ayrı 04 adımı yapılacaksa yeni bir gölge artışı yerine önceden belgelenmiş geçit kompozisyonu C değerlendirilmeli.
+- Yeni `02` karesinde eski kareye ek olarak süvari seçimi/bilgi etiketi de var; `03` topçu emirlerini gösteriyor. Bunlar doku değişiminin sonucu gibi değerlendirilmedi. Bu inceleme yalnız görseldir; root'un devam eden doğal zafer/test kapısının bitiş sonucu burada varsayılmadı. Assets freeze korundu.

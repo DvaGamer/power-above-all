@@ -1,4 +1,4 @@
-# Ilk kesif: sonuc normal savastan dogar; bu script zaferi garanti etmez.
+# Ilk gercek kosuda gozlenen taktik: dogal zafer sonraki degisikliklerde korunmali.
 new
 lang ru
 select champagne
@@ -51,6 +51,7 @@ battle state 05-committed-forces
 shot 05-contested-crossing
 battle wait ended 120
 expect BattleEnded True
+expect BattleWon True
 expect BattleHasOutcome True
 battle state 06-natural-outcome
 shot 06-natural-report-ru

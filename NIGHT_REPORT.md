@@ -4,6 +4,8 @@
 
 ## Doğrulanmış kontrol noktası
 
+- **23:53 UTC:** `hill-natural-victory-20260905-234734-753-1141ea63` ayrıca GREEN92Unity/9PNG/15kontrol/8JSON/10tarayıcı; zafer açık kabul koşulu oldu ve aynı125,8s/196kayıp/+24sonucu doğdu. Root ve görsel ajan gerçek tepe ışık/gölgesini kabul etti. `native-input-20260905-235035-73515bcc` gerçek mouse/ok/Enter/koşullara kaydırma incelemesi nativeexit0 ve4kontrol/2PNG/1JSON ilePARTIAL; bu yeniden kullanılan build incelemesidir. Önceki native ok tuşu hatası araçtaki scan/extended kodlaması düzeltilince çözüldü; eski RED çıktısı korundu.
+
 - **23:36 UTC yeni iki kapı GREEN:** `tactical-trust-first-20260905-233324-829-3db06d4c` ve `patron-trust-journey-20260905-233615-111-60fec1ea`. Her biri92 Unity testi, taze DX11 build,10 tarayıcı testi ve141 dosya manifesti.
 - İlk gerçek taktik sonuç: normal seçim/hareket/düzen/ateş/nişanlı salvo emirleriyle125,8 saniyede konvoy zaferi;1200 kişiden196 kayıp,24 teçhizat.9 PNG/14 kontrol/8 JSON; rapor bir kez sefere geçti ve kayıt/yükleme eşit kaldı. Root RU raporunu gördü. Sonraki regresyon senaryosu artık açıkça zafer bekleyecek.
 - Güven rotası:20 haftada5 temerrüt, Valcourt ilişki0 iken avans reddi; siyasi sorumluluk Güç35→29/ilişki0→4; yeni avans ve22. haftada ödeme, ilişki8.6 PNG/15 kontrol/3 JSON. Root iki dilde ret ve telafi ekranını gördü. Eski bölgesel ve kurumsal kayıplar silinmedi.

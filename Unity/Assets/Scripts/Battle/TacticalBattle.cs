@@ -487,9 +487,22 @@ namespace PowerAboveAll
             for (int z = 0; z < size; z++) for (int x = 0; x < size; x++)
             {
                 float px = x * 84f / (size - 1) - 42, pz = z * 68f / (size - 1) - 32;
-                float slope = Mathf.Clamp01(1 - new Vector2((px + 20) / 16, (pz - 15) / 15).magnitude);
                 float foreground = Mathf.Clamp01(1 - new Vector2((px + 13) / 33, (pz + 22) / 16).magnitude);
-                Color colour = Color.Lerp(sage, sun, Mathf.Max(slope * .70f, foreground * .38f));
+                Color colour = Color.Lerp(sage, sun, foreground * .38f);
+                float hillX = (px + 20) / 13, hillZ = (pz - 15) / 12;
+                float hillDistance = Mathf.Sqrt(hillX * hillX + hillZ * hillZ);
+                if (hillDistance < 1 && !InOrchard(new Vector3(px, 0, pz)))
+                {
+                    // Gerçek kosinüs tepesinin hacmi; yön mevcut sahne ışığıyla uyumludur.
+                    float feather = Mathf.SmoothStep(0, 1, Mathf.Clamp01((1 - hillDistance) / .22f));
+                    float shoulder = Mathf.Sin(hillDistance * Mathf.PI);
+                    float crest = (1 + Mathf.Cos(hillDistance * Mathf.PI)) * .5f;
+                    float facing = (hillX * .53f - hillZ * .848f) / Mathf.Max(.001f, hillDistance);
+                    float lightWash = (Mathf.Max(0, facing) * shoulder * .32f + crest * .23f) * feather;
+                    float shadeWash = Mathf.Max(0, -facing) * shoulder * .64f * feather;
+                    colour = Color.Lerp(colour, sun, lightWash);
+                    colour = Color.Lerp(colour, cool, shadeWash);
+                }
                 float creekBank = Mathf.Clamp01(1 - Mathf.Abs(px - 6) / 4.1f);
                 colour = Color.Lerp(colour, cool, creekBank * .33f);
                 if (InOrchard(new Vector3(px, 0, pz))) colour = Color.Lerp(colour, cool, .26f);
