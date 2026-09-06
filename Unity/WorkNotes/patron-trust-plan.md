@@ -29,3 +29,13 @@ Yeni kalıcı alan gerekmez: rol→hami eşlemesi ve mevcut ilişki yeterli. Ön
 3. Dumas0 ve bütün ekonomik kaynaklar0: telafi mümkündür; yeni askeri yardım hâlâ mevcut Güç/yaşayan ordu koşullarına bağlıdır. Meclis0 için tek kullanımlık `negotiate` yeniden icat edilmez. Normal eylemler ve haftalar güven gerekçesiyle bloke edilmez.
 
 Bu öneri önceki temerrüt maliyetine ek yeni siyasi bedel getirir; uygulanmadan önce sonraki 24 haftalık rota ile ölçülmelidir. Doğrudan patron güvenine odaklanan sınırlı bir seçimdir, kapsamlı diplomasi değildir.
+
+## 0b108de sonrasında uygulama denetimi
+
+`CampaignPatronTrust.cs`, `PatronTrustTests.cs` ve `CanIssueMandate/ResolveMandate` salt okunur incelendi. Root'un bildirdiği gerçek kapı92 Unity testi PASS; ayrıca22 haftalık güven akışı GREEN. Bu denetimde yeni süreç çalıştırılmadı.
+
+- Geçerli sefer durumundan ulaşılabilen yeni ücretsiz döngü veya eski sözün fiyatını değiştiren hata bulunmadı. Telafi `NextMandateWeek` alanını değiştirmez; ilişki0→4 olduğunda ikinci telafi reddedilir. Açık söz telafiyi engeller ama kendi eski tutarıyla ödenebilir.
+- `GetPatronRepairTerms` önceki önerinin nominal bedeli yerine kalan Güç ile sınırlanmış **gerçek** bedeli gösterir: örneğin Güç2,5 için kraliyet maliyeti2,5. Bu, uygulanan tutarla tutarlıdır. Güç0'daki telafi yeni yardımın Güç10 eşiğini kaldırmaz.
+- “Telafi → avans → hemen temerrüt” tekrar edilebilir bir siyasi stratejidir; aynı haftada sınırsız kaynak değildir. İlk ihraç dört haftalık beklemeyi kurar, ihlal/telafi Güç harcar. Güç sınırına yakınken gerçek toplam bedelin sınırlanması mevcut0 tabanının açık sonucudur; yeni kaynak üretim açığı değildir.
+- Dumas ilişkisi0 iken mevcut zafer +2 ilişki vererek yeni yardım erişimini onarabilir. Yürüyüş ve gerçek muharebe gerektiren bu yol yararlı doğal toparlanmadır; diğer patronlara yanlışlıkla uygulanmaz.
+- Mevcut13 test önizleme saflığı, yalnız kişisel değişiklik, reddin atomikliği, üç eski söz, sıfır stok/Güç, kesirli maliyet, dilekçe önceliği, doğal beş temerrüt ve eski rolü kapsıyor. Küçük ek entegrasyon önerisi: bekleme sırasında telafi → yeni ihraç reddi; süre dolunca ihraç/erken ihlal/telafi → aynı haftada ikinci ihraç yine reddi. Kaynakta bu davranış doğru; birleşik akışı ayrıca sabitlemek yararlı olur.

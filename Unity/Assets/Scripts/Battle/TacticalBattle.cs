@@ -573,7 +573,7 @@ namespace PowerAboveAll
             edge.receiveShadows = backing.receiveShadows = false;
             BuildCreekReach("Creek north", 5, 36);
             BuildCreekReach("Creek south", -32, -3);
-            Primitive("Crossing dirt", PrimitiveType.Cube, world.transform, new Vector3(6, .035f, 1), new Vector3(6, .06f, 7), soil);
+            BuildDryFord();
             BuildRuralApproach();
             for (int i = 0; i < 20; i++)
             {
@@ -609,6 +609,32 @@ namespace PowerAboveAll
                 float angle = i * Mathf.PI * 2 / 40;
                 Primitive("Convoy capture boundary", PrimitiveType.Cube, world.transform, convoy + new Vector3(Mathf.Sin(angle) * 6.5f, .12f, Mathf.Cos(angle) * 6.5f), new Vector3(.45f, .1f, .45f), gold);
             }
+        }
+
+        void BuildDryFord()
+        {
+            // Yol kıyıda genişler; gerçek dere şeridindeki bütün kuru geçit -3..5 olarak görünür.
+            float[] across = { -.5f, .9f, 2.1f, 3.35f, 4, 5.25f, 6.75f, 8, 8.55f, 9.75f, 11.1f, 12.5f };
+            float[] south = { -.54f, -.80f, -1.85f, -2.65f, -3, -3, -3, -3, -2.83f, -1.60f, .38f, 1.37f };
+            float[] north = { 1.10f, 1.72f, 3.55f, 4.70f, 5, 5, 5, 5, 5.16f, 4.75f, 3.35f, 3 };
+            Vector3[] vertices = new Vector3[across.Length * 2];
+            int[] triangles = new int[(across.Length - 1) * 6];
+            for (int i = 0; i < across.Length; i++)
+            {
+                // Eski toprak parçasının üst yüzeyiyle aynı yükseklik; yeni basamak veya engel yok.
+                vertices[i * 2] = new Vector3(across[i], .065f, north[i]);
+                vertices[i * 2 + 1] = new Vector3(across[i], .065f, south[i]);
+                if (i == across.Length - 1) continue;
+                int triangle = i * 6, vertex = i * 2;
+                triangles[triangle] = vertex; triangles[triangle + 1] = vertex + 2; triangles[triangle + 2] = vertex + 1;
+                triangles[triangle + 3] = vertex + 1; triangles[triangle + 4] = vertex + 2; triangles[triangle + 5] = vertex + 3;
+            }
+            Mesh mesh = new Mesh { name = "Dry ford joining the road", vertices = vertices, triangles = triangles };
+            mesh.RecalculateNormals(); meshes.Add(mesh);
+            GameObject ford = new GameObject("Dry ford"); ford.transform.SetParent(world.transform, false);
+            ford.AddComponent<MeshFilter>().sharedMesh = mesh;
+            MeshRenderer renderer = ford.AddComponent<MeshRenderer>(); renderer.sharedMaterial = soil;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
 
         void BuildCreekReach(string name, float start, float end)

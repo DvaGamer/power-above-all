@@ -2,6 +2,16 @@
 
 ## Geliştirme altında — Unreleased
 
+### 6 Eylül 2026 — gece kontrol noktaları
+
+- Üç başlangıç rolü, ayrıcalık karşılığında süreli sözler ve hami güveni: temerrüt yeni yardımı kapatır, siyasi telafi erişimi geri açabilir; eski borç/bölgesel sonuçlar korunur.
+- Bölgesel vergi tatili: dört gerçek gelir hesabında bir ilin vergisi bırakılır, direnç azalabilir ve orduya barışçıl geçiş açılabilir. Olağanüstü vergi sözleşmeyi bozar; v3arşiv v1/v2 kayıtlarını açıkça taşır.
+- Guaj atlas ve tepe, 12 şehir silueti, 4 kurgusal portre ve doğal yol–sığ geçit bağlantısı; açık mat kâğıt ile koyu mürekkep paleti. İşe alımın haftalık ek gideri ve RU/TR yardım metni okunur.
+- Ortak taktik komutlar, aynı adımda karşılıklı salvo ve cephanesiz yakın temas. Gerçek oyuncuda125.803s doğal zafer/196kayıp/+24teçhizat ve tek sefer aktarımı doğrulandı.
+- Son tam kapı128Unity/10tarayıcıPASS ve taze141dosyalık Windowsmanifesti. Kullanıcı kaydı korunur; launcher en son bütün kapıları geçen build'i açar. Ayrıntı ve yeniden kullanılan build/nativeinput incelemelerinin sınırları NIGHT_REPORT içinde.
+
+### Önceki geliştirme kayıtları
+
 - Unity 6000.3.23f1 kuruldu: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`. İlk başlatmadaki lisans hatasından sonra kullanıcı lisansı etkinleştirdi; Editor yeniden açıldı ve paket/proje içe aktarımı başladı.
 - `OPEN_UNITY.cmd` proje başlatıcısı ve `Unity/Assets/Scenes/Main.unity` başlangıç sahnesi eklendi. Tarayıcı 0.1 referans olarak korunuyor.
 - Unity kaynaklarına atlas, belge panelleri, taktik savaş, kayıt bağlantısı ve Rusça/Türkçe yerelleştirme eklendi.

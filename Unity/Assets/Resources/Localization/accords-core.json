@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {"key":"log.accord.ready","ru":"Условия налоговых каникул готовы к подписи.","tr":"Vergi tatilinin şartları imzaya hazır."},
+    {"key":"log.accord.granted","ru":"{0}: предоставлены налоговые каникулы на {1} недельных расчёта. Обычный налог за это время не взимается и не станет долгом.","tr":"{0}: {1} haftalık hesap için vergi tatili tanındı. Bu sürede olağan vergi alınmaz ve sonradan borca dönüşmez."},
+    {"key":"log.accord.broken","ru":"{0}: чрезвычайный сбор нарушил налоговые каникулы. Сопротивление усилилось; Морель и Собрание потеряли доверие к вашему слову.","tr":"{0}: olağanüstü tahsilat vergi tatilini bozdu. Direniş arttı; Morel ve Meclis sözünüze olan güvenini kaybetti."},
+    {"key":"log.accord.completed","ru":"{0}: четыре расчёта налоговых каникул завершены. Морель признал выполненное соглашение. Обычный налог возобновится со следующего расчёта, без взыскания прошлых сумм.","tr":"{0}: vergi tatilinin dört hesabı tamamlandı. Morel anlaşmanın tutulduğunu kabul etti. Olağan vergi gelecek hesapta döner; geçmiş tutarlar tahsil edilmez."},
+    {"key":"error.accord.state","ru":"Данные регионального соглашения некорректны.","tr":"Bölgesel anlaşma verileri geçersiz."},
+    {"key":"error.accord.active","ru":"{0}: налоговые каникулы ещё действуют. Одновременно доступно одно соглашение.","tr":"{0}: vergi tatili sürüyor. Aynı anda tek anlaşma yapılabilir."},
+    {"key":"error.accord.cooldown","ru":"Новое соглашение можно предложить через {0} нед. Нарушение прежнего соглашения не сокращает этот срок.","tr":"Yeni anlaşma {0} hafta sonra önerilebilir. Önceki anlaşmayı bozmak bu süreyi kısaltmaz."},
+    {"key":"error.accord.calendar","ru":"До предела календаря не осталось четырёх расчётов для налоговых каникул.","tr":"Takvim sınırına kadar vergi tatili için dört hesap kalmadı."}
+  ]
+}

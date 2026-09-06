@@ -47,6 +47,9 @@ namespace PowerAboveAll
         public bool PendingPetition, PetitionResolved;
         [System.Runtime.Serialization.OptionalField] public string RoleId;
         [System.Runtime.Serialization.OptionalField] public int NextMandateWeek;
+        // v1/v2 arşivleri bu iki alanı taşımaz; v3 wire sözleşmesi varlıklarını ayrıca doğrular.
+        [System.Runtime.Serialization.OptionalField] public string AccordRegionId = "";
+        [System.Runtime.Serialization.OptionalField] public int AccordUntilWeek;
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -138,10 +141,20 @@ namespace PowerAboveAll
         // Taxes depend on unrest, actual government control and Assembly approval.
         // Weekly army cost includes 36 gold to replenish 18 military supplies.
         public static EconomyForecast Forecast(CampaignState s)
+        { return ForecastWithRegionalAccord(s, HasRegionalAccord(s) ? s.AccordRegionId : null, null, 0, 0); }
+
+        // Gerçek hesap ve salt okunur anlaşma önizlemesi aynı yuvarlama/üretim yolunu kullanır.
+        private static EconomyForecast ForecastWithRegionalAccord(CampaignState s,string exemptRegion,string adjustedRegion,float unrestDelta,float controlDelta)
         {
             double tax=0,food=0;
             foreach(var d in Regions)
-            { var r=Region(s,d.Id);tax+=d.BaseTax*(1-r.Unrest/150f)*(.5f+r.Control/200f);food+=d.BaseFood*(1-r.Unrest/200f); }
+            {
+                var r=Region(s,d.Id);
+                float unrest=d.Id==adjustedRegion?Clamp(r.Unrest+unrestDelta):r.Unrest;
+                float control=d.Id==adjustedRegion?Clamp(r.Control+controlDelta):r.Control;
+                if(d.Id!=exemptRegion)tax+=d.BaseTax*(1-unrest/150f)*(.5f+control/200f);
+                food+=d.BaseFood*(1-unrest/200f);
+            }
             var f=new EconomyForecast {
                 TaxIncome=Round(tax*(.75f+Faction(s,"assembly").Approval/200f)),
                 ArmyCost=(int)Math.Ceiling(s.Troops/12d)+(s.Troops>0||s.MilitarySupplies<120?36:0),Production=Round(food),
@@ -165,6 +178,7 @@ namespace PowerAboveAll
                 case "tax":
                     if(r.TaxUsed)return Result(false,"error.used");
                     if(s.Gold>MaximumStock-100)return Result(false,"error.capacity");
+                    BreakRegionalAccordForTax(s,id);
                     s.Gold+=100;r.Unrest=Clamp(r.Unrest+12);r.EliteLoyalty=Clamp(r.EliteLoyalty-4);r.TaxUsed=true;
                     urban.Approval=Clamp(urban.Approval-3);Faction(s,"crown").Approval=Clamp(Faction(s,"crown").Approval+1);
                     return Record(s,"log.tax","region."+id);
@@ -308,6 +322,7 @@ namespace PowerAboveAll
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
+            CompleteRegionalAccordAfterWeek(s);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -317,6 +332,7 @@ namespace PowerAboveAll
         {
             ValidateBase(s);
             ValidateRoleState(s);
+            ValidateRegionalAccordState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

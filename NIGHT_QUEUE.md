@@ -42,8 +42,8 @@ en zayıf ekran seçilir, yeni bir madde olarak sona yazılır ve o yapılır.
   biçimde farklı.
 - [x] **09. Varsayılan kaydırma çubuğunu ve IMGUI kontrol hissini kaldır.** Sağ panel, sekmeler ve
   düğmeler tek bir kontrol dili izlesin. Kabul: kare 01 ve 09.
-- [ ] **10. Bölgelere görsel karakter.** Paris, liman ve kırsal aynı görünmesin: şehir işareti,
-  peyzaj vurgusu veya kısa yerel tanım. Tarihî ayrıntı uydurulmaz. Kabul: kare 01.
+- [x] **10. Bölgelere görsel karakter.** Paris, liman ve kırsal aynı görünmesin: şehir işareti,
+  peyzaj vurgusu veya kısa yerel tanım. Tarihî ayrıntı uydurulmaz. Kabul: `upkeep-help-20260906-000313-242-91cc7cbc/shots/01-atlas-ru.png` ve02TR,12 farklı şehir minyatürü; tarihî bina doğruluğu iddiası yok.
 - [ ] **11. Seçili bölgenin hissi.** Hafif yükselme, kontur, yumuşak aydınlanma ve yan belgeyle açık
   bağ. Hover tıklamadan önce etkileşimi göstersin. Kabul: kare 03.
 - [x] **12. Kullanılamayan her emir sebebini söylesin.** Soluk düğme yetmez: gıda yetersiz, emir
@@ -68,13 +68,10 @@ en zayıf ekran seçilir, yeni bir madde olarak sona yazılır ve o yapılır.
 
 ## Oynanabilirlik
 
-- [ ] **18. Seferin bir sonu olsun.** Şu anda kampanya hiç bitmiyor: huzursuzluk 100, ordu 0 iken
-  bile hafta ilerliyor. En küçük çözüm: açık bir kayıp ve açık bir kazanç koşulu, dünya içi bir
-  kapanış ekranı. Yeni sistem kurma; mevcut göstergeleri kullan.
-  *Kullanıcı bu maddeyi istemiyorsa satırı silmesi yeterlidir.*
-- [ ] **19. Baştan sona elle oynanan tur.** `tools\shots.script` üzerinden en az 6 hafta ve iki
+- [ ] **18. Seferde bölüm değerlendirmesi.** Kesin zafer/kayıp ve kampanya uzunluğu kullanıcı tarafından seçilmedi. Önce üç konsept değerlendir; toparlanabilen ordu0 durumunu zorunlu oyun sonuna çevirmeden, oyuncunun siyasi/ekonomik sonuçlarını okuyabildiği isteğe bağlı bir değerlendirme düşün. Henüz uygulama yok; eski zorunlu kapanış önerisi güncel vizyon kararı sayılmaz.
+- [x] **19. Gerçek player'da uzun tur.** `tools\long-campaign.script` üzerinden en az 6 hafta ve iki
   savaş içeren uzun bir tur çalıştır. Çöken, tutarsız veya iki kez uygulanan sonuç var mı bak.
-  Bulduğun her hatayı kuyruğun sonuna madde olarak yaz.
+  Bulduğun her hatayı kuyruğun sonuna madde olarak yaz. Kanıt: `roles-six-week-20260905-231015-322-3f2f59ba`, native0/12PNG/40assert/4JSON. İki savaş scriptli geri çekilmeyle bitti; bu bütünüyle elle oynanmış veya iki doğal zaferli tur diye sunulmaz. Daha sonraki doğal zafer ve gerçek Windows girdi kanıtları NIGHT_LOG içinde ayrıdır.
 - [ ] **20. Ses seviyeleri.** Mevcut on prosedürel sesin seviyesi ve tekrarı dinlenmeden kalite
   iddia edilmez. En azından sonucun iki kez çalmadığını ve eşzamanlı ses sınırını koda bakarak
   doğrula. Kabul: `NIGHT_LOG.md` içinde ne kontrol edildiği açıkça yazılı.

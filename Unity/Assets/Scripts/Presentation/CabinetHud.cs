@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PowerAboveAll
 {
     /// <summary>Ministerial marginalia around a permanently visible atlas. Drawn by GameApp after its 1440×900 GUI transform.</summary>
-    public sealed class CabinetHud : MonoBehaviour
+    public sealed partial class CabinetHud : MonoBehaviour
     {
         private readonly Color forest = C("#304F43"), deep = C("#243B37"), paper = C("#F3E7CA"), pale = C("#E9DCB7"), ink = C("#243B37"), muted = C("#53604D"), brass = C("#CAB36F"), red = C("#864B45"), rule = C("#C9C29E");
         private GUIStyle body, small, tiny, title, heading, numeral, button, quietButton, lightBody, lightTiny, mapLabel, cityLabel, tabStyle;
@@ -31,6 +31,7 @@ namespace PowerAboveAll
         private LogEntry previewEntry;
         private string previewRegion;
         private ActionResult weekCheck;
+        private int additionalRecruitPayroll, additionalRecruitFood;
         private readonly Dictionary<string, ActionResult> orderChecks = new Dictionary<string, ActionResult>();
         private bool weeklyChange;
         private int observedWeek;
@@ -39,7 +40,7 @@ namespace PowerAboveAll
 
         public void OpenDocument(string name)
         {
-            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate")return;
+            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
         }
 
@@ -117,12 +118,22 @@ namespace PowerAboveAll
                 latestEntry=current;latestEntryTime=Time.unscaledTime;
             }
             previewSource=state;previewEntry=current;previewRegion=state.SelectedRegionId;
+            ObserveRegionalAccord(state);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
             weekCheck=CampaignCore.NextWeek(nextState);
+            var currentEconomy=CampaignCore.Forecast(state);
+            additionalRecruitPayroll=additionalRecruitFood=0;
             foreach(string action in new[]{"bread","tax","recruit","subsidy"})
-                orderChecks[action]=CampaignCore.Act(JsonUtility.FromJson<CampaignState>(snapshot),action,state.SelectedRegionId);
+            {
+                var proposed=JsonUtility.FromJson<CampaignState>(snapshot);
+                orderChecks[action]=CampaignCore.Act(proposed,action,state.SelectedRegionId);
+                if(action!="recruit"||!orderChecks[action].Ok)continue;
+                var afterRecruit=CampaignCore.Forecast(proposed);
+                additionalRecruitPayroll=afterRecruit.ArmyCost-currentEconomy.ArmyCost;
+                additionalRecruitFood=afterRecruit.ArmyConsumption-currentEconomy.ArmyConsumption;
+            }
         }
         private string Animated(int index,int actual)
         {
@@ -428,7 +439,8 @@ namespace PowerAboveAll
         private void Order(GameApp app,ref float y,string action,string name,string detail)
         {
             ActionResult check=orderChecks[action];
-            if(Press(new Rect(4,y,195,34),name,check.Ok))app.Act(action);y+=40;
+            bool breaksAccord=action=="tax"&&CampaignCore.TaxBreaksRegionalAccord(app.State,app.State.SelectedRegionId);
+            if(Press(new Rect(4,y,195,34),breaksAccord?T("ui.accord.tax_button"):name,check.Ok))app.Act(action);y+=40;
             if(!check.Ok)
             {
                 string reason=OrderReason(app.State,check);var reasonStyle=new GUIStyle(tiny);reasonStyle.normal.textColor=red;
@@ -438,6 +450,20 @@ namespace PowerAboveAll
             }
             float detailHeight=tiny.CalcHeight(new GUIContent(detail),188);
             Text(new Rect(7,y,188,detailHeight),detail,tiny);y+=detailHeight+8;
+            if(breaksAccord)
+            {
+                var warning=new GUIStyle(tiny);warning.normal.textColor=red;
+                var effect=accordPreview.Break;
+                string consequence=T("ui.accord.tax_warning",Change(effect.Unrest),Change(effect.Control),Change(effect.Relationship),Change(effect.Approval),Change(effect.Power));
+                float warningHeight=warning.CalcHeight(new GUIContent(consequence),188);
+                Text(new Rect(7,y,188,warningHeight),consequence,warning);y+=warningHeight+8;
+            }
+            if(action=="recruit")
+            {
+                string upkeep=T("ui.recruit.upkeep",Signed(-additionalRecruitPayroll),Signed(-additionalRecruitFood));
+                float upkeepHeight=tiny.CalcHeight(new GUIContent(upkeep),188);
+                Text(new Rect(7,y,188,upkeepHeight),upkeep,tiny);y+=upkeepHeight+8;
+            }
         }
         private string OrderReason(CampaignState state,ActionResult check)
         {
@@ -471,7 +497,7 @@ namespace PowerAboveAll
             string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<names.Length;i++)
             {
-                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i];if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
+                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||(document=="accord"&&names[i]=="council");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
                 if(GUI.Button(rect,T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i]),tabStyle)){OpenDocument(names[i]);app.Feedback("paper");}
             }
             if(document=="journal")
@@ -480,13 +506,14 @@ namespace PowerAboveAll
                 foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
             }
             documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
-            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else Journal(app);
+            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
         {
             float y=0;Paragraph(ref y,T("ui.council.title"),heading,242,12);
             Paragraph(ref y,T("ui.council.intro"),small,242,19);
+            RegionalAccordEntry(app,ref y);
             foreach(var faction in app.State.Factions)
             {
                 var person=app.State.Characters.Find(p=>p.Id==faction.LeaderId);
@@ -526,6 +553,8 @@ namespace PowerAboveAll
             Rule(4,y,238);y+=18;
             Paragraph(ref y,T("ui.economy.treasury"),tiny,238,13);
             LedgerLine(ref y,T("ui.economy.tax"),forecast.TaxIncome);
+            if(accordPreview!=null&&accordPreview.IsActive)
+                Paragraph(ref y,T("ui.accord.economy",T("region."+accordPreview.RegionId),Number(accordPreview.TaxForgone),accordPreview.RemainingWeeks),small,238,14);
             int payroll=(int)Math.Ceiling(state.Troops/12d);
             LedgerLine(ref y,T("ui.economy.payroll"),-payroll);
             LedgerLine(ref y,T("ui.economy.equipment"),-(forecast.ArmyCost-payroll));
@@ -703,14 +732,14 @@ namespace PowerAboveAll
             Text(new Rect(161,y,81,height),Signed(value),number);y+=height+9;
         }
         private float JournalEntryHeight(LogEntry entry){return 28+body.CalcHeight(new GUIContent(L.Text(entry.Key,entry.Args)),226)+29;}
-        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
+        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)||entry.Key.StartsWith("log.accord.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
         private void Journal(GameApp app)
         {
             float y=0;Paragraph(ref y,T("ui.journal.title"),heading,242,19);bool first=true;
             foreach(var entry in app.State.Journal)
             {
                 float height=JournalEntryHeight(entry);
-                bool urgent=entry.Key=="log.shortage"||entry.Key=="log.battle.defeat"||entry.Key=="log.subsidy.failed"||
+                bool urgent=entry.Key=="log.shortage"||entry.Key=="log.battle.defeat"||entry.Key=="log.subsidy.failed"||entry.Key=="log.accord.broken"||
                     (entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)&&entry.Key.EndsWith(".break",StringComparison.Ordinal));
                 if(first)
                 {

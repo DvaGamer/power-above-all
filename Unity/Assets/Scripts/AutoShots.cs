@@ -134,6 +134,7 @@ namespace PowerAboveAll
                         break;
                     case "mandate-terms": RequireIdle(app); app.GetComponent<CabinetHud>().ShowMandateTerms(); break;
                     case "patron-repair": RequireIdle(app); app.RepairPatronTrust(); break;
+                    case "accord": RequireChoice(value, "grant"); RequireIdle(app); app.GrantRegionalAccord(); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
@@ -144,7 +145,7 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal", "mandate");
+                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord");
                         app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
@@ -199,7 +200,10 @@ namespace PowerAboveAll
                 ? BattleExpectation(app.GetComponent<TacticalBattle>().CaptureSnapshot(), key) :
                 key == "PatronRelationship" ? PatronRelationship(app.State) :
                 key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
-                key == "HasObligation" ? app.State.Obligation != null :
+                key == "HasObligation" ? app.State.Obligation != null : key == "HasAccord" ? CampaignCore.HasRegionalAccord(app.State) :
+                key == "SelectedUnrest" ? (object)CampaignCore.Region(app.State,app.State.SelectedRegionId).Unrest :
+                key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :
+                key == "TaxIncome" ? CampaignCore.Forecast(app.State).TaxIncome :
                 key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
                 key == "Language" ? L.Language : key == "Mode" ? app.Mode : key == "ResolvedBattleCount" ?
                 app.State.ResolvedBattles.Count : Field(typeof(CampaignState), key).GetValue(app.State);

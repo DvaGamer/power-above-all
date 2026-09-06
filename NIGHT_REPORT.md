@@ -4,6 +4,10 @@
 
 ## Doğrulanmış kontrol noktası
 
+- **00:33 UTC güncel:** son başlatılabilir Windowsbuild `accord-layout-final-20260906-002826-992-56dba0b4`, GREEN128Unity/4PNG7kontrol1JSON/10tarayıcı/141dosya. Ana sözleşme rotası `regional-accord-20260906-002323-844-cee27fbb` ayrıca GREEN128/14PNG36kontrol6JSON. Vergi tatili dört gerçek hesap boyunca gelirden vazgeçer; Champagne'ye savaşsız ama masraflı geçiş sağlar; erken vergi Morel/temsilciler/kişisel iktidarı etkiler, ilk tekrar tarihi arşivde kalır. Role ait eski söz ayrı işler. Ayrı7politika×12haftaCoreincelemesi1327kontrolPASS; uzun vadede tutulan anlaşma güçlü bir sivil seçenek, son denge hükmü değil.
+- Root ve görsel ajan teklif, imza, ekonomi, Paris'teki bütün emirler ve başka bölge seçiliyken asıl sözleşme bölgesini RU/TR gördü. Kesirli kontrol göstergesi 60,5→63,5 olarak düzeltildi. Yardım iki dilde tamamen sığar; işe alım +200 asker için ek 17 livre/7 erzak haftalık gideri önceden gösterir. Sığ geçidin ve tepenin tonu mevcut paleti korur.
+- Aynı kaynak kesitinin doğal savaşı `accord-ford-natural-20260906-002505-474-25aa327c` PARTIAL/native0,9PNG15kontrol8JSON:125.803s zafer/196kayıp/+24teçhizat, önceki sonuçla aynı. Gerçek Windows mouse/Space/düzen/rakam2–4 yolu `native-input-20260906-000936-3ea85fdc` PARTIAL/native0,13kontrol4PNG5JSON. Rakam1 baştan seçili olduğu için o tuşun ayrı geçişi ve Shift/manuelvolley bu koşuda kanıtlanmadı. İnsan kaydı00:32UTCaynıSHA256'da.
+
 - **23:53 UTC:** `hill-natural-victory-20260905-234734-753-1141ea63` ayrıca GREEN92Unity/9PNG/15kontrol/8JSON/10tarayıcı; zafer açık kabul koşulu oldu ve aynı125,8s/196kayıp/+24sonucu doğdu. Root ve görsel ajan gerçek tepe ışık/gölgesini kabul etti. `native-input-20260905-235035-73515bcc` gerçek mouse/ok/Enter/koşullara kaydırma incelemesi nativeexit0 ve4kontrol/2PNG/1JSON ilePARTIAL; bu yeniden kullanılan build incelemesidir. Önceki native ok tuşu hatası araçtaki scan/extended kodlaması düzeltilince çözüldü; eski RED çıktısı korundu.
 
 - **23:36 UTC yeni iki kapı GREEN:** `tactical-trust-first-20260905-233324-829-3db06d4c` ve `patron-trust-journey-20260905-233615-111-60fec1ea`. Her biri92 Unity testi, taze DX11 build,10 tarayıcı testi ve141 dosya manifesti.
@@ -39,4 +43,4 @@ Root atlası, ekonomi sayfasını, dört portreyi, dilekçeyi, sevk geçişini, 
 
 ## Sonraki inceleme
 
-Sıradaki kesit taktik kuralların doğruluğu ve gerçek emirlerle doğal savaş akışıdır. Paralel olarak atlas şehirleri ayrışacak. Sabah açılacak build ve üç öncelikli inceleme noktası son kontrol noktasına göre güncellenecek.
+Sıradaki kesit kişisel iktidarın askerî başarıdan nasıl etkilendiği için üç ayrı kavramın değerlendirilmesidir; henüz seçilmiş/uygulanmış yeni bir sistem yoktur. Görsel tarafta en zayıf kalan savaş geri bildirimi ayrı gerçek karelerle ele alınacak. Sabah açılacak build ve üç inceleme noktası son kontrol noktasına göre güncellenecek; görev07:22UTC'ye kadar sürüyor.

@@ -1,21 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Xml;
 
 namespace PowerAboveAll
 {
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         [Serializable] private sealed class Envelope
         {
             public int Version;
             public CampaignState State;
+        }
+
+        // DCS'nin zorunlu üye sözleşmesi v3 alan varlığını denetler; bütün State DTO'su çoğaltılmaz.
+        [DataContract] private sealed class RequiredAccordEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredAccordState State = null;
+        }
+
+        [DataContract] private sealed class RequiredAccordState
+        {
+            [DataMember(IsRequired = true)] public string AccordRegionId = null;
+            [DataMember(IsRequired = true)] public int AccordUntilWeek = 0;
         }
 
         public static string Serialize(CampaignState state, bool prettyPrint = true)
@@ -39,14 +53,28 @@ namespace PowerAboveAll
             {
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
                     envelope = (Envelope)new DataContractJsonSerializer(typeof(Envelope)).ReadObject(stream);
+                if (envelope != null && envelope.Version == CurrentVersion)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredAccordEnvelope)new DataContractJsonSerializer(typeof(RequiredAccordEnvelope)).ReadObject(stream);
+                        if (required == null || required.State == null || required.State.AccordRegionId == null)
+                            throw new SerializationException("Missing required regional accord data.");
+                    }
             }
-            catch (SerializationException error)
+            catch (Exception error) when (IsArchiveReadError(error))
             {
                 throw new ArgumentException("Invalid campaign archive.", nameof(json), error);
             }
-            if (envelope == null || envelope.State == null || (envelope.Version != 1 && envelope.Version != CurrentVersion))
+            if (envelope == null || envelope.State == null || (envelope.Version != 1 && envelope.Version != 2 && envelope.Version != CurrentVersion))
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
+            if (envelope.Version < CurrentVersion)
+            {
+                if (!string.IsNullOrEmpty(state.AccordRegionId) || state.AccordUntilWeek != 0)
+                    throw new ArgumentException("Invalid regional accord data in an older archive.", nameof(json));
+                state.AccordRegionId = "";
+                state.AccordUntilWeek = 0;
+            }
             if (envelope.Version == 1)
             {
                 CampaignCore.ValidateBase(state);
@@ -58,6 +86,13 @@ namespace PowerAboveAll
             }
             CampaignCore.Validate(state);
             return state;
+        }
+
+        private static bool IsArchiveReadError(Exception error)
+        {
+            // Mono'nun yansımalı DCS okuyucusu bozuk sayıyı XmlException içinde sarabilir.
+            while (error is TargetInvocationException && error.InnerException != null) error = error.InnerException;
+            return error is SerializationException || error is XmlException || error is FormatException || error is OverflowException;
         }
     }
 }

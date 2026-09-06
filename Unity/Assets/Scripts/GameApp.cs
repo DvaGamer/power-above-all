@@ -289,6 +289,13 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("mandate"); Feedback("quill"); }
         }
+        public void GrantRegionalAccord()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.GrantRegionalAccord(State, State.SelectedRegionId);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("accord"); Map.Pulse(State.SelectedRegionId); Feedback("seal"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;
