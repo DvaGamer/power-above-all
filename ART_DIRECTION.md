@@ -30,7 +30,7 @@ Türetilmiş tonlar: güneşli çayır `#C6D19F`, serin çayır `#7F9E80`, yapra
 
 Aşağıdaki önceki kurallar yeni renk/ışık yönüyle birlikte okunur; çelişen solgunluk veya sürekli koyuluk yorumunda yukarıdaki son kullanıcı talimatı önceliklidir.
 
-Bu belge, proje sahibinin görsel yönünü uygulanabilir ekran kurallarına dönüştürür. **Etkin aşama: 0.2 Visual & Feel Polish Pass.** Unity seçildi; temel aktarım sürüyor ve çalışma zamanı henüz doğrulanmadı. Bu aşamada mevcut temelin görünümü, okunurluğu ve kontrol hissi iyileştirilir; **yeni mekanik veya ekonomi sistemi eklenmez**. Aşağıdaki henüz uygulanmamış sistemlere ait kurallar gelecekteki tasarım rehberi olarak kalır.
+Bu belge, proje sahibinin görsel yönünü uygulanabilir ekran kurallarına dönüştürür. İlk Unity aktarımı ve gerçek harita–savaş–dönüş çalışma zamanı doğrulandı. Kullanıcının on saatlik geliştirme talimatıyla ilk polish aşamasının ardından bağlı siyasi kararlar da uygulanıyor. Güncel kapsam ve kabul kanıtı `AGENTS.md`, `STATUS.md` ve `NIGHT_REPORT.md` içindedir. Aşağıdaki henüz uygulanmamış sistemlere ait kurallar gelecekteki tasarım rehberi olarak kalır.
 
 Yön, kullanıcının metinle verdiği referans açıklamalarına dayanır. Bu karar için referans ekran görüntüsü veya görsel dosyası eklenmedi; burada görüntü karşılaştırması yapıldığı iddia edilmez.
 

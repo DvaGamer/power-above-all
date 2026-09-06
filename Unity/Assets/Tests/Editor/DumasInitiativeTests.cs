@@ -15,7 +15,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":6", json);
+            StringAssert.Contains("\"Version\":7", json);
             var loaded = CampaignArchive.Deserialize(json);
             Assert.AreEqual(before, Snapshot(loaded)); return loaded;
         }
@@ -273,9 +273,14 @@ namespace PowerAboveAll.Tests
         [TestCase(6, "text_due")]
         [TestCase(6, "missing_next")]
         [TestCase(6, "null_next")]
+        [TestCase(7, "missing_due")]
+        [TestCase(7, "null_due")]
+        [TestCase(7, "text_due")]
+        [TestCase(7, "missing_next")]
+        [TestCase(7, "null_next")]
         public void V5AndCurrentRequireBothTypedInitiativeFields(int version, string corruption)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":6", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":7", "\"Version\":" + version);
             switch (corruption)
             {
                 case "missing_due": json = json.Replace("\"DumasForageDueWeek\":", "\"IgnoredDue\":"); break;
@@ -312,7 +317,7 @@ namespace PowerAboveAll.Tests
 
         static string Older(string json, int version)
         {
-            json = json.Replace("\"Version\":6", "\"Version\":" + version)
+            json = json.Replace("\"Version\":7", "\"Version\":" + version)
                 .Replace("\"DumasForageDueWeek\":", "\"IgnoredForageDue\":")
                 .Replace("\"DumasNextForageWeek\":", "\"IgnoredForageNext\":");
             if (version < 4) json = json.Replace("\"PendingVictoryId\":", "\"IgnoredVictory\":");
@@ -362,7 +367,7 @@ namespace PowerAboveAll.Tests
         public void OldVersionNumbersCannotHideAnActiveOrVetoedInitiative(int version, bool vetoed)
         {
             var state = ForageState(); if (vetoed) Success(CampaignCore.VetoDumasInitiative(state, 2));
-            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":6", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":7", "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
         }
 

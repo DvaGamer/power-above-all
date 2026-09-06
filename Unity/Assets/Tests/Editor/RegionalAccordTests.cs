@@ -16,7 +16,7 @@ namespace PowerAboveAll.Tests
         {
             string before = Snapshot(state);
             string json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":6", json);
+            StringAssert.Contains("\"Version\":7", json);
             var loaded = CampaignArchive.Deserialize(json);
             Assert.AreEqual(before, Snapshot(loaded));
             return loaded;
@@ -254,10 +254,15 @@ namespace PowerAboveAll.Tests
         [TestCase(6, "missing_until")]
         [TestCase(6, "null_until")]
         [TestCase(6, "text_until")]
+        [TestCase(7, "missing_region")]
+        [TestCase(7, "null_region")]
+        [TestCase(7, "missing_until")]
+        [TestCase(7, "null_until")]
+        [TestCase(7, "text_until")]
         public void V3AndCurrentRequireBothExplicitTypedAccordFields(int version, string corruption)
         {
             string json = CampaignArchive.Serialize(CampaignCore.Create(), false);
-            json = json.Replace("\"Version\":6", "\"Version\":" + version);
+            json = json.Replace("\"Version\":7", "\"Version\":" + version);
             switch (corruption)
             {
                 case "missing_region": json = json.Replace("\"AccordRegionId\":", "\"IgnoredRegion\":"); break;
@@ -301,13 +306,13 @@ namespace PowerAboveAll.Tests
         {
             var legacy = CampaignCore.Create();
             string v1 = WithoutAccordFields(CampaignArchive.Serialize(legacy, false))
-                .Replace("\"Version\":6", "\"Version\":1").Replace("\"RoleId\":", "\"IgnoredRole\":")
+                .Replace("\"Version\":7", "\"Version\":1").Replace("\"RoleId\":", "\"IgnoredRole\":")
                 .Replace("\"PendingVictoryId\":", "\"IgnoredVictory\":")
                 .Replace("\"NextMandateWeek\":", "\"IgnoredNext\":").Replace("\"Mandates\":", "\"IgnoredMandates\":");
             Assert.AreEqual(Snapshot(legacy), Snapshot(CampaignArchive.Deserialize(v1)));
             var currentRole = CampaignCore.Create("crown");
             Success(CampaignCore.IssueMandate(currentRole, "ile"));
-            string v2 = WithoutAccordFields(CampaignArchive.Serialize(currentRole, false)).Replace("\"Version\":6", "\"Version\":2")
+            string v2 = WithoutAccordFields(CampaignArchive.Serialize(currentRole, false)).Replace("\"Version\":7", "\"Version\":2")
                 .Replace("\"PendingVictoryId\":", "\"IgnoredVictory\":");
             StringAssert.DoesNotContain("\"AccordRegionId\":", v2);
             StringAssert.DoesNotContain("\"AccordUntilWeek\":", v2);
@@ -327,7 +332,7 @@ namespace PowerAboveAll.Tests
             var state = CampaignCore.Create();
             Success(CampaignCore.GrantRegionalAccord(state, "champagne"));
             if (broken) Success(CampaignCore.Act(state, "tax", "champagne"));
-            string downgraded = CampaignArchive.Serialize(state, false).Replace("\"Version\":6", "\"Version\":" + version);
+            string downgraded = CampaignArchive.Serialize(state, false).Replace("\"Version\":7", "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(downgraded));
         }
 

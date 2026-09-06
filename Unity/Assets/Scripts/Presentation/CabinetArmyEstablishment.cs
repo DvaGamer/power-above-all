@@ -113,6 +113,12 @@ namespace PowerAboveAll
             {
                 var warning = new GUIStyle(small); warning.normal.textColor = red;
                 Paragraph(ref y, L.Text(establishmentCheck.Key, establishmentCheck.Args), warning, 238, 12);
+                if(establishmentCheck.Key=="error.establishment.commission")
+                {
+                    if(Press(new Rect(4,y,238,36),T("ui.commission.open")))
+                    {OpenDocument("officers");app.Feedback("paper");}
+                    y+=48;
+                }
             }
             if (Press(new Rect(4, y, 238, 43), T(active ? "ui.establishment.update" : "ui.establishment.start"),
                 establishmentCheck != null && establishmentCheck.Ok, true)) app.SetArmyEstablishment("budget", establishmentDraft);

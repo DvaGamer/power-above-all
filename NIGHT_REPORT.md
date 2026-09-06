@@ -1,12 +1,14 @@
 # Gece geliştirme raporu — çalışma sürüyor
 
-Güncelleme: 6 Eylül 2026, 03:10 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
+Güncelleme: 6 Eylül 2026, 03:59 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
 
 ## Çalışan sürüm
 
 [PLAY_GAME.cmd](PLAY_GAME.cmd) son doğrulanmış Windows oyununu açar. `node play-game.cjs --check` oyunu başlatmadan seçilen yolu ve dosya bütünlüğünü gösterir.
 
-Son tam kapı: [Ordu mevcudu raporu](output/verify/army-establishment-final-20260906-030602-688-f7c2fdcb/REPORT.md), **GREEN**. 304 Unity testi, yeni Direct3D11 build, 37 gerçek PNG, 259 durum kontrolü, 33 JSON kaydı ve 10 tarayıcı testi geçti. Başlatıcı bu 141 dosyalık build'i `complete-build` olarak seçti. Runtime SHA256: `1a31f88bc9ad3dbb72e39227e73766c624fe7bb7ec0daf2319191bef21ac1f3c`.
+Son tam kapı: [Subay beratı ve kaynak importu](output/verify/officer-commission-import-fixed-20260906-034710-694-4b17a317/REPORT.md), **GREEN**. 380 Unity testi, yeni Direct3D11 build, 19 gerçek PNG, 97 durum kontrolü, 13 JSON kaydı ve 10 tarayıcı testi geçti. RU/TR üst ve alt belge kareleri ayrıca gözle kabul edildi. Runtime SHA256: `0f2cacda5f0e4270128f883460eebf8bb0b0a36cf59fe5a60ea3d7053f9b2581`; bütün build için 141 dosyalık manifest vardır. Önceki [ordu paketi](output/verify/army-establishment-final-20260906-030602-688-f7c2fdcb/REPORT.md) 304 test, 37 PNG ve 259 kontrolün ayrı kanıtını korur.
+
+İlk subay build'i otomatik GREEN vermesine rağmen gerçek karelerinde ham çeviri anahtarları görüldü ve görsel olarak reddedildi. Yanlış uzunluktaki Unity GUID yüzünden kaynak tablo import edilmemişti. GUID düzeltildi; artık bütün 22 tablo hem metadata denetiminden hem Unity'de gerçek import ve her iki dilde çalışma zamanı çözümleme testinden geçer. Launcher ve temiz-log kontrolü bu açık import kaybını reddeder; eski raporlar değiştirilmedi. 67 araç kontrolü ve 11 launcher testi geçti.
 
 ## Oynanabilir değişiklikler
 
@@ -18,7 +20,8 @@ Son tam kapı: [Ordu mevcudu raporu](output/verify/army-establishment-final-2026
 - Konseyde ve alt bildirimde erzak emri okunabilir. Tarih, yer, gerçek bedeller ve veto açıkça görünür. Ekonomi defterindeki toplama satırı, haftanın uyguladığı aynı hesabı kullanır. Yeni bir zorunlu cevap kilidi yoktur.
 - Sürekli ordunun üst sınırı belirlenebilir. İki başarılı haftada en çok200 yaşayan fazla asker rezerve döner; ayrılış hesabı eski mevcudu öder, daha düşük gider sonraki hesapta başlar. Dumas her gerçek gruba tepki verir. Politika durdurulabilir; yeniden asker almak normal fiyatını ister. Hedef0 mümkündür; flama ve askerî harita alanı kaybolur, sonraki hafta garnizon katkısı da biter.
 - Hesaplar içindeki açık kâğıt belge, uygulanan hedefi ve taslağı ayırır. Ücret, gıda, ayrılış tarihi ve Dumas'nın gerçek bedeli imzadan önce okunur. Gerçek fareyle800 taslağı seçilip kapatıldığında kampanya aynı kaldı; ayrı onay tıklaması emri bir kez uyguladı. Kayıt/yükleme ve iki haftalık çıkış doğrulandı.
-- Arşiv v6 ordu hedefini ve ayrılış tarihini saklar. v1–v5 kayıtları taşınır; eski rol sözleri, v3 bölgesel anlaşmaları, v4 zafer kararları ve v5 Dumas emirleri korunur.
+- Oyuncu Dumas'ya subay atama hakkını ücretsiz verebilir. Mevcut kamptaki normal alımdan sonra haftada bir kez daha200 asker, aynı120 livre/20 gıda/15 teçhizat/200 rezerv karşılığında alınabilir. Gerçek alım Dumas sadakatini1 artırır. Açık hak planlı küçülmeyi engeller; yaşayan ordunun bir haftalık maaşı ödenerek geri alınır. Askerler ve kazanılmış sadakat kalır; yeniden imza veya başka kampa geçiş haftalık ek hakkı yenilemez.
+- Arşiv v7 subay hakkını ve haftalık kullanımını, v6 ordu hedefiyle birlikte saklar. v1–v6 kayıtları taşınır; eski rol sözleri, v3 bölgesel anlaşmaları, v4 zafer kararları ve v5 Dumas emirleri korunur.
 
 ## Görsel dil ve savaş
 
@@ -31,6 +34,10 @@ Aynı taktik adımda verilen atışlar birlikte çözülür. Cephanesiz piyade v
 Alay etiketleri figürlerin ve sabit namlu alanının yanına taşınır; ince bağlantı çizgisi hangi birliğe ait olduklarını gösterir. Seçili topçu ve iki piyade gerçek RU/TR karelerinde açıktır. Üç duraklatılmış PNG/JSON çifti birebir eşittir. Yoğun sahnenin bir bölümünde iki panelin köşesi yaklaşık6×3 piksel temas eder; metin kapanmaz. Tamamen çakışmasız yerleşim iddiası yoktur.
 
 ## Kanıtlanan siyasi sonuçlar
+
+Subay belgesinde gerçek fareyle hak verme, ücretli ek alım ve geri alma tamamlandı:1400→1600 asker, hazine720→600→466, sadakat60→61. Geri alma134 livreydi; aynı haftanın kullanım hakkı korunurken save/load byte-eşit kaldı. Sonraki normal1400 hedefi iki eski170-livre hesabından sonra200 kişiyi rezerve döndürdü. [Native rapor](Unity/WorkNotes/native-officer-commission-input.md): PARTIAL/native0, süre aşımı yok,40 kontrol/5 PNG/6 JSON,141 dosya değişmedi. Bu testin üç siyasi eylemi semantik inceleme komutlarıyla verilmedi.
+
+Ek doğal1600 kişilik savaş incelemesi ilk denemede120 saniyelik sonuç bekleme sınırını aştı. Son durum, canlı piyadenin konvoy hedefinden uzakta kaldığını gösterdi. Yeni [ikinci manevra rotasında](output/verify/officer-battle-second-maneuver-20260906-035947-297-9703935f/REPORT.md) kalan hat piyadesine ayrı hedef emri verildi: gerçek zafer,1356 sağ kalan,244 kayıp ve24 teçhizat. Açık subay hakkı ve zafer teklifi yüklemede korundu; prim61→66 sadakat verdi. Prim ve hakkın geri alınması yaşayan1356 kişiye göre113'er livreydi. Son1000 hedefi bu askerleri hemen silmeden kaydedildi. Bu ek inceleme PARTIAL/native0,13 PNG/65 kontrol/17 JSON; eski RED kanıtı korunur.
 
 Ordu mevcudu rotasında1200→1000 için ilk iki hesap136 livre/40 gıda ile tamamlandı; sonra200 kişi rezerve döndü. Sıfır hedefi12 haftada3600 rezerv bıraktı,13. hafta asker olmadan ilerledi; normal200 kişilik işe alımla tekrar ordu kuruldu. Bağlı askerî rol rotasında14. haftanın200 kişilik çıkışı, aynı tarihteki80 livre borcu silmedi. Sonraki açlık kayıpları nedeniyle16. hafta rezerve yalnız76 kişi döndü; kişi sayısı oluşturulmadı. Bunlar son tam kapıdaki gerçek komut sonuçlarıdır.
 

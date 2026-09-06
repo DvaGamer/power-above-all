@@ -41,7 +41,7 @@ namespace PowerAboveAll
         public void OpenDocument(string name)
         {
             if(name=="victory"){showVictory=true;return;}
-            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment")return;
+            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment"&&name!="officers")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
         }
 
@@ -125,6 +125,7 @@ namespace PowerAboveAll
             ObserveVictoryDecision(state);
             ObserveDumasInitiative(state);
             ObserveArmyEstablishment(state);
+            ObserveOfficerCommission(state);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
@@ -420,6 +421,12 @@ namespace PowerAboveAll
             Order(app,ref y,"bread",T("ui.order.bread"),T("ui.order.bread.detail"));
             Order(app,ref y,"tax",T("ui.order.tax"),T("ui.order.tax.detail"));
             Order(app,ref y,"recruit",T("ui.order.recruit"),T("ui.order.recruit.detail"));
+            if(region.Id==state.ArmyRegionId&&(region.RecruitUsed||state.DumasOfficerCommission))
+            {
+                if(Press(new Rect(4,y,195,32),T("ui.commission.open")))
+                {OpenDocument("officers");app.Feedback("paper");}
+                y+=40;
+            }
             var march=CampaignCore.CanMarch(state,region.Id);bool here=state.Troops>0&&state.ArmyRegionId==region.Id;
             // Düğme durumu değiştirebilir; varış tahmini tıklamadan önce alınır.
             var arrival=!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
@@ -509,7 +516,7 @@ namespace PowerAboveAll
             string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<names.Length;i++)
             {
-                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative")&&names[i]=="council")||(document=="establishment"&&names[i]=="economy");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
+                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative"||document=="officers")&&names[i]=="council")||(document=="establishment"&&names[i]=="economy");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
                 if(GUI.Button(rect,T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i]),tabStyle)){OpenDocument(names[i]);app.Feedback("paper");}
             }
             if(document=="journal")
@@ -518,7 +525,7 @@ namespace PowerAboveAll
                 foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
             }
             documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
-            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else if(document=="establishment")ArmyEstablishment(app);else Journal(app);
+            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else if(document=="establishment")ArmyEstablishment(app);else if(document=="officers")OfficerCommission(app);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
@@ -549,7 +556,13 @@ namespace PowerAboveAll
                 Pair(5,y,236,T("ui.influence"),Number(faction.Influence));y+=29;Pair(5,y,236,T("ui.radicalism"),Number(faction.Radicalism));y+=36;
                 Paragraph(ref y,T(faction.DemandKey),body,236,10);
                 if(person!=null)Paragraph(ref y,T(person.AgendaKey),small,236,19);
-                if(person!=null&&person.Id=="dumas")CommanderPoliticalTerms(person,ref y);
+                if(person!=null&&person.Id=="dumas")
+                {
+                    CommanderPoliticalTerms(person,ref y);
+                    if(Press(new Rect(4,y,238,38),T("ui.commission.open")))
+                    {OpenDocument("officers");app.Feedback("paper");}
+                    y+=52;
+                }
             }
             documentContentHeight=y+12;
         }

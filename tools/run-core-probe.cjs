@@ -10,7 +10,7 @@ if (!name || !/^[A-Za-z][A-Za-z0-9_]*$/.test(name)) throw new Error('Usage: node
 const data = 'C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Data/MonoBleedingEdge';
 const mono = path.join(data, 'bin', 'mono.exe');
 const compiler = path.join(data, 'lib', 'mono', '4.5', 'mcs.exe');
-const sources = ['CampaignCore', 'CampaignRoles', 'CampaignPatronTrust', 'CampaignRegionalAccords', 'CampaignVictoryDecisions', 'CampaignDumasInitiative', 'CampaignArmyEstablishment', 'CampaignArchive']
+const sources = ['CampaignCore', 'CampaignRoles', 'CampaignPatronTrust', 'CampaignRegionalAccords', 'CampaignVictoryDecisions', 'CampaignDumasInitiative', 'CampaignArmyEstablishment', 'CampaignOfficerCommission', 'CampaignArchive']
   .map(file => path.join(root, 'Unity/Assets/Scripts/Core', file + '.cs'));
 sources.push(path.join(root, 'Unity/WorkNotes', name + '.cs'));
 for (const file of [mono, compiler, ...sources]) if (!fs.statSync(file).isFile()) throw new Error('Required file missing: ' + file);

@@ -1,0 +1,201 @@
+# Dogal savas + Dumas subay berati. Emirler victory-campaign.script rotasindan gelir.
+# BattleWon sadece denetlenen hedeftir; sonuc, kayip, can veya zaman enjekte edilmez.
+new
+role-menu
+role-start army
+lang ru
+act recruit
+commission grant
+commission recruit
+expect Troops 1600
+expect Manpower 2000
+expect Gold 600
+expect Food 320
+expect MilitarySupplies 90
+expect Moves 2
+expect Fatigue 0
+expect ArmyRegionId ile
+expect DumasLoyalty 61
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect HasPendingVictory False
+expect ResolvedBattleCount 0
+panel officers
+scroll document 650
+wait 0.4
+state 01-officer-prebattle
+shot 01-officer-prebattle-ru
+select champagne
+march
+battle wait active 5
+battle pause on
+expect BattleActive True
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 02-officer-deployment
+shot 02-officer-deployment
+
+# Daha once kazanmis gercek oyuncu emirleri: iki piyade, yandaki suvari ve topcu.
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state 03-officer-orders
+battle pause off
+expect BattlePaused False
+battle wait arrived 45
+expect BattleSelectionArrived True
+battle wait volley-ready 30
+expect BattleCanVolley True
+battle volley
+battle state 04-officer-volley
+shot 03-officer-volley
+battle fire free
+battle select 1 replace
+battle select 2 add
+battle fire free
+battle move 1 4
+battle select 3 replace
+battle formation line
+battle move 0 6
+battle state 05-officer-committed-forces
+# Ilk carpismadan sonra kalan hat piyadesine ayri hedef emri verilir.
+# Grup merkez emri bu alayi konvoyun disinda birakmisti; sonuc zorlanmaz.
+wait 75
+battle pause on
+battle state 05b-officer-after-first-contact
+shot 03b-officer-surviving-line
+battle select 1 replace
+battle formation line
+battle fire free
+battle move 4 3
+battle pause off
+battle wait arrived 30
+expect BattleSelectionArrived True
+battle state 05c-officer-line-at-convoy
+battle wait ended 60
+expect BattleEnded True
+expect BattleWon True
+expect BattleHasOutcome True
+battle state 06-officer-natural-outcome
+shot 04-officer-natural-report-ru
+lang tr
+shot 05-officer-natural-report-tr
+accept
+
+# Gercek gozlenen kayip, seyahat ve toplanan teçhizatla kampanya karsilastirilir.
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect Week 0
+expect ResolvedBattleCount 1
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 61
+expect HasPendingVictory True
+state 07-officer-victory-return
+save
+remember officer-open-victory
+victory-close
+select normandy
+load
+same officer-open-victory
+expect HasOfficerCommission True
+expect HasPendingVictory True
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 61
+state 08-officer-loaded-open-victory
+lang ru
+panel victory
+wait 0.4
+shot 06-officer-loaded-victory-ru
+
+# Prim kendi gercek canli ordu fiyatini uygular; kayip/altin sayisi tahmin edilmez.
+state 09-officer-before-bonus
+victory bonus
+expect HasPendingVictory False
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 66
+expect ResolvedBattleCount 1
+state 10-officer-paid-bonus
+lang tr
+panel journal
+wait 0.5
+shot 07-officer-paid-bonus-tr
+remember officer-paid-victory
+select brittany
+load
+same officer-paid-victory
+expect HasOfficerCommission True
+expect HasPendingVictory False
+expect DumasLoyalty 66
+state 11-officer-loaded-paid-victory
+
+# Yetki bedeli snapshot'taki gercek sag kalan mevcuda baglidir.
+panel officers
+lang ru
+scroll document 1300
+wait 0.4
+shot 08-officer-live-revoke-price-ru
+remember officer-still-controls-appointments
+establishment budget 1000
+same officer-still-controls-appointments
+state 12-officer-before-revocation
+commission revoke
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 66
+expect HasPendingVictory False
+expect ArmyPolicyId campaign
+state 13-officer-rights-reclaimed
+lang tr
+panel officers
+scroll document 1300
+wait 0.4
+shot 09-officer-rights-reclaimed-tr
+
+# Hedef1000 normal politikadir. Vade, gercek sag kalan sayisina gore0 veya2 olur.
+# Ilk kosudan once asker sayisini veya vade dalini sabitlemeyiz; JSON incelemesi bunu dogrular.
+establishment budget 1000
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1000
+expect HasArmyEstablishment True
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 66
+expect HasPendingVictory False
+expect ResolvedBattleCount 1
+state 14-officer-postbattle-budget
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot 10-officer-postbattle-budget-ru
+save
+remember officer-postbattle-budget
+select picardy
+load
+same officer-postbattle-budget
+expect ArmyPolicyId budget
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 66
+state 15-officer-loaded-postbattle-budget
+panel establishment
+lang tr
+scroll document 650
+wait 0.4
+shot 11-officer-loaded-budget-tr
+panel journal
+lang ru
+wait 0.5
+shot 12-officer-final-journal-ru
+quit

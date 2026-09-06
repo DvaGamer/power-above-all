@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {"key":"error.commission.state","ru":"Не удалось прочитать офицерское полномочие.","tr":"Subay tayin yetkisi okunamadı."},
+    {"key":"error.commission.active","ru":"Право назначения уже передано Дюма.","tr":"Tayin yetkisi zaten Dumas'ya verilmiş."},
+    {"key":"error.commission.none","ru":"Сначала нужно передать Дюма право назначения офицеров.","tr":"Önce Dumas'ya subay tayin yetkisi verilmeli."},
+    {"key":"error.commission.policy","ru":"Действует предел армии. Сначала остановите сокращение, чтобы передать назначения Дюма.","tr":"Ordu hedefi yürürlükte. Tayinleri Dumas'ya vermeden önce azaltmayı durdurun."},
+    {"key":"error.commission.normal_required","ru":"Сначала проведите обычный набор в нынешней стоянке. Дюма организует дополнительную группу.","tr":"Önce mevcut konakta olağan asker toplama emrini verin. Dumas ek grubu kurar."},
+    {"key":"error.commission.used","ru":"Дополнительная группа на этой неделе уже набрана. Переход в другой лагерь и повторная передача права не обновляют её.","tr":"Bu haftanın ek grubu zaten toplandı. Konak değiştirmek veya yetkiyi yeniden vermek hakkı yenilemez."},
+    {"key":"error.commission.gold","ru":"Для отзыва права нужно {0} ливров — недельное жалованье нынешней армии.","tr":"Yetkiyi geri almak için {0} livre gerekiyor: mevcut ordunun bir haftalık maaşı."},
+    {"key":"error.establishment.commission","ru":"Офицерские назначения переданы Дюма. Перед сокращением армии нужно выкупить это право.","tr":"Subay tayinleri Dumas'ya verildi. Orduyu azaltmadan önce bu yetki geri alınmalı."},
+    {"key":"log.commission.ready","ru":"Условия офицерского распоряжения выполнены.","tr":"Subay emrinin koşulları karşılandı."},
+    {"key":"log.commission.granted","ru":"Дюма получил право назначать офицеров и организовать дополнительный набор. Для планового сокращения понадобится выкупить это право.","tr":"Dumas subay tayin etme ve ek asker toplama yetkisini aldı. Planlı azaltma için bu yetki geri alınmalı."},
+    {"key":"log.commission.recruited","ru":"{0}: Дюма набрал ещё {1} солдат за 120 ливров, 20 пищи, 15 снаряжения и 200 резерва. Лояльность Дюма +{2}.","tr":"{0}: Dumas 120 livre, 20 gıda, 15 teçhizat ve 200 yedek bedeliyle {1} ek asker topladı. Dumas'nın sadakati +{2}."},
+    {"key":"log.commission.revoked","ru":"Право назначения офицеров возвращено правительству за {0} ливров. Солдаты и заработанная лояльность Дюма сохранены; предел армии снова можно установить.","tr":"Subay tayin yetkisi {0} livre karşılığında hükümete döndü. Askerler ve Dumas'nın kazanılmış sadakati kaldı; ordu hedefi yeniden belirlenebilir."}
+  ]
+}

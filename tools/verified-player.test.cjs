@@ -59,6 +59,26 @@ test('modified latest runtime falls back to previous verified build', () => {
   fs.appendFileSync(changed.assembly, 'unverified changes');
   assert.equal(findVerifiedPlayer(root).executable, old.executable);
 });
+test('newer GREEN with logged invalid GUID and ignored asset falls back without rewriting evidence', () => {
+  const root = fixture();
+  const old = build(root, 'old', '2026-09-05T20:00:00Z');
+  const broken = build(root, 'ignored-asset', '2026-09-05T21:00:00Z');
+  const logPath = path.join(broken.directory, 'build.log');
+  const log = 'The .meta file Assets/Resources/Localization/commission-ui.json.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly\nBuild succeeded.';
+  fs.writeFileSync(logPath, log);
+  const resultPath = path.join(broken.directory, 'result.json');
+  const originalReceipt = fs.readFileSync(resultPath, 'utf8');
+  assert.equal(findVerifiedPlayer(root).executable, old.executable);
+  assert.equal(fs.readFileSync(resultPath, 'utf8'), originalReceipt);
+  assert.equal(fs.readFileSync(logPath, 'utf8'), log);
+});
+test('GUID parser fallback alone does not displace the newest intact GREEN build', () => {
+  const root = fixture();
+  build(root, 'old', '2026-09-05T20:00:00Z');
+  const candidate = build(root, 'fallback', '2026-09-05T21:00:00Z');
+  fs.writeFileSync(path.join(candidate.directory, 'build.log'), "The GUID inside 'Assets/Sample.json.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.\nBuild succeeded.");
+  assert.equal(findVerifiedPlayer(root).executable, candidate.executable);
+});
 test('missing gate is excluded even if receipt incorrectly says GREEN', () => {
   const root = fixture();
   const candidate = build(root, 'incomplete', '2026-09-05T21:00:00Z');

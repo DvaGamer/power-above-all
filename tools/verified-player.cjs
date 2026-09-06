@@ -66,6 +66,9 @@ function findVerifiedPlayer(root) {
       const result = readJson(path.join(directory, 'result.json'));
       const build = readJson(path.join(directory, 'build-result.json'));
       if (result.verdict !== 'GREEN' || !samePath(result.artifacts, directory)) continue;
+      // Eski GREEN makbuzu, kayitli ve acik bir asset kaybini gecersiz kilamaz.
+      const buildLog = path.join(directory, 'build.log');
+      if (fs.existsSync(buildLog) && /does not have a valid GUID[^\r\n]*\bAsset file will be ignored\b/i.test(fs.readFileSync(buildLog, 'utf8'))) continue;
       const executable = path.join(directory, 'player-build', 'Power Above All.exe');
       const assembly = path.join(directory, 'player-build', 'Power Above All_Data', 'Managed', 'PowerAboveAll.Runtime.dll');
       if (!samePath(build.playerPath, executable)) continue;

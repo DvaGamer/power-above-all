@@ -64,7 +64,7 @@ function Assert-CleanLog([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required log missing: $Path" }
   $logText = [IO.File]::ReadAllText($Path)
   if ([string]::IsNullOrWhiteSpace($logText)) { throw "Required log is empty: $Path" }
-  $pattern = '(?im)(?:\berror CS\d+:|\b(?:[A-Za-z_][\w.]*Exception):|Unhandled exception|Shader error|Crash!!!|Assertion failed|^\s*(?:Error|Exception|Assert):|Auto shots failed:|UNKNOWN COMMAND|^FAILED )'
+  $pattern = '(?im)(?:\berror CS\d+:|\b(?:[A-Za-z_][\w.]*Exception):|Unhandled exception|Shader error|Crash!!!|Assertion failed|^\s*(?:Error|Exception|Assert):|Auto shots failed:|UNKNOWN COMMAND|^FAILED |does not have a valid GUID[^\r\n]*\bAsset file will be ignored\b)'
   $errors = [regex]::Matches($logText, $pattern)
   if ($errors.Count -gt 0) { throw "Error marker '$($errors[0].Value)' in $Path" }
   return $logText
@@ -142,7 +142,9 @@ function Get-ReviewPlan([string]$Path) {
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
     if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
     if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
-    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment|officers)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^commission(?:\s|$)' -and $line -cnotmatch '^commission (grant|recruit|revoke)$') { throw "Unsupported officer commission order: $line" }
+    if ($line -match '^expect\s+(HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed)(?:\s|$)' -and $line -cnotmatch '^expect (HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed) (True|False)$') { throw "Officer commission assertion requires True or False: $line" }
     if ($line -match '^establishment(?:\s|$)') {
       if ($line -cnotmatch '^establishment (campaign 0|budget [0-9]+)$') { throw "Unsupported army establishment order: $line" }
       [int]$armyTarget = 0

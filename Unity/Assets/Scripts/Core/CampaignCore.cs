@@ -55,6 +55,7 @@ namespace PowerAboveAll
         [System.Runtime.Serialization.OptionalField] public int DumasForageDueWeek, DumasNextForageWeek;
         [System.Runtime.Serialization.OptionalField] public string ArmyPolicyId = "campaign";
         [System.Runtime.Serialization.OptionalField] public int ArmyTargetTroops, ArmyReductionDueWeek;
+        [System.Runtime.Serialization.OptionalField] public bool DumasOfficerCommission, DumasExtraRecruitUsed;
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -189,13 +190,8 @@ namespace PowerAboveAll
                     urban.Approval=Clamp(urban.Approval-3);Faction(s,"crown").Approval=Clamp(Faction(s,"crown").Approval+1);
                     return Record(s,"log.tax","region."+id);
                 case "recruit":
-                    if(r.RecruitUsed)return Result(false,"error.used");
-                    if(id!=s.ArmyRegionId)return Result(false,"error.recruit.location");
-                    if(s.Gold<120||s.Food<20||s.MilitarySupplies<15||s.Manpower<200)return Result(false,"error.recruit.cost");
-                    if(s.Troops>MaximumStock-200)return Result(false,"error.capacity");
-                    s.Gold-=120;s.Food-=20;s.MilitarySupplies-=15;s.Manpower-=200;s.Troops+=200;r.RecruitUsed=true;
-                    r.Unrest=Clamp(r.Unrest+2);s.Morale=Clamp(s.Morale-2);Faction(s,"army").Approval=Clamp(Faction(s,"army").Approval+2);
-                    RefreshArmyReduction(s);
+                    var recruitCheck=CheckRecruitment(s,r,false);if(!recruitCheck.Ok)return recruitCheck;
+                    ApplyRecruitment(s,r);
                     return Record(s,"log.recruit","region."+id);
                 case "subsidy":
                     if(id!="ile")return Result(false,"error.subsidy.location");
@@ -335,6 +331,7 @@ namespace PowerAboveAll
                 r.Control=Clamp(r.Control+(garrison?2:0)+(r.EliteLoyalty<35?-2:0)-(r.Unrest>=65?3:0));
             }
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));
+            s.DumasExtraRecruitUsed=false;
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
             CompleteRegionalAccordAfterWeek(s);
@@ -353,6 +350,7 @@ namespace PowerAboveAll
             ValidateVictoryDecisionState(s);
             ValidateDumasInitiativeState(s);
             ValidateArmyEstablishmentState(s);
+            ValidateOfficerCommissionState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

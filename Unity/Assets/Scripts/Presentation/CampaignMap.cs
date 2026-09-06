@@ -70,7 +70,7 @@ namespace PowerAboveAll
         private List<Vector2> mainland;
         private Camera atlasCamera;
         private Transform selectionRoot, hoverRoot, routeRoot, armyRoot, armyCloth;
-        private Material borderMat, goldMat, roadMat, hoverMat, cityInkMat;
+        private Material borderMat, selectionInkMat, goldMat, roadMat, hoverMat, cityInkMat;
         private Texture2D paperGrain;
         private string selectedId, hoveredId, armyId;
         private int lastWeek = -1, lastMoves = -1, lastTroops = -1;
@@ -97,6 +97,7 @@ namespace PowerAboveAll
             mainland = SoftenCoast(mainland);
             paperGrain = MakePaperGrain();
             borderMat = MakeMaterial(Hex("#677960"));
+            selectionInkMat = MakeMaterial(Hex("#3E5A4E"));
             goldMat = MakeMaterial(Hex("#CAB36F"));
             hoverMat = MakeMaterial(Hex("#DCCE9F"));
             roadMat = MakeMaterial(Hex("#536C57"));
@@ -181,7 +182,7 @@ namespace PowerAboveAll
                     ClearChildren(selectionRoot);
                     if (cells.TryGetValue(selectedId ?? "", out var selectedCell))
                     {
-                        BorderOfCell(selectedCell, selectionRoot, borderMat, .20f, .19f);
+                        BorderOfCell(selectedCell, selectionRoot, selectionInkMat, .20f, .19f);
                         BorderOfCell(selectedCell, selectionRoot, goldMat, .09f, .21f);
                     }
                     RebuildHover();

@@ -56,6 +56,10 @@ $badLog = Fixture 'runtime.log' "Frame started`nNullReferenceException: sample f
 Reject { Assert-CleanLog $badLog } 'Runtime exception marker rejected'
 $compilerLog = Fixture 'compile.log' 'Assets/Test.cs(1,2): error CS1002: ; expected'
 Reject { Assert-CleanLog $compilerLog } 'C# compile error marker rejected'
+$ignoredAssetLog = Fixture 'ignored-asset.log' "The .meta file Assets/Resources/Localization/commission-ui.json.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly`nPower Above All build succeeded: a fresh folder"
+Reject { Assert-CleanLog $ignoredAssetLog } 'Invalid GUID with ignored asset rejects an otherwise successful build log'
+$guidFallbackLog = Fixture 'guid-fallback.log' "The GUID inside 'Assets/Sample.json.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.`nPower Above All build succeeded: a fresh folder"
+Check ((Assert-CleanLog $guidFallbackLog).Contains('succeeded')) 'GUID parser fallback alone is not treated as an ignored asset'
 $plan = Get-ReviewPlan (Join-Path $PSScriptRoot 'shots.script')
 Check ($plan.Captures.Count -eq 27 -and $plan.Assertions -gt 20 -and $plan.States.Count -eq 3) 'Full review has frames, state evidence and assertions'
 $journeyPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'long-campaign.script')
@@ -70,6 +74,14 @@ $badVictory = Fixture 'injected-victory.script' "new`nexpect HasPendingVictory T
 Reject { Get-ReviewPlan $badVictory } 'Decision review cannot override the domain-computed price'
 $badPending = Fixture 'ambiguous-victory.script' "new`nexpect HasPendingVictory maybe`nshot sample`nquit"
 Reject { Get-ReviewPlan $badPending } 'Ambiguous pending-offer expectation is rejected before a natural battle runs'
+$commissionPlan = Fixture 'officer-commission.script' "new`ncommission grant`npanel officers`ncommission recruit`nexpect HasOfficerCommission True`ncommission revoke`nshot sample`nquit"
+Check ((Get-ReviewPlan $commissionPlan).Commands -eq 8) 'Officer commission sends three supported domain orders'
+foreach ($order in @('recruit 400', 'revoke 0', 'grant loyalty 100', 'reset')) {
+  $badCommission = Fixture ('commission-invalid-' + [Guid]::NewGuid().ToString('N') + '.script') "new`ncommission $order`nexpect HasOfficerCommission True`nshot sample`nquit"
+  Reject { Get-ReviewPlan $badCommission } "Commission cannot inject troops, price, loyalty or weekly reset: $order"
+}
+$ambiguousCommission = Fixture 'ambiguous-commission.script' "new`nexpect DumasExtraRecruitUsed maybe`nshot sample`nquit"
+Reject { Get-ReviewPlan $ambiguousCommission } 'Officer commission assertion rejects ambiguous boolean'
 $armyPlan = Fixture 'army-establishment.script' "new`nestablishment budget 800`nexpect HasArmyEstablishment True`npanel establishment`nestablishment campaign 0`nshot sample`nquit"
 Check ((Get-ReviewPlan $armyPlan).Commands -eq 7) 'Army establishment uses a target order and ordinary document'
 foreach ($order in @('budget -1', 'budget 1.5', 'budget 100000001', 'budget 2147483648', 'campaign 800', 'release 200', 'budget 200 troops 200')) {

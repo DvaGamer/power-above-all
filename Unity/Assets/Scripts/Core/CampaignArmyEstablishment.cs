@@ -76,6 +76,7 @@ namespace PowerAboveAll
                 return Result(false, "error.establishment.unchanged");
             if (policyId == "budget")
             {
+                if (state.DumasOfficerCommission) return Result(false, "error.establishment.commission");
                 int excess = Math.Max(0, state.Troops - targetTroops);
                 if ((long)state.Manpower + excess > MaximumStock) return Result(false, "error.establishment.capacity");
                 if (excess > 0 && ArmyDueFor(state, policyId, targetTroops) == 0)
@@ -142,6 +143,7 @@ namespace PowerAboveAll
         private static void ValidateArmyEstablishmentState(CampaignState state)
         {
             Require(ArmyPolicy(state.ArmyPolicyId) && ArmyTarget(state.ArmyPolicyId, state.ArmyTargetTroops));
+            Require(!state.DumasOfficerCommission || state.ArmyPolicyId == "campaign");
             if (state.ArmyPolicyId == "campaign") { Require(state.ArmyReductionDueWeek == 0); return; }
             int excess = Math.Max(0, state.Troops - state.ArmyTargetTroops);
             Require((long)state.Manpower + excess <= MaximumStock);

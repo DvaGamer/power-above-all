@@ -152,6 +152,12 @@ namespace PowerAboveAll
                             (establishment[0] == "campaign" && targetTroops != 0))
                             throw new InvalidDataException("establishment requires budget and a nonnegative target, or campaign 0.");
                         app.SetArmyEstablishment(establishment[0], targetTroops); break;
+                    case "commission":
+                        RequireIdle(app); RequireChoice(value, "grant", "recruit", "revoke");
+                        if(value=="grant")app.GrantOfficerCommission();
+                        else if(value=="recruit")app.RecruitThroughDumas();
+                        else app.RevokeOfficerCommission();
+                        break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
@@ -162,7 +168,7 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative", "establishment");
+                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative", "establishment", "officers");
                         app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
@@ -221,6 +227,9 @@ namespace PowerAboveAll
                 key == "HasPendingVictory" ? CampaignCore.HasPendingVictory(app.State) :
                 key == "HasDumasInitiative" ? CampaignCore.HasDumasInitiative(app.State) :
                 key == "HasArmyEstablishment" ? CampaignCore.HasArmyEstablishment(app.State) :
+                key == "HasOfficerCommission" ? CampaignCore.HasOfficerCommission(app.State) :
+                key == "CommissionRevokeGold" ? (object)CampaignCore.GetOfficerCommissionTerms(app.State).RevokeGoldCost :
+                key == "DumasLoyalty" ? (object)app.State.Characters.Find(person=>person.Id=="dumas").Loyalty :
                 key == "ArmyCost" ? (object)CampaignCore.Forecast(app.State).ArmyCost :
                 key == "ArmyConsumption" ? (object)CampaignCore.Forecast(app.State).ArmyConsumption :
                 key == "ForageFood" ? (object)CampaignCore.Forecast(app.State).ForageFood :

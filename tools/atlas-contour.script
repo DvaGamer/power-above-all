@@ -1,0 +1,44 @@
+# Aynı API durumu ve kadrajda yalnız mevcut seçili sınır materyalinin karşılaştırması.
+new
+lang ru
+mode control
+panel journal
+select ile
+expect Week 0
+expect Troops 1200
+expect Gold 840
+wait 1.2
+state 00-ile-control
+shot 00-ile-control
+select normandy
+expect SelectedRegionId normandy
+wait 1.2
+state 01-normandy-control
+shot 01-normandy-control
+select champagne
+expect SelectedRegionId champagne
+wait 1.2
+state 02-champagne-control
+shot 02-champagne-control
+mode unrest
+wait 1.2
+state 03-champagne-unrest
+shot 03-champagne-unrest
+select provence
+expect SelectedRegionId provence
+wait 1.2
+state 04-provence-unrest
+shot 04-provence-unrest
+lang tr
+wait 1.2
+state 05-provence-unrest-tr
+shot 05-provence-unrest-tr
+mode army
+select ile
+wait 1.2
+state 06-ile-army-tr
+shot 06-ile-army-tr
+expect Week 0
+expect Troops 1200
+expect Gold 840
+quit

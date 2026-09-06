@@ -317,6 +317,27 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("establishment"); Feedback("quill"); }
         }
+        public void GrantOfficerCommission()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.GrantOfficerCommission(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Feedback("seal"); }
+        }
+        public void RecruitThroughDumas()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RecruitThroughDumas(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Map.Pulse(State.ArmyRegionId); Feedback("march"); }
+        }
+        public void RevokeOfficerCommission()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RevokeOfficerCommission(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Feedback("quill"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;

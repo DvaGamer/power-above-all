@@ -1,0 +1,229 @@
+# OfficerCommissionProbe-2026-09-06T03-25-54-113Z PASS52 public rotasi.
+# Normal iki bolge ile Dumas'nin tek kamp grubu ayri yeni seferlerdir; fiyat enjeksiyonu yok.
+new
+lang ru
+wait 0.4
+shot 00-start
+act recruit
+select normandy
+march
+settle 5
+act recruit
+expect Troops 1600
+expect Manpower 2000
+expect Gold 600
+expect Food 306
+expect MilitarySupplies 85
+expect Moves 1
+expect Fatigue 10
+expect ArmyRegionId normandy
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed False
+state 01-ordinary-two-region-recruitment
+wait 0.4
+shot 01-ordinary-two-regions-ru
+save
+remember ordinary-route
+load
+same ordinary-route
+# Ayni kaynak baslangici; army rolu sadakat expectation'ini de gorunur tutar.
+new
+role-menu
+role-start army
+expect DumasLoyalty 60
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed False
+panel officers
+wait 0.4
+shot 02-offer-upper-ru
+scroll document 1300
+wait 0.3
+shot 03-offer-lower-ru
+lang tr
+wait 0.3
+shot 04-offer-upper-tr
+scroll document 1300
+wait 0.3
+shot 05-offer-lower-tr
+commission grant
+expect HasOfficerCommission True
+expect DumasLoyalty 60
+state 02-granted-before-any-recruit
+remember signed-no-normal-recruit
+commission grant
+same signed-no-normal-recruit
+commission recruit
+same signed-no-normal-recruit
+scroll document 650
+wait 0.3
+shot 06-normal-group-required-tr
+act recruit
+expect Troops 1400
+expect Manpower 2200
+expect CommissionRevokeGold 117
+expect DumasLoyalty 60
+state 03-normal-group-paid
+lang ru
+scroll document 650
+wait 0.3
+shot 07-extra-group-available-ru
+commission recruit
+expect Troops 1600
+expect Manpower 2000
+expect Gold 600
+expect Food 320
+expect MilitarySupplies 90
+expect Moves 2
+expect Fatigue 0
+expect ArmyRegionId ile
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 61
+expect ArmyCost 170
+expect ArmyConsumption 54
+expect CommissionRevokeGold 134
+state 04-dumas-one-camp-paid-group
+save
+remember one-camp-used
+select orleans
+load
+same one-camp-used
+state 05-one-camp-used-loaded
+panel officers
+wait 0.4
+shot 08-active-upper-ru
+scroll document 1300
+wait 0.3
+shot 09-active-revoke-134-ru
+lang tr
+wait 0.3
+shot 10-active-upper-tr
+scroll document 1300
+wait 0.3
+shot 11-active-revoke-134-tr
+remember authority-still-active
+establishment budget 1000
+same authority-still-active
+# Geri alma134altin; hak kapansa da bu haftaki ek grup kullanimi kaybolmaz.
+commission revoke
+expect Gold 466
+expect Troops 1600
+expect DumasExtraRecruitUsed True
+expect HasOfficerCommission False
+expect DumasLoyalty 61
+state 06-revoked-but-week-still-used
+panel officers
+scroll document 1300
+wait 0.4
+shot 12-rights-reclaimed-tr
+commission grant
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+remember regranted-used
+commission recruit
+same regranted-used
+select normandy
+march
+settle 5
+act recruit
+expect Gold 346
+expect Food 284
+expect MilitarySupplies 70
+expect Troops 1800
+expect Manpower 1800
+expect Moves 1
+expect Fatigue 10
+expect ArmyRegionId normandy
+expect CommissionRevokeGold 150
+expect DumasExtraRecruitUsed True
+expect DumasLoyalty 61
+state 07-regrant-travel-normal-group
+remember global-week-already-used
+commission recruit
+same global-week-already-used
+save
+load
+same global-week-already-used
+state 08-global-use-loaded
+panel officers
+lang ru
+scroll document 1300
+wait 0.4
+shot 13-live-revoke-price-150-ru
+lang tr
+scroll document 1300
+wait 0.3
+shot 14-live-revoke-price-150-tr
+commission revoke
+expect Gold 196
+expect Troops 1800
+expect DumasExtraRecruitUsed True
+expect HasOfficerCommission False
+establishment budget 1400
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1400
+expect ArmyReductionDueWeek 2
+state 09-reclaimed-rights-budget-scheduled
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot 15-budget-after-paid-revocation-ru
+week
+expect Troops 1800
+expect ArmyReductionDueWeek 2
+expect DumasExtraRecruitUsed False
+expect HasOfficerCommission False
+state 10-first-week-resets-global-use
+week
+expect Week 2
+expect Troops 1600
+expect Manpower 2000
+expect PendingPetition True
+expect ArmyReductionDueWeek 4
+expect DumasExtraRecruitUsed False
+state 11-reduction-with-petition
+remember petition-first
+commission grant
+same petition-first
+wait 0.3
+shot 16-petition-before-new-authority-ru
+petition negotiate
+remember budget-still-prevents-authority
+commission grant
+same budget-still-prevents-authority
+week
+week
+expect Week 4
+expect Gold 318
+expect Food 214
+expect MilitarySupplies 84
+expect Troops 1400
+expect Manpower 2200
+expect Moves 2
+expect Fatigue 0
+expect ArmyRegionId normandy
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed False
+expect CommissionRevokeGold 117
+expect ArmyCost 153
+expect ArmyConsumption 47
+expect DumasLoyalty 61
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1400
+expect ArmyReductionDueWeek 0
+state 12-final-rights-reclaimed-army-reduced
+save
+remember final-reduced
+select orleans
+load
+same final-reduced
+state 13-final-reduced-loaded
+panel journal
+lang tr
+wait 0.6
+shot 17-final-journal-tr
+lang ru
+wait 0.3
+shot 18-final-journal-ru
+quit
