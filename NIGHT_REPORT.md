@@ -27,6 +27,8 @@ Son tam kapı: [Subay beratı ve kaynak importu](output/verify/officer-commissio
 
 Krem kâğıt, adaçayı yeşili, açık mavi, mercan ve koyu mürekkep birlikte kullanılır. Haritada on iki ayrı şehir silueti, guaj arazi ve kurgu kişilerin resimli portreleri bulunur. Savaş alanındaki tepe ve sığ geçit gerçek arazi kurallarıyla uyumludur.
 
+04:15 ek görsel kabul: deniz tekdüze mavi yerine daha derin Atlantik ve yumuşak kuzey/güney açıklığı taşır. [Deniz son kapısı](output/verify/atlas-sea-linear-20260906-041054-091-2db68a88/REPORT.md) GREEN380/4 PNG/8 kontrol/4 JSON/10 tarayıcı; runtime `fdb980581940a214c92dff8de071f23e0c2fca7e1d319478dbf93ab0941fcefc`. Root ve görsel ajan RU/TR tam kareleri karşılaştırdı; yazı, ordu ve kıyı açık, dört campaign JSON'u öncekiyle byte-eşit. İlk vertex renk adayı gereğinden açık çıktı; yalnız denizin Linear renk dönüşümü düzeltilerek ikinci aday kabul edildi. Yeni bitmap veya animasyon yoktur.
+
 Duman için ayrı ve açık alfa geçişi kullanıldı. Önceki opak beyaz dörtgen hatası gerçek karelerde giderildi; son duman hafif bir izdir, erken evresi hâlâ zayıf görünür. Bu, bitmiş ve güçlü bir salvo gösterisi olarak sunulmaz. Dumas'nın yanındaki komşu portre kırıntısı yalnız gösterilen kaynak bölgesi daraltılarak kaldırıldı; resim dosyası ve ana siluetin ölçeği değiştirilmedi.
 
 Aynı taktik adımda verilen atışlar birlikte çözülür. Cephanesiz piyade ve süvari yakın temasa girebilir. Gerçek oyuncu rotası 125,803 saniyede zafer, 196 kayıp ve 24 ele geçirilen teçhizat verdi; bu her oyuncunun sonucu için garanti değildir. Önceki military-art-final koşusunda iki savaş dünyası art arda kurulup kapandı ve eski nesneler yeni karşılaşmaya taşınmadı.

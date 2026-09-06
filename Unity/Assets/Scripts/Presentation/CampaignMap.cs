@@ -103,7 +103,7 @@ namespace PowerAboveAll
             roadMat = MakeMaterial(Hex("#536C57"));
             cityInkMat = MakeAtlasMaterial(Color.white);
             cityInkMat.mainTexture = Texture2D.whiteTexture;
-            MakeFlat("Atlas sea", new List<Vector2> { new Vector2(-700,-600),new Vector2(1500,-600),new Vector2(1500,1600),new Vector2(-700,1600) }, Hex("#83B0B6"), -.22f);
+            MakeAtlasSea();
             AddSurroundings();
             var triangles = Triangulate(mainland);
             foreach (Seed seed in Seeds)
@@ -370,6 +370,66 @@ namespace PowerAboveAll
             var go = new GameObject(name); go.transform.SetParent(transform, false);
             go.AddComponent<MeshFilter>().sharedMesh = NewMesh(vertices, Triangulate(points));
             var renderer = go.AddComponent<MeshRenderer>(); renderer.sharedMaterial = MakeAtlasMaterial(color); renderer.shadowCastingMode = ShadowCastingMode.Off;
+        }
+        private void MakeAtlasSea()
+        {
+            // Görünür atlas sık, uzak dış kenarlar seyrek örneklenir: toplam 1482 köşe.
+            var columns = new List<float> { -700f, -300f, -100f };
+            for (int x = -60; x <= 930; x += 30) columns.Add(x);
+            columns.Add(1200f); columns.Add(1500f);
+            var rows = new List<float> { -600f, -300f, -180f, -90f };
+            for (int y = -30; y <= 900; y += 30) rows.Add(y);
+            rows.Add(1200f); rows.Add(1600f);
+
+            var vertices = new List<Vector3>(columns.Count * rows.Count);
+            var colors = new List<Color>(columns.Count * rows.Count);
+            var indices = new List<int>((columns.Count - 1) * (rows.Count - 1) * 6);
+            Color water = Hex("#83B0B6"), paper = Hex("#F3E7CA");
+            Color atlantic = Color.Lerp(water, Hex("#5F8DA5"), .65f);
+            Color channel = Color.Lerp(water, paper, .22f);
+            Color south = Color.Lerp(water, paper, .14f);
+            for (int y = 0; y < rows.Count; y++)
+            for (int x = 0; x < columns.Count; x++)
+            {
+                var point = new Vector2(columns[x], rows[y]);
+                vertices.Add(World(point, -.22f));
+                Color color = SeaWashColor(point, water, atlantic, channel, south);
+                // Vertex renkleri materyal rengi gibi otomatik dönüştürülmez.
+                colors.Add(QualitySettings.activeColorSpace == ColorSpace.Linear ? color.linear : color);
+                if (x == columns.Count - 1 || y == rows.Count - 1) continue;
+                int i = y * columns.Count + x;
+                indices.Add(i); indices.Add(i + 1); indices.Add(i + columns.Count);
+                indices.Add(i + 1); indices.Add(i + columns.Count + 1); indices.Add(i + columns.Count);
+            }
+            var mesh = NewMesh(vertices, indices);
+            mesh.name = "Atlas sea wash";
+            mesh.SetColors(colors);
+            var go = new GameObject("Atlas sea"); go.transform.SetParent(transform, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = MakeAtlasMaterial(Color.white);
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+        }
+        private static Color SeaWashColor(Vector2 point, Color water, Color atlantic, Color channel, Color south)
+        {
+            // Yönlü guaj alanları kıyı uzaklığına veya oyun verisine bağlı değildir.
+            float atlanticEdge = 230f + .34f * (point.y - 280f) + 24f * SeaWashTransition(point.y, 360f, 620f);
+            float atlanticWeight = (1f - SeaWashTransition(point.x, atlanticEdge - 210f, atlanticEdge + 120f))
+                * SeaWashTransition(point.y, 150f, 320f);
+            Color color = Color.Lerp(water, atlantic, atlanticWeight);
+            float channelEdge = 212f + .10f * point.x - 30f * SeaWashTransition(point.x, 90f, 370f);
+            float channelWeight = 1f - SeaWashTransition(point.y, channelEdge - 90f, channelEdge + 70f);
+            color = Color.Lerp(color, channel, channelWeight);
+            float southEdge = 560f - .12f * (point.x - 470f);
+            float southWeight = SeaWashTransition(point.y, southEdge - 45f, southEdge + 105f)
+                * SeaWashTransition(point.x, 350f, 530f);
+            return Color.Lerp(color, south, southWeight);
+        }
+        private static float SeaWashTransition(float value, float from, float to)
+        {
+            float t = Mathf.InverseLerp(from, to, value);
+            return t * t * (3f - 2f * t);
         }
         private Mesh NewMesh(List<Vector3> vertices, List<int> indices)
         {
