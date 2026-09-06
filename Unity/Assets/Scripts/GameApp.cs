@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PowerAboveAll
 {
-    public sealed class GameApp : MonoBehaviour
+    public sealed partial class GameApp : MonoBehaviour
     {
         public CampaignState State { get; private set; }
         public CampaignState ViewState { get; private set; }
@@ -15,26 +15,19 @@ namespace PowerAboveAll
         public StrategicCamera StrategyCamera { get; private set; }
         private float lastMapClick;
         private string lastMapClickRegion;
-        public bool BattleActive => battle != null && battle.Active;
-        public bool Busy => BattleActive || dispatchPending;
+        public bool BattleActive => State?.World!=null && State.World.HasCombat;
+        public bool Busy => Simulation==null;
         public bool ChoosingRole { get; private set; }
         public bool CanCancelRoleSelection => hasCampaign;
         private bool hasCampaign;
-        private bool CampaignInputBlocked => Busy || ChoosingRole || State.PendingPetition || CampaignCore.MandateDue(State);
+        private bool CampaignInputBlocked => Busy || ChoosingRole;
         private CabinetHud hud;
-        private TacticalBattle battle;
         private CabinetAudio sound;
         private PetitionDocument petition;
         private RoleSelection roleSelection;
         private MandateDocument mandateDocument;
         private string messageKey = "app.welcome";
         private object[] messageArgs = new object[0];
-        private string pendingTarget, pendingBattleId;
-        private float dispatchUntil;
-        private Action afterDispatch;
-        private bool dispatchPending;
-        private string dispatchKey;
-        private GUIStyle dispatchStyle;
         private GUIStyle languageStyle, battleIdentityStyle;
         private string SavePath
         {
@@ -74,13 +67,12 @@ namespace PowerAboveAll
             StrategyCamera = gameObject.AddComponent<StrategicCamera>();
             StrategyCamera.Initialize(Camera);
             hud = gameObject.AddComponent<CabinetHud>();
-            battle = gameObject.AddComponent<TacticalBattle>();
             sound = gameObject.AddComponent<CabinetAudio>();
             sound.SetMuted(PlayerPrefs.GetInt("muted", 0) == 1);
             petition = gameObject.AddComponent<PetitionDocument>();
             roleSelection = gameObject.AddComponent<RoleSelection>();
             mandateDocument = gameObject.AddComponent<MandateDocument>();
-            battle.Feedback += Feedback;
+            InitializeContinuousWorld();
             RestoreAtlas();
             if (File.Exists(SavePath)) Load();
             if (!hasCampaign) BeginRoleSelection();
@@ -88,43 +80,28 @@ namespace PowerAboveAll
         }
         private void Update()
         {
-            Camera.rect = ViewLayout.CameraRect(BattleActive ? ViewLayout.BattleViewport
-                : new Rect(0, 0, 1, 1));
+            Camera.rect = ViewLayout.CameraRect(new Rect(0, 0, 1, 1));
+            UpdateContinuousWorld();
             bool pointerOnMap = !hud.IsPointerOverInterface(ViewLayout.ToCanvas(Input.mousePosition));
-            if (!BattleActive) StrategyCamera.Tick(!CampaignInputBlocked && !hud.BlocksMapInput && pointerOnMap);
-            if (dispatchPending)
-            {
-                Map.SetHovered(null);
-                if (Time.unscaledTime >= dispatchUntil)
-                {
-                    dispatchPending = false;
-                    var action = afterDispatch; afterDispatch = null;
-                    try { action?.Invoke(); }
-                    catch (Exception error)
-                    {
-                        Debug.LogException(error); battle.Stop(); pendingTarget = pendingBattleId = null;
-                        RestoreAtlas(); messageKey = "app.battle.failed"; messageArgs = new object[0];
-                    }
-                }
-                return;
-            }
+            StrategyCamera.Tick(!CampaignInputBlocked && !ShowPendingDocument && !hud.BlocksMapInput && pointerOnMap);
             if (Input.GetKeyDown(KeyCode.M))
             {
                 sound.SetMuted(!sound.Muted);
                 if (!L.IsReviewSession) { PlayerPrefs.SetInt("muted", sound.Muted ? 1 : 0); PlayerPrefs.Save(); }
             }
-            if (CampaignInputBlocked || hud.BlocksMapInput) { Map.SetHovered(null); return; }
+            if (CampaignInputBlocked || ShowPendingDocument || hud.BlocksMapInput) { Map.SetHovered(null); return; }
             Map.SetHovered(Map.Pick(Input.mousePosition));
             if (Input.GetKeyDown(KeyCode.F5)) Save();
             if (Input.GetKeyDown(KeyCode.F9)) Load();
             if (!pointerOnMap) { Map.SetHovered(null); return; }
             if (Input.GetKeyDown(KeyCode.F)) StrategyCamera.Focus(Map.RegionWorld(State.SelectedRegionId));
-            if (Input.GetKeyDown(KeyCode.G)) StrategyCamera.Focus(Map.RegionWorld(State.ArmyRegionId));
+            if (Input.GetKeyDown(KeyCode.G)) FocusWorldArmy();
             if (Input.GetMouseButtonDown(0))
             {
                 var p = Input.mousePosition;
                 if (Camera.pixelRect.Contains(p))
                 {
+                    if(SelectWorldEntity(p))return;
                     var id = Map.Pick(p);
                     if (!string.IsNullOrEmpty(id))
                     {
@@ -137,7 +114,8 @@ namespace PowerAboveAll
         }
         private void OnGUI()
         {
-            if (!BattleActive && !CampaignInputBlocked && !hud.BlocksMapInput &&
+            HandleWorldTimeEvent(Event.current);
+            if (!CampaignInputBlocked && !ShowPendingDocument && !hud.BlocksMapInput &&
                 !hud.IsPointerOverInterface(ViewLayout.ToCanvas(Input.mousePosition)))
                 StrategyCamera.HandleMapEvent(Event.current,Input.mousePosition);
             var old = GUI.matrix;
@@ -149,47 +127,17 @@ namespace PowerAboveAll
                 GUI.matrix = old;
                 return;
             }
-            if (BattleActive)
-            {
-                GUI.color = new Color(.141f, .231f, .216f);
-                GUI.DrawTexture(new Rect(0, 0, 1440, 36), Texture2D.whiteTexture);
-                // Kameranın altındaki aralığı da boya; önceki atlas karesi görünmemeli.
-                GUI.DrawTexture(new Rect(0, 729, 1440, 9), Texture2D.whiteTexture);
-                GUI.color = Color.white;
-                battle.DrawHud();
-                DrawBattleLanguageBar();
-            }
-            else
             {
                 bool enabled = GUI.enabled;
-                GUI.enabled = !dispatchPending && !State.PendingPetition && !CampaignCore.MandateDue(State);
+                GUI.enabled = !ShowPendingDocument;
                 hud.Draw(this);
                 GUI.enabled = enabled;
-                if (State.PendingPetition)
+                if (ShowPendingDocument && State.PendingPetition)
                 {
                     petition.Draw(this);
                     petition.DrawLanguageControls(this);
                 }
-                else if (CampaignCore.MandateDue(State)) mandateDocument.Draw(this);
-            }
-            if (dispatchPending)
-            {
-                float arrival = Mathf.SmoothStep(0, 1, Mathf.Clamp01((.9f - (dispatchUntil - Time.unscaledTime)) / .28f));
-                GUI.color = new Color(.08f, .14f, .13f, .48f * arrival);
-                GUI.DrawTexture(new Rect(0, 0, 1440, 900), Texture2D.whiteTexture);
-                var document = new Rect(400 + (1 - arrival) * 30, 318, 640, 230);
-                GUI.color = new Color(.04f, .08f, .07f, .22f * arrival);
-                GUI.DrawTexture(new Rect(document.x + 6, document.y + 8, document.width, document.height), Texture2D.whiteTexture);
-                GUI.color = new Color(.953f, .906f, .792f, arrival);
-                GUI.DrawTexture(document, Texture2D.whiteTexture);
-                GUI.color = new Color(.792f, .702f, .435f, arrival);
-                GUI.DrawTexture(new Rect(document.x + 36, document.y + 27, document.width - 72, 2), Texture2D.whiteTexture);
-                GUI.DrawTexture(new Rect(document.x + 36, document.yMax - 28, document.width - 72, 1), Texture2D.whiteTexture);
-                GUI.color = Color.white;
-                if (dispatchStyle == null) dispatchStyle = new GUIStyle(GUI.skin.label) { fontSize = 30, alignment = TextAnchor.MiddleCenter, wordWrap = true };
-                dispatchStyle.normal.textColor = new Color(.141f, .231f, .216f, arrival);
-                GUI.Label(new Rect(document.x + 36, document.y + 35, document.width - 72, document.height - 70),
-                    L.Text(dispatchKey, "region." + State.SelectedRegionId), dispatchStyle);
+                else if (ShowPendingDocument && CampaignCore.MandateDue(State)) mandateDocument.Draw(this);
             }
             GUI.matrix = old;
         }
@@ -265,6 +213,7 @@ namespace PowerAboveAll
         }
         private void Report(ActionResult result)
         {
+            if(result.Ok)Simulation?.ImportPlayerArmy();
             messageKey = result.Key; messageArgs = result.Args;
             Refresh();
             if (result.Ok) WriteSave(false);
@@ -292,8 +241,9 @@ namespace PowerAboveAll
         public void SetLanguage(string language) { L.SetLanguage(language); Refresh(); }
         public void NewCampaign()
         {
-            if (BattleActive || dispatchPending) return;
+            if (Busy) return;
             State = CampaignCore.Create(); Mode = "control"; messageKey = "app.welcome"; messageArgs = new object[0];
+            InitializeContinuousWorld();
             ChoosingRole = false; hasCampaign = true;
             Map.ResetPresentation(); Refresh(); WriteSave(false);
         }
@@ -313,6 +263,7 @@ namespace PowerAboveAll
             if (Busy || !ChoosingRole) return;
             CampaignState next = CampaignCore.Create(roleId);
             State = next; ChoosingRole = false; hasCampaign = true; Mode = "control";
+            InitializeContinuousWorld();
             messageKey = State.Journal[0].Key; messageArgs = State.Journal[0].Args;
             Map.ResetPresentation(); hud.OpenDocument("mandate"); Refresh(); WriteSave(false); Feedback("seal");
         }
@@ -404,40 +355,9 @@ namespace PowerAboveAll
         public void March()
         {
             if (CampaignInputBlocked) return;
-            var result = CampaignCore.March(State, State.SelectedRegionId);
-            if (!result.RequiresBattle) { Report(result); if (result.Ok) Feedback("march"); return; }
-            var arrival = CampaignCore.PreviewMarch(State, State.SelectedRegionId);
-            var resistance = CampaignCore.GetRegionalResistance(State, State.SelectedRegionId);
-            if (resistance == null || !resistance.RequiresBattle || resistance.EnemyTroops <= 0)
-            { Report(new ActionResult { Ok = false, Key = "ui.resistance.unavailable" }); return; }
-            pendingTarget = State.SelectedRegionId;
-            pendingBattleId = "battle-" + State.Week + "-" + State.Moves + "-" + State.ArmyRegionId + "-" + pendingTarget;
-            WriteSave(false);
-            Dispatch("app.dispatch", () =>
-            {
-                Map.SetVisible(false);
-                StrategyCamera.Suspend();
-                var commander = State.Characters.Find(c => c.Id == "dumas");
-                battle.Begin(new BattleSetup { Troops = State.Troops, EnemyTroops = resistance.EnemyTroops, Supply = arrival.Supply, Morale = arrival.Morale,
-                    Fatigue = arrival.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
-                    CommandNetwork = CampaignCore.Desk(State) != null,
-                    CampaignMoraleAfterBattle = (won, morale) => CampaignCore.BattleReturnMorale(arrival.Morale, morale, won),
-                    Seed = 1789 + State.Week * 31 + State.Moves, RegionNameKey = "region." + pendingTarget }, Camera, CompleteBattle);
-            });
-        }
-        private void CompleteBattle(BattleOutcome outcome)
-        {
-            if (pendingBattleId == null) return;
-            var result = CampaignCore.ResolveBattle(State, pendingTarget, pendingBattleId, outcome.Won, outcome.Casualties, outcome.EndingMorale);
-            pendingBattleId = null; pendingTarget = null;
-            if (result.Ok) CampaignCore.RecoverMilitarySupplies(State, outcome.MilitarySuppliesRecovered);
-            battle.Stop(); RestoreAtlas(); Report(result);
-            if (result.Ok && CampaignCore.HasPendingVictory(State)) hud.OpenDocument("victory");
-            // The report's single return button restores the atlas immediately.
-        }
-        private void Dispatch(string key, Action action)
-        {
-            dispatchKey = key; afterDispatch = action; dispatchUntil = Time.unscaledTime + .9f; dispatchPending = true;
+            var region=Array.Find(Map.WorldData.regions,r=>r.id==State.SelectedRegionId);
+            if(region==null)return;
+            var result=Simulation.March(State.World.PlayerArmyId,region.seatId);Report(result);if(result.Ok)Feedback("march");
         }
         private void RestoreAtlas()
         {
@@ -463,14 +383,17 @@ namespace PowerAboveAll
         }
         public void Load()
         {
-            if (BattleActive || dispatchPending) return;
+            if (Busy) return;
             try
             {
                 if (!File.Exists(SavePath)) { messageKey = "app.save.none"; messageArgs = new object[0]; return; }
                 var restored = CampaignArchive.Deserialize(File.ReadAllText(SavePath));
+                if(restored.World==null){messageKey="world.legacy_save";messageArgs=new object[0];return;}
                 State = restored; hasCampaign = true; ChoosingRole = false;
+                InitializeContinuousWorld();
                 messageKey = "app.loaded"; messageArgs = new object[0]; Map.ResetPresentation(); Refresh();
             }
+            catch (NotSupportedException) { messageKey = "world.legacy_save"; messageArgs = new object[0]; }
             catch (Exception error) { Debug.LogException(error); messageKey = "app.load.failed"; messageArgs = new object[0]; }
         }
     }

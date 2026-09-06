@@ -4,6 +4,10 @@ Bilgi bir kaynak kişisi ve gözlem tarihiyle gelir. Gecikme planı değerlendir
 
 ## Karşılaştırma — 6 Eylül 2026
 
+İkmal karşılaştırması: UGAR'daki yerel stok/teslim ilkesi + NAM gündelik iaşe → PAA'da merkez/yerel/yolda/ordu stoğunun ayrılması. `supply-loop-20260906-131713-745-63176cc5` gerçek Windows 02RU:5,6gün erzak ve33,6saat yol;04TR:11,2gün ve256salvo, yük tüketildi. Kayıt/yükleme eşitliği geçti. Kaynak oyunun karma puanı başarı diye gizlenmez. Kalan fark: köprü/üretim grafiği ve günlük yaşam sunumu. Yakın Paris sembolü konvoyu kapattı;576testli sonraki sürümde sembol zoom'a göre küçültüldü. Bu bir gerçek screenshot→düzeltme döngüsüdür; henüz bütün sanatın kabulü değildir.
+
+Güncel sürekli dünya: UG cephe/yedek + SoW teslim + Command Ops açıklanabilir gecikme → altı görev/aynı alay listesi/kompakt emir raporu.557testli gerçek Windows'ta eski büyük altpanoyu küçültmek ve çerçeveleri kaldırmak alanı açtı. Native4karede yedeğe Shift-click, HQ taşıma, Space ve kare emri çalıştı. Square görseli üçsıra çıkmıştı; sonraki558adayda çevreye dağıtıldı. Saf üçseedde1200vs2400 hazırlık sonucu tersine çevirdi; bunların kampanyada kurulması için gerçek ikmal ağı eksik. Uzun gerçek coğrafya testi600s sınırına takıldı; devamı695s'de doğal bitti. Bu nedenle uzun GPU ve responsive kabulü devam ediyor.
+
 | Reference | Intended lesson | Our implementation | Result | Remaining gap |
 |---|---|---|---|---|
 | Radio General + Young | Haber gerçekliğin gerisinde | Bordeaux snapshot | Gerçek correspondence-atlas-fixed: week1 gerçek21/bilinen35; week2 bilinen21/gerçek23 | Tek bölge, duygusal kör kullanıcı testi yok |

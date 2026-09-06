@@ -223,7 +223,7 @@ namespace PowerAboveAll
             var obligation = state.Obligation;
             Require(obligation.Kind == RoleKind(state.RoleId) && Definition(obligation.RegionId) != null);
             Require(obligation.IssuedWeek >= 0 && obligation.IssuedWeek <= state.Week && obligation.IssuedWeek <= MaximumWeek - MandateDelayWeeks);
-            Require(obligation.DueWeek == obligation.IssuedWeek + MandateDelayWeeks && state.Week <= obligation.DueWeek);
+            Require(obligation.DueWeek == obligation.IssuedWeek + MandateDelayWeeks && (state.World!=null || state.Week <= obligation.DueWeek));
             Require(state.NextMandateWeek == obligation.IssuedWeek + MandateCooldownWeeks);
             var terms = BuildMandateTerms(obligation.Kind, obligation.RegionId, obligation.IssuedWeek);
             Require(terms != null && terms.RegionId == obligation.RegionId);

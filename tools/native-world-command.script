@@ -1,0 +1,29 @@
+new
+lang ru
+select champagne
+march
+time 3
+world wait contact 30
+time pause
+world unit royal-3
+world focus
+state 00-before
+shot 00-start
+wait 30
+state 01-orders
+shot 01-orders
+wait 30
+state 02-command
+shot 02-command
+wait 45
+time pause
+expect WorldHasArena False
+expect WorldMapVisible True
+expect WorldArmyCount 2
+state 03-after
+shot 03-after
+save
+remember after-native
+load
+same after-native
+quit

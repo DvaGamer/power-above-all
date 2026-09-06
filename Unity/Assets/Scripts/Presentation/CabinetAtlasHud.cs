@@ -15,7 +15,7 @@ namespace PowerAboveAll
             Fill(new Rect(0,0,1440,78),deep);Fill(new Rect(0,77,1440,1),brass);
             var mark=new GUIStyle(heading);mark.normal.textColor=paper;mark.fontSize=18;
             Text(new Rect(18,13,205,25),"POWER ABOVE ALL",mark);
-            Text(new Rect(18,44,220,22),Date(app.ViewState.Week),lightBody);
+            Text(new Rect(18,44,230,22),app.State.World.Clock.Date.ToString("d MMM yyyy · HH:mm",System.Globalization.CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU")),lightBody);
             string[] labels={"ui.gold","ui.food","ui.supplies","ui.troops","ui.power"};
             string[] values={Animated(0,app.ViewState.Gold),Animated(1,app.ViewState.Food),Animated(2,app.ViewState.MilitarySupplies),Animated(3,app.ViewState.Troops),Animated(4,app.ViewState.Power)};
             string[] details={Signed(forecast.NetGold),Signed(forecast.NetFood),T("ui.stock"),T("ui.reserve",Number(app.ViewState.Manpower)),T("ui.personal")};
@@ -39,12 +39,12 @@ namespace PowerAboveAll
             if(Press(new Rect(266,95,86,27),T("ui.world.world")))app.StrategyCamera.SetView(Vector3.zero,3000,0,85);
             if(Press(new Rect(359,95,86,27),T("ui.world.europe")))app.StrategyCamera.SetView(AtlasProjection.Project(12,49),570,0,72);
             if(Press(new Rect(452,95,86,27),T("ui.world.france")))app.StrategyCamera.SetView(AtlasProjection.Project(2.3f,46.6f),150,0,65);
-            if(Press(new Rect(545,95,104,27),T("ui.troops")))app.StrategyCamera.Focus(app.Map.RegionWorld(app.ViewState.ArmyRegionId));
+            if(Press(new Rect(545,95,104,27),T("ui.troops")))app.FocusWorldArmy();
             string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<4;i++)
                 if(Press(new Rect(672+i*124,95,117,27),T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i])))
                 {if(showDocument&&document==names[i])showDocument=false;else OpenDocument(names[i]);}
-            if(app.StrategyCamera.Distance<420)
+            if(app.StrategyCamera.Distance>=2&&app.StrategyCamera.Distance<420)
             {
                 float width=104;
                 for(int i=0;i<ModeNames.Length;i++)
@@ -70,7 +70,7 @@ namespace PowerAboveAll
             }
             else if(distance>280)
                 AtlasLabel(app,AtlasProjection.Project(2.3f,46.6f),T("ui.world.france"),heading,180);
-            if(distance<280)
+            if(distance>=2&&distance<280)
             {
                 var selected=app.ViewState.SelectedRegionId;
                 foreach(var s in app.Map.WorldData.settlements)
@@ -90,15 +90,29 @@ namespace PowerAboveAll
         {
             Vector3 p=AtlasProjection.Project(place.longitude,place.latitude,.2f);
             string name=place.rank==0?T(distance<80?"city."+place.regionId:"region."+place.regionId):place.name;
-            var style=new GUIStyle(distance<80?cityLabel:mapLabel);style.fontSize=selected?16:14;style.fontStyle=selected?FontStyle.Bold:FontStyle.Normal;
+            var style=new GUIStyle(distance<80?cityLabel:mapLabel);style.fontSize=selected?18:16;style.fontStyle=selected?FontStyle.Bold:FontStyle.Normal;
             AtlasLabel(app,p,name,style,165,selected);
+            var desk=CampaignCore.Desk(app.State);
+            if(desk!=null&&place.rank==0&&place.regionId==desk.RegionId&&distance<280)
+            {
+                var knowledge=CampaignCore.Knowledge(app.State,desk.RegionId);
+                Vector3 screen=app.Camera.WorldToScreenPoint(p);Vector2 point=ViewLayout.ToCanvas(screen);
+                var badge=new Rect(point.x-72,point.y+16,144,22);
+                if(screen.z>0&&badge.y>140&&badge.yMax<788&&(PanelsHidden||(!showProvince||badge.x>ProvinceWidth+5))&&(PanelsHidden||(!showDocument||badge.xMax<1140)))
+                {
+                    Fill(badge,paper);var note=new GUIStyle(tiny);note.alignment=TextAnchor.MiddleCenter;
+                    note.normal.textColor=knowledge.AgeDays>7?red:muted;
+                    Text(badge,T("dispatch.map_age",knowledge.AgeDays),note);
+                    labelBounds.Add(badge);
+                }
+            }
         }
-        private void AtlasLabel(GameApp app,Vector3 world,string text,GUIStyle style,float width,bool selected=false)
+        private void AtlasLabel(GameApp app,Vector3 world,string text,GUIStyle style,float width,bool selected=false,float vertical=-30)
         {
             Vector3 projected=app.Camera.WorldToScreenPoint(world);if(projected.z<=0)return;
-            Vector2 p=ViewLayout.ToCanvas(projected);Rect r=new Rect(p.x-width*.5f,p.y-30,width,24);
-            if(r.x<10||r.xMax>1430||r.y<140||r.yMax>788)return;
-            if(!PanelsHidden&&((showProvince&&r.x<250)||(showDocument&&r.xMax>1140)))return;
+            Vector2 p=ViewLayout.ToCanvas(projected);Rect r=new Rect(p.x-width*.5f,p.y+vertical,width,24);
+            if(r.x<10||r.xMax>1430||r.y<(PanelsHidden?55:140)||r.yMax>(PanelsHidden?886:788))return;
+            if(!PanelsHidden&&((showProvince&&regionalScale&&r.x<ProvinceWidth+5)||(showDocument&&r.xMax>1140)))return;
             foreach(Rect previous in labelBounds)if(previous.Overlaps(r))return;
             labelBounds.Add(r);
             var centered=new GUIStyle(style);centered.alignment=TextAnchor.MiddleCenter;centered.wordWrap=false;
@@ -114,7 +128,9 @@ namespace PowerAboveAll
             if(Press(new Rect(165,857,58,28),T("ui.new")))confirmNew=true;
             Text(new Rect(244,852,870,22),string.IsNullOrEmpty(app.Message)?T("ui.welcome"):app.Message,lightBody);
             Text(new Rect(244,879,890,17),T(CampaignCore.Desk(app.State)!=null?"dispatch.forecast_notice":"ui.world.controls"),lightTiny);
-            if(Press(new Rect(1160,855,262,34),T("ui.next"),true,true))app.NextWeek();
+            string[] speed={"Ⅱ","I","II","III"};
+            for(int i=0;i<4;i++)if(Press(new Rect(1160+i*66,852,60,27),i==0?"||":speed[i],true,(int)app.State.World.Clock.Speed==i))app.SetWorldSpeed(i);
+            Text(new Rect(1160,881,258,17),T("world.speed."+(int)app.State.World.Clock.Speed),lightTiny);
         }
     }
 }

@@ -7,7 +7,8 @@ param(
   [ValidateSet('Default', 'Direct3D11', 'Direct3D12')][string]$GraphicsApi = 'Default',
   [switch]$VisiblePlayer,
   [ValidateRange(640,7680)][int]$Width=1440,
-  [ValidateRange(480,4320)][int]$Height=900
+  [ValidateRange(480,4320)][int]$Height=900,
+  [ValidateRange(30,1800)][int]$TimeoutSeconds=300
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'verify-support.ps1')
@@ -47,7 +48,7 @@ if ($gates.Preflight.StartsWith('PASSED')) {
   $playerLog = Join-Path $out 'player.log'
   try {
     $arguments = @('-shots', $shotDir, '-script', $scriptCopy, '-logFile', $playerLog, '-screen-width', [string]$Width, '-screen-height', [string]$Height, '-screen-fullscreen', '0') + @(Get-ReviewGraphicsArguments $GraphicsApi)
-    $playerExit = Invoke-OwnedProcess $PlayerPath $arguments 300 $repo -Visible:$VisiblePlayer
+    $playerExit = Invoke-OwnedProcess $PlayerPath $arguments $TimeoutSeconds $repo -Visible:$VisiblePlayer
     Say "Player native exit: $playerExit"
     $playerText = Assert-CleanLog $playerLog
     Assert-ReviewGraphics $playerText $GraphicsApi

@@ -1,0 +1,50 @@
+new
+lang ru
+expect Gold 840
+atlas france
+shot 00-france-ru
+atlas europe
+shot 01-europe-ru
+atlas world
+shot 02-world-ru
+select ile
+atlas region
+shot 03-paris-close-ru
+atlas oblique
+shot 04-paris-oblique-ru
+atlas clean
+shot 05-paris-clean-ru
+atlas panels
+desk open
+atlas region
+shot 06-bordeaux-close-ru
+desk view draft
+shot 07-draft-ru
+lang tr
+shot 08-draft-tr
+desk order mission express
+expect Gold 828
+desk view outbox
+shot 09-sent-tr
+week
+expect KnownUnrest 35
+expect SelectedUnrest 21
+desk view report
+shot 10-outdated-tr
+week
+petition negotiate
+expect KnownUnrest 21
+expect ReportObservedDay 7
+desk view report
+shot 11-reply-tr
+lang ru
+shot 12-reply-ru
+panel economy
+shot 13-economy-ru
+lang tr
+shot 14-economy-tr
+remember reviewed
+save
+load
+same reviewed
+quit

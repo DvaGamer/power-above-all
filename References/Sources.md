@@ -13,5 +13,12 @@ Kontrol: **2026-09-06**. Kartlar somut URL ve konumu kaydeder. Arama snippet'i o
 | [Jefferson–Morris](Literature/Primary_Sources/Jefferson_Morris_Channels.md) | LOC4sayfa transkripsiyon | 1792 diplomasi, iç Fransız postası değil |
 | [Natural Earth](Visual/World_Map/Natural_Earth_Layers.md) | Lisans/katalog/pinned v5.1.2 | Public domain; dosya hash'leri provenance içinde |
 | [Bailliages](Historical/Maps/Bailliages_1789.md) | Araştırma/DataverseV2/shapefile | CC-BY4.0; yeniden kurma sınırları korunur |
+| [Pentiment](Visual/UI/Pentiment_Readable_Hand.md) | Lettermatic/Obsidian/Steam | Görsel yazar eli ve okunurluk; font/art kopyalanmaz |
+| [UG ateş koridoru/yedek](Gameplay/Combat/UG_Front_Reserves_Fire_Lanes.md) | Steam DARTIS rehberi, belirli başlıklar ve yorumlar | Taktik örnek; dönem sayıları/halk uzlaşması çıkarılmaz |
+| [UGAR ikmal](Gameplay/Logistics/UGAR_Visible_Supply_Network.md) | Mağaza ve iki belirli Steam tartışması | Karma sonuçlu karşılaştırma; 2024 deneyimi güncel algoritma değildir |
+| [NAM kamp yemeği](Historical/Military/NAM_Camp_Food.md) | Early years metni | Britanya müze sentezi;1789Fransa rasyon miktarı değildir |
 
 Ses dinleme ve videoların zaman kodlu incelemesi henüz yapılmadı. README/katalog dosyaları kart sayısına dahil edilmez.
+
+- [Laclos](Literature/Fiction/Laclos_Access_And_Deadlines.md): Gutenberg52006gerçek metin, LettreI/II. Yalnız bağlantı ve analiz; kurmaca/atmosfer. Katalogdaki otomatik özet kullanılmadı.
+- [Figaro](Literature/Fiction/Figaro_Waiting_And_Rank.md): Wikisource1876edisyon, ActeV II–III. Metin ve edisyon sayfası açıldı; replik/çeviri veya kaynak resim dağıtılmaz.

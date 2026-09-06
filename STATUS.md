@@ -1,6 +1,20 @@
 # Power Above All — proje durumu
 
-Son güncelleme: **6 Eylül 2026**. Gece planından sonraki kullanıcı öncelikleri: küresel coğrafi atlas, kamera/UI, elle görsel üretim ve PLAYER ≠ STATE için iki küçük bağlı deney. Eski gece raporu bu yeni işlerin tamamını kapsamaz.
+Son güncelleme: **6 Eylül 2026**. Yeni bağlayıcı yön: tek gerçek-zaman dünyası, tek küresel harita; hafta bir tur değildir, ayrı savaş arenası yoktur. Oyuncu bir kişidir; emir insan, mesafe ve bilgi üzerinden işler. [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) eski haftalı/ayrı-savaş tasarımının yerine geçer.
+
+Güncel aday `playable-balance-20260906-135642-436-62670a8a` **GREEN: 577/577 Unity testi, yeni Windows build, 8 gerçek PNG, 11 kontrol, 3 durum ve 10 tarayıcı testi**. Runtime SHA256 `039585725F0CB16652590EAE5BD351E69AD23F5717E03131983CE563A985C022`; 141 dağıtım dosyası doğrulandı. `PLAY_GAME.cmd` son GREEN adayı bütünlük kontrolünden geçirerek seçer. 908 RU/TR anahtarı 32 asset içindedir. Bu kalite kabulünün tamamlandığı anlamına gelmez.
+
+Son adayın RU muharebe ve TR teslim kareleri gerçekten incelendi: komut/erzak bilgisi okunur, teslim sonrası 11,2 günlük erzak ve 256 salvo görünür. Yakın şehir simgesi artık konvoyu kapatmıyor. Kalan görsel açıklar: seyrek yerel arazi, zaman zaman yakınlaşan alay etiketleri, düz kâğıt düğmeler ve yetersiz sonuç hiyerarşisi. Kaynak kodun derlenmesi bunların kabulü değildir.
+
+Önceki 576 adayında `natural-live-7efd0631-20260906-134422-118-63891e49` **710 saniyelik gerçek player incelemesi; native exit 0, 6 PNG, 8 kontrol, 3 durum** ile bitti. Sonuç enjekte edilmedi; kraliyet ordusu 1200 kişiden 1034 kişiye düşüp aynı haritada geri çekildi. Son TR sonuç karesi incelendi. `native-input-20260906-133837-a0e3ed05` gerçek UI tıklamasıyla konvoyu gönderdi; stok 80→40 erzak ve 192→96 mühimmat oldu, teslim ve kayıt/yükleme geçti. Bunlar player-only **PARTIAL** raporlardır; yeni kaynak için ayrı tam kapının yerine geçmezler. Son 577 adayındaki iki davranış düzeltmesi aç ordunun dinlenerek bedava yorgunluk silmesini engeller.
+
+Çalışan bağ: WorldClock0/1/3600/86400 → fiziksel iki ordu/yol → aynı haritada muharebe → altı cephe görevi, geciken emir, görüş/ateş hattı, HQ/cephane arabası, moral/düzen → kalıcı geri çekilme → sonlu depo/konvoy/rasyon/dinlenme. Haftalık ülke hesabı ve günlük Bordeaux yazışması aynı saatte sürer. Ayrı arena açılmaz. Arşiv v12/schema3 önceki dünya biçimini açıkça reddeder; eski dosyayı değiştirmez. [Oynanabilirlik raporu](PLAYABILITY_REPORT.md) kararları ve on devam işini açıklar.
+
+RU/TR için 1440×900 son tam koşuda; 1366×768 `playable-768-20260906-132918-500-4594c8ad`, 2560×1440 `playable-1440p-20260906-133109-666-83614eda`, 1920×1080 `playable-1080-20260906-133241-409-1e607a80` önceki aynı UI kaynaklı 576 adayı üzerinde **native 0 / 8 PNG / 11 kontrol / 3 durum** ile geçti. Root 768 RU ikmal / TR savaş ve 1440p RU savaş / TR ikmal karelerini gördü. Sonraki runtime farkları var olan ses taslaklarının yeni muharebeye bağlanması ve iki yorgunluk düzeltmesidir; artwork/layout değişmedi.
+
+**Henüz bitmedi:** bina/inşaat, bütün bölgesel üretim/lojistik ağı, fiziksel asker toplama, operasyonel düşman planları, takip ve bütün siyasi süreçlerin aktarımı. Askerî ikmal kesiti ülke ekonomisinin tamamını fiziksel üretime çevirmiş değildir. Üç eşli testte hazırlık1200vs2400dezavantajını tersine çevirir; tüm koşulların normal kampanyada kurulması henüz kabul edilmedi. Tam dengelenmiş oyun veya profesyonel görsel/ses milestone iddiası yok. Reference Library16karttır;30–50kart hedefi açıktır.
+
+## Önceki katmanların doğrulama geçmişi
 
 Küresel fiziksel GIS katmanı, kaynaklı 1789 Fransa katmanı, ölçeğe bağlı detay, serbest kamera/HUD, Paris–Bordeaux yazışması ve HQ/alay deneyleri Unity içinde uygulanmıştır. Son aday `command-input-final-20260906-090548-165-7de71df0`: **523 Unity testi, yeni Windows build, 6 PNG, 2 kontrol, 7 durum kaydı** ve 10 tarayıcı testi. Önceki atlas kapısında 12 PNG ve 6 kontrol; aynı UI kaynak sürümünde RU/TR 1440×900, 1920×1080, 2560×1440, 1366×768 senaryoları geçti. Native incelemelerde çok adımlı zoom, Home, dünya sınırı, F, belge kaydırma, D/E/RMB/MMB/Tab ve kamera sonrası bilgi değişmezliği doğrulandı. Son native senaryoda hiçbir alay seçilmeden HQ taşındı. **Dünya/kamera/profesyonel UI milestone'u henüz tamamlanmadı.**
 
@@ -37,7 +51,7 @@ Kabul edilen çalışma dili güneşli guaj atlas ve tarihî minyatürlerdir: s�
 
 Rusça ve Türkçe oyun metni vardır. Bölge raporunun bütün gövdesi tek kaydırılan yapraktır; yoğun Paris uyarılarında emirlere ve nedenlere ulaşılır. Ekonomi ve siyasi belgeler fiyatı, ilgili kişiyi, mevcut sonucu ve koşullu gelecek hesabını gösterir. Ortak 1440×900 tasarım farklı pencere oranlarında eşit ölçeklenir. Sesli geri bildirimler ve kalıcı sessize alma vardır; son ses kalitesi dinleme kabulü hâlâ açıktır.
 
-## Son doğrulama
+## Önceki komuta kesitinin doğrulama arşivi
 
 [Son komuta kapısı](output/verify/command-input-final-20260906-090548-165-7de71df0/REPORT.md): **GREEN**, 523/523 Unity testi ve yeni Windows build. Son native HQ incelemesi `native-input-20260906-090716-1d2fe87f`, mevcut bu build üzerinde iki gerçek kare, iki kontrol ve iki durum kaydıyla tamamlandı. Önce ve sonra alay seçimi boşken HQ koordinatı değişti; sağ tıkla hareket ve sefer dönüşü doğrulandı. `PLAY_GAME.cmd` bütünlük kontrolü bu adayı seçiyor.
 
@@ -51,7 +65,7 @@ Taktik senaryoda emir gönderme ve alınma, HQ hareketi, niyet değiştirme ve s
 
 - Dünya fiziksel coğrafyası vardır; küresel simülasyon ve diğer ülkelerin ayrıntılı içeriği yoktur. Diplomasi, makam/kariyer sistemi, tam rejim yolları ve çok oyunculu oyun gelecekteki kapsamdır.
 - Fransa'nın siyasi katmanı kaynaklı 1789 bailliage yeniden kurmasını kullanır; 12 oynanış kümesi tarihî idareyle birebir değildir. Yollar şematik stratejik bağlantılardır; orman ve yerleşim ayrıntıları özgün stilizasyon içerir. Her kaynak katmanının kökeni `Unity/Assets/Resources/World/` içinde kayıtlıdır.
-- Sefer arşivi v9, eski v1–v8 verilerini destekler. Devam eden taktik savaş ayrı bir kaydedilebilir savaş arşivi değildir.
+- Güncel sefer arşivi v12/schema3'tür. Eski v9 komuta kesitinin arena kaydı kısıtı geçmiş uygulamaya aittir; yeni dünya, devam eden çatışmayı ve aynı alayların durumunu kaydeder. Desteklenmeyen eski dünya şeması açıkça reddedilir.
 - Gecikmeli yönetim yalnız Bordeaux deneyindedir. Oyuncu seyahati, Paris'te yokluğunun siyasi bedeli, bütün ülke için direktifler, generalin bağımsız sefer yönetimi ve HQ yaralanması uygulanmadı.
 - Küçük ekran yazısı, ağır bölge sınırları, şehir silüetleri ve yakın plan yüzeyleri daha fazla görsel çalışma gerektirir. Dört çözünürlükte görüntü almak profesyonel responsive UI kabulü değildir.
 - Güçlü aktif sivil politika ve pasif kriz yolları ölçüldü; uzun dönem rekabet dengesi, bütün taktikler ve ses kalitesi için daha fazla gerçek oynama gerekir.

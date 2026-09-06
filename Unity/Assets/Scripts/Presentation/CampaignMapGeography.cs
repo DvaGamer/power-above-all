@@ -8,16 +8,19 @@ namespace PowerAboveAll
     public sealed partial class CampaignMap
     {
         public AtlasWorld WorldData { get; private set; }
+        public GeoRiver[] WorldRivers => physical.rivers;
         public int VisibleGeographicChunks { get; private set; }
         private PhysicalGeography physical;
         private readonly List<GeographicChunk> geographicChunks = new List<GeographicChunk>();
         private readonly List<LocalDetail> localDetails = new List<LocalDetail>();
         private readonly Dictionary<string, GeoMesh[]> regionGeometry = new Dictionary<string, GeoMesh[]>();
+        private readonly Dictionary<string, Mesh[]> boundaryMeshes = new Dictionary<string, Mesh[]>();
+        private readonly List<GameObject[]> boundaryLevels = new List<GameObject[]>();
         private Transform geographicBorders, roadsRoot, riversRoot, extraCitiesRoot;
         private Material seaMaterial, landMaterial, coastMaterial, riverMaterial, detailMaterial;
         private float lodTimer;
         private sealed class GeographicChunk { public GameObject Root; public int Level; public Bounds Bounds; }
-        private sealed class LocalDetail { public GameObject Root; public Vector3 Point; public float Limit; }
+        private sealed class LocalDetail { public GameObject Root; public Vector3 Point; public float Limit, TownScale; }
 
         public void Build(Camera camera)
         {
@@ -34,8 +37,8 @@ namespace PowerAboveAll
             landMaterial = MakeAtlasMaterial(Hex("#D3D2A8"));
             coastMaterial = MakeMaterial(Hex("#567E77"));
             riverMaterial = MakeMaterial(Hex("#729EA2"));
-            borderMat = MakeMaterial(Hex("#89916E")); goldMat = MakeMaterial(Hex("#CAB36F"));
-            selectionInkMat = MakeMaterial(Hex("#45554B")); hoverMat = MakeMaterial(Hex("#F3E7CA"));
+            borderMat = MakeMaterial(Hex("#A4AE87")); goldMat = MakeMaterial(Hex("#CAB36F"));
+            selectionInkMat = MakeMaterial(Hex("#637858")); hoverMat = MakeMaterial(Hex("#CAB36F"));
             roadMat = MakeMaterial(Hex("#B79D71"));
             cityInkMat = new Material(Resources.Load<Shader>("World/AtlasInk")) { color=Color.white };owned.Add(cityInkMat);
             detailMaterial = cityInkMat;
@@ -59,7 +62,8 @@ namespace PowerAboveAll
             foreach (GeoMesh area in entity.areas)
             {
                 MeshObject(entity.id,GeographicMesh(area,.035f),MakeAtlasMaterial(Hex("#BEC99B")),geographicBorders);
-                MeshObject(entity.id+" boundary",LinesMesh(area.paths,.14f,.08f),borderMat,geographicBorders);
+                var outline=Array.ConvertAll(area.paths,p=>AtlasCartography.Simplify(p,.10f));
+                MeshObject(entity.id+" boundary",LinesMesh(outline,.08f,.08f),borderMat,geographicBorders);
             }
             foreach (AtlasRegion region in WorldData.regions)
             {
@@ -79,16 +83,13 @@ namespace PowerAboveAll
                     var mesh=GeographicMesh(area,.055f);
                     var part=MeshObject("Province:"+region.id,mesh,material,root);
                     part.AddComponent<MeshCollider>().sharedMesh=mesh;
-                    MeshObject("Regional ink",LinesMesh(area.paths,.055f,.10f),borderMat,root);
                     if(area.paths.Length>0)foreach(Vector3 p in GeographicPoints(area.paths[0].points,0))cells[region.id].Add(DrawingPoint(p));
                 }
-                MakeCity(seed);
-                var city=root.Find("Engraved town:"+seed.Id);
-                if(city){city.localScale=Vector3.one*.68f;localDetails.Add(new LocalDetail{Root=city.gameObject,Point=position,Limit=300});}
+                GeographicRegionBorder(region.id,root,borderMat,.10f);
             }
             roadsRoot=NewRoot("Strategic route network");
             foreach(AtlasRoute road in WorldData.roads)
-                MeshObject(road.id,LinesMesh(new[]{new GeoPath{points=road.points}},.055f,.13f),roadMat,roadsRoot);
+                MeshObject(road.id,LinesMesh(AtlasCartography.Dashes(road.points,.28f,.18f),.065f,.13f),roadMat,roadsRoot);
             riversRoot=NewRoot("River systems");
             // Batched within geographic tiles; small rivers enter only near their tile.
             foreach(GeoRiver river in physical.rivers)
@@ -100,15 +101,13 @@ namespace PowerAboveAll
             extraCitiesRoot=NewRoot("Provincial settlements");
             foreach(var settlement in WorldData.settlements)
             {
-                if(settlement.rank==0)continue;
                 Vector3 p=AtlasProjection.Project(settlement.longitude,settlement.latitude,.15f);
                 var root=NewRoot(settlement.id);root.SetParent(extraCitiesRoot,false);root.localPosition=p;
-                var engraving=new CityEngraving();
-                EngravedHouse(engraving,-.6f,-.2f,.7f,.5f,.25f);
-                EngravedTower(engraving,.2f,-.2f,.3f,.95f);
+                var engraving=AtlasTownSculpture.Draw(settlement);
                 var mesh=NewMesh(engraving.Vertices,engraving.Indices);mesh.SetColors(engraving.Colors);
                 MeshObject(settlement.id,mesh,cityInkMat,root);
-                localDetails.Add(new LocalDetail{Root=root.gameObject,Point=p,Limit=100});
+                root.localScale=Vector3.one*(settlement.rank==0?.78f:.58f);
+                localDetails.Add(new LocalDetail{Root=root.gameObject,Point=p,Limit=settlement.rank==0?300:100,TownScale=settlement.rank==0?.78f:.58f});
             }
             BuildLocalAtlasDetails();
             BuildGeographicRelief();
@@ -171,10 +170,24 @@ namespace PowerAboveAll
             }
             return NewMesh(v,t);
         }
-        private void GeographicRegionBorder(string id,Transform root,Material material,float width,float elevation)
+        private void GeographicRegionBorder(string id,Transform root,Material material,float elevation)
         {
             if(!regionGeometry.TryGetValue(id,out var areas))return;
-            foreach(var area in areas)MeshObject("Selection ink",LinesMesh(area.paths,width,elevation),material,root);
+            if(!boundaryMeshes.TryGetValue(id,out var meshes))
+            {
+                meshes=new Mesh[3];
+                float[] tolerance={.018f,.12f,.32f},width={.038f,.08f,.17f};
+                for(int level=0;level<3;level++)
+                {
+                    var paths=new List<GeoPath>();
+                    foreach(var area in areas)foreach(var path in area.paths)paths.Add(AtlasCartography.Simplify(path,tolerance[level]));
+                    meshes[level]=LinesMesh(paths.ToArray(),width[level],0);
+                }
+                boundaryMeshes[id]=meshes;
+            }
+            var levels=new GameObject[3];
+            for(int i=0;i<3;i++){levels[i]=MeshObject("Boundary ink LOD "+i,meshes[i],material,root);levels[i].transform.localPosition=Vector3.up*elevation;levels[i].SetActive(i==1);}
+            boundaryLevels.Add(levels);
         }
         private bool OnFrenchLand(Vector3 point)
         {
@@ -197,6 +210,13 @@ namespace PowerAboveAll
             var app=FindFirstObjectByType<GameApp>();if(!app||!app.StrategyCamera)return;
             float distance=app.StrategyCamera.Distance;Vector3 focus=app.StrategyCamera.FocusPoint;
             int level=distance>900?0:1;VisibleGeographicChunks=0;
+            int inkLevel=distance<75?0:distance<280?1:2;
+            for(int i=boundaryLevels.Count-1;i>=0;i--)
+            {
+                var levels=boundaryLevels[i];
+                if(!levels[0]){boundaryLevels.RemoveAt(i);continue;}
+                for(int j=0;j<levels.Length;j++)if(levels[j].activeSelf!=(j==inkLevel))levels[j].SetActive(j==inkLevel);
+            }
             Plane[] planes=GeometryUtility.CalculateFrustumPlanes(atlasCamera);
             foreach(var chunk in geographicChunks)
             {
@@ -205,13 +225,15 @@ namespace PowerAboveAll
             }
             foreach(var detail in localDetails)
             {
-                bool show=distance<detail.Limit&&(detail.Point-focus).sqrMagnitude<distance*distance*1.8f;
+                bool show=distance>=2&&distance<detail.Limit&&(detail.Point-focus).sqrMagnitude<distance*distance*1.8f;
                 if(detail.Root.activeSelf!=show)detail.Root.SetActive(show);
+                if(show&&detail.TownScale>0)
+                    detail.Root.transform.localScale=Vector3.one*Mathf.Max(30/(float)WorldPoint.MetresPerAtlasUnit,detail.TownScale*Mathf.Pow(Mathf.Min(1,distance/100),1.2f));
             }
-            roadsRoot.gameObject.SetActive(distance<300);
+            roadsRoot.gameObject.SetActive(distance>=2&&distance<300);
             foreach(var province in provinces)province.Value.gameObject.SetActive(distance<420);
-            selectionRoot.gameObject.SetActive(distance<420);hoverRoot.gameObject.SetActive(distance<420);
-            routeRoot.gameObject.SetActive(distance<300);armyRoot.gameObject.SetActive(lastTroops>0&&distance<600);
+            selectionRoot.gameObject.SetActive(distance>=2&&distance<420);hoverRoot.gameObject.SetActive(distance>=2&&distance<420);
+            routeRoot.gameObject.SetActive(!continuousWorld&&distance<300);armyRoot.gameObject.SetActive(!continuousWorld&&lastTroops>0&&distance<600);
         }
 
         private void BuildLocalAtlasDetails()

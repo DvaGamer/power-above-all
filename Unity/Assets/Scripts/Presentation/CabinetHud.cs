@@ -42,14 +42,17 @@ namespace PowerAboveAll
             if (BlocksMapInput) return true;
             if (PanelsHidden) return new Rect(12,12,140,32).Contains(point);
             return point.y<82 || point.y>843 || new Rect(258,90,922,38).Contains(point)
+                ||new Rect(385,680,670,150).Contains(point)||(!regionalScale&&new Rect(18,185,240,485).Contains(point))||new Rect(1080,747,338,33).Contains(point)||new Rect(16,90,230,36).Contains(point)
+                ||(ShowWorldSupply&&new Rect(1080,185,338,440).Contains(point))
                 || (regionalScale && new Rect(300,802,837,28).Contains(point))
-                || (regionalScale && showProvince && point.x<245 && point.y<800) || (showDocument && point.x>1140 && point.y<800);
+                || (regionalScale && showProvince && point.x<ProvinceWidth && point.y<800 && point.y>=(correspondenceVisible?142:94)) || (showDocument && point.x>1140 && point.y<800);
         }
         public void NotifyRegionSelected() { provinceScroll = Vector2.zero; showProvince=true; PanelsHidden=false; panelOpenedAt=Time.unscaledTime; }
         private static readonly string[] ModeNames = { "control", "unrest", "food", "tax", "army", "influence" };
 
         public void OpenDocument(string name)
         {
+            ShowWorldSupply=false;
             if(name=="victory"){showVictory=true;return;}
             if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment"&&name!="officers"&&name!="reform")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
@@ -63,9 +66,10 @@ namespace PowerAboveAll
 
         public void Draw(GameApp app)
         {
-            if (app == null || app.ViewState == null || app.BattleActive) return;
+            if (app == null || app.ViewState == null) return;
             EnsureStyles();
-            regionalScale = app.StrategyCamera.Distance < 420;
+            ObserveCorrespondence(app.State);
+            regionalScale = app.StrategyCamera.Distance >=2 && app.StrategyCamera.Distance < 420;
             if (cachedLanguage != L.Language) { cachedLanguage = L.Language; provinceScroll = documentScroll = Vector2.zero; }
             CampaignState state = app.ViewState; EconomyForecast forecast = CampaignCore.Forecast(state);
             Observe(state);
@@ -73,16 +77,18 @@ namespace PowerAboveAll
             bool previousEnabled = GUI.enabled;
             if (BlocksMapInput) GUI.enabled = false;
             Atlas(app);
+            DrawWorldEntities(app);
             if (!PanelsHidden)
             {
                 Top(app, forecast); AtlasNavigation(app);
                 Color oldColor=GUI.color; GUI.color=new Color(oldColor.r,oldColor.g,oldColor.b,Mathf.Clamp01((Time.unscaledTime-panelOpenedAt)/.14f));
-                if(showProvince && app.StrategyCamera.Distance<420) Province(app);
+                if(showProvince && regionalScale) Province(app);
                 if(showDocument) Cabinet(app, forecast);
                 GUI.color=oldColor;
-                if(showProvince && app.StrategyCamera.Distance<420 && Press(new Rect(214,105,23,24),"×"))showProvince=false;
+                if(showProvince && regionalScale && Press(correspondenceVisible?new Rect(328,153,23,24):new Rect(214,105,23,24),"×"))showProvince=false;
                 if(showDocument && Press(new Rect(1409,105,23,24),"×"))showDocument=false;
                 Bottom(app);
+                WorldArmyDesk(app);
             }
             else if(Press(new Rect(12,12,140,32),T("ui.world.restore")))PanelsHidden=false;
             GUI.enabled = previousEnabled;
@@ -147,11 +153,12 @@ namespace PowerAboveAll
             ObserveArmyEstablishment(state);
             ObserveOfficerCommission(state);
             ObserveRegionalReform(state);
-            resistancePreview=CampaignCore.GetRegionalResistance(state,state.SelectedRegionId);
+            resistancePreview=state.World==null?CampaignCore.GetRegionalResistance(state,state.SelectedRegionId):null;
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
-            weekCheck=CampaignCore.NextWeek(nextState);
+            // Haftalık kapanış tahmini, gerçek dünya saatini veya hareketi ilerletmez.
+            weekCheck=state.World==null?CampaignCore.NextWeek(nextState):CampaignCore.SettleCalendarPeriod(nextState);
             var currentEconomy=CampaignCore.Forecast(state);
             additionalRecruitPayroll=additionalRecruitFood=0;
             foreach(string action in new[]{"bread","tax","recruit","subsidy"})
@@ -161,7 +168,7 @@ namespace PowerAboveAll
                 if(action!="recruit"||!orderChecks[action].Ok)continue;
                 var afterRecruit=CampaignCore.Forecast(proposed);
                 additionalRecruitPayroll=afterRecruit.ArmyCost-currentEconomy.ArmyCost;
-                additionalRecruitFood=afterRecruit.ArmyConsumption-currentEconomy.ArmyConsumption;
+                additionalRecruitFood=state.World==null?afterRecruit.ArmyConsumption-currentEconomy.ArmyConsumption:CampaignCore.ArmyFoodFor(proposed.Troops)-CampaignCore.ArmyFoodFor(state.Troops);
             }
         }
         private string Animated(int index,int actual)
@@ -453,9 +460,9 @@ namespace PowerAboveAll
                 {OpenDocument("officers");app.Feedback("paper");}
                 y+=40;
             }
-            var march=CampaignCore.CanMarch(state,region.Id);bool here=state.Troops>0&&state.ArmyRegionId==region.Id;
+            var march=state.World==null?CampaignCore.CanMarch(state,region.Id):new ActionResult{Ok=true,Key="world.route_hint"};bool here=state.Troops>0&&state.ArmyRegionId==region.Id;
             // Düğme durumu değiştirebilir; varış tahmini tıklamadan önce alınır.
-            var arrival=!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
+            var arrival=state.World==null&&!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
             int movementCost=arrival==null?0:state.Moves-arrival.MovesAfter;
             if(arrival!=null)ResistanceMarchSummary(app,ref y);
             if(Press(new Rect(4,y,195,34),T(state.Troops==0?"ui.establishment.empty_army":here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=40;
@@ -476,7 +483,7 @@ namespace PowerAboveAll
             RegionalReformEntry(app,ref y,195);
             Rule(4,y,195);y+=17;Text(new Rect(4,y,195,22),T("ui.army.dispatch"),tiny);y+=28;
             Text(new Rect(4,y,195,29),T("city."+state.ArmyRegionId),heading);y+=36;
-            Pair(4,y,195,T("ui.troops"),Number(state.Troops));y+=29;Pair(4,y,195,T("ui.moves"),Number(state.Moves));y+=33;
+            Pair(4,y,195,T("ui.troops"),Number(state.Troops));y+=29;
             Meter(4,y,195,T("ui.morale"),state.Morale,C("#708563"));y+=49;Meter(4,y,195,T("ui.supply"),state.Supply,C("#9B9E66"));y+=49;Meter(4,y,195,T("ui.fatigue"),state.Fatigue,red);y+=55;
             provinceContentHeight=y+10;
             GUI.EndScrollView();

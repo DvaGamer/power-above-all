@@ -1,28 +1,37 @@
 # Power Above All
 
-> **Unity 0.2 prototipi geliştiriliyor.** Vizyon [VISION.md](VISION.md), sanat yönü [ART_DIRECTION.md](ART_DIRECTION.md), doğrulanmış sonuçlar ve kalan sınırlar [NIGHT_REPORT.md](NIGHT_REPORT.md) içinde tutulur.
+> **Unity'de tek haritalı gerçek-zaman stratejisi geliştiriliyor.** Vizyon [VISION.md](VISION.md), sanat yönü [ART_PRODUCTION_RULES.md](ART_PRODUCTION_RULES.md), güncel doğrulama ve kalan sınırlar [STATUS.md](STATUS.md) içindedir.
 
 **Fransa. Mayıs 1789. Her şeyin üstünde iktidar.**
 
 Fransız Devrimi'nin başlangıcında geçen bir strateji oyununun ilk oynanabilir prototipi. Bölgeleri yönetin; hazineyi, halkın hoşnutsuzluğunu ve ordunun ihtiyaçlarını dengeleyin; taktik çatışmalarda birliklerinize komuta edin.
 
-> **Güncel proje Unity 6000.3.23f1'de; oyun dilleri Rusça ve Türkçe.** Son tam doğrulama: 496 Unity testi, yeni Windows build, 18 gerçek kare, 72 durum kontrolü, 14 kampanya kaydı ve 10 tarayıcı testi. Tarayıcı 0.1, Rusça referans olarak korunur. Belgeler Türkçedir.
+> **Unity 6000.3.23f1; Rusça ve Türkçe.** Güncel uygulama ve test kayıtları [STATUS.md](STATUS.md). Tarayıcı 0.1 eski Rusça referans prototipidir; aşağıdaki tarayıcı yönergeleri Unity kuralları değildir. Belgeler Türkçedir.
 
-Geçerli aşama **Unity 0.2 oynanabilir prototipi**: kişisel iktidar, ülke ekonomisi ve alay savaşını birbirine bağlayan temel. Geniş diplomasi, kampanya sonu ve kapsamlı alternatif tarih yolları henüz tamamlanmadı. [POLISH_PLAN.md](POLISH_PLAN.md) önceki görsel iyileştirme planını korur; güncel kapsam için [VISION.md](VISION.md) ve [NIGHT_REPORT.md](NIGHT_REPORT.md) esas alınır.
+Geçerli aşama **oynanabilir kesitlerin birleştirilmesi**: kişisel iktidar, ülke ekonomisi, fiziksel yürüyüş, alay savaşı ve sonlu ikmal. Geniş diplomasi, inşaat/üretim ağı, kampanya sonu ve kapsamlı alternatif tarih yolları tamamlanmadı. Eski haftalı tasarımın yerine [sürekli dünya mimarisi](REALTIME_ARCHITECTURE.md) geçti.
 
 ## Unity temelinin durumu
 
-12 bölgeli atlas, kişisel hamiler, hesap defteri, ikinci hafta ekmek dilekçesi, taktik savaş ve kayıt bağlantısı birlikte çalışır:
+Gerçek küresel GIS atlası üstünde Fransa odaklı 12 bölge, kişisel hamiler, hesap defteri ve aynı dünya orduları:
 
 - Taç, meclis veya ordu rolü; yardımlar, vadeli sözler, temerrüt ve hami güvenini onarma.
 - Vergi, ekmek, Paris yardımı, dört haftalık vergi tatili ve Dumas'nın gerçek açlığa bağlı erzak girişimi. Ekonomi tahmini gerçek haftayla aynı hesap yolunu kullanır.
 - Ordu bütçe hedefiyle kademeli rezerve dönüş, ücretli ek asker alımı sağlayan subay hakkı ve gerçek zaferden sonraki siyasi kararlar.
 - Erzak veya ticaret yönünde bölgesel reform: tam başlangıç bedeli, dört uygun hafta, sonraki bütçede etki, sponsor ilişkisi ve açık iptal.
 - Yerel huzursuzluk, denetim ve elit muhalefetinden hesaplanan düşman kuvveti; oyuncunun ordusunu büyütmek düşmanı doğrudan büyütmez.
-- Çoklu seçim, hareket, hat/kol/dörtgen düzenleri, ateş izni, elle salvo, duraklatma ve tek sefer uygulanan savaş sonucu.
+- Bir dünya saati, fiziksel yürüyüş ve temas; aynı ordunun merkez/kanat/yedek/topçu/süvari görevleri. HQ, geciken alay emirleri, düzenler, görüş ve ateş koridoru; moral kaybı ve fiziksel geri çekilme. Eski arena sınıfları regresyon için durur, yeni oyunda başlatılmaz.
+- Sonlu depo ve konvoy yükü, yol kesilmesi, teslim, yerel erzak tüketimi ve dinlenme. Konvoy yola çıktığında stok düşer; ordu ancak teslim alırsa kullanır.
 - Resimli kişiler, guaj atlas, şehir siluetleri ve kaydırılan kâğıt belgeler; en-boy oranını koruyan **1440×900** temel arayüz.
 
-**496/496 Unity EditMode testi** ve 25 yerelleştirme kaynağında **692 RU/TR anahtarı** doğrulandı. Arşiv v8, v1–v7 kayıtlarını eski siyasi ve askerî durumları koruyarak taşır. Ayrı oyuncu senaryoları doğal savaş, kampanyaya dönüş ve kayıt/yükleme eşitliğini; gerçek Windows girdileri seçim, salvo ve çeşitli siyasi belgeleri sınadı. Reformun gerçek fare incelemesi henüz yapılmadı. Otomatik kare kontrolü bütün görsellerin kalite kabulü anlamına gelmez; ayrıntılar [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
+Arşiv **v12 / dünya schema3**: saat, yollar, aynı alaylar, muharebeler, emirler, yerel stok ve yoldaki konvoy korunur. Daha eski dünya kayıtları açık yeni-kampanya mesajıyla reddedilir; kaynak dosya değiştirilmez. Eski siyasi arşivlerin okunabilmesi onların yeni dünya gibi oynanabildiği anlamına gelmez. Otomatik kare kontrolü görsel kalite kabulü değildir.
+
+## Unity'de ilk deneme
+
+1. Yeni kampanya ve rol seçin. Alt sağdaki `|| I II III`, Space ve 1/2/3 zamanı yönetir. I gerçek saniye, II saat, III gün hızıdır.
+2. Fransa üstünde bir bölge seçip orduyu gönderin. Rota zaman içinde yürünür. G orduya odaklanır; WASD/MMB kaydırır, tekerlek yakınlaşır, Q/E veya sağ sürükleme döndürür.
+3. Sakin deneme için Normandiya'ya gidin; ordu raporundaki **Снабжение / İkmal** dosyasını açıp Paris'ten yük gönderin. Dosyadan kolonu bulun; teslim zamanı ve kalan günleri izleyin. Ordu uzaklaşırsa konvoy gönderildiği buluşma yerinde bekler.
+4. Muharebe için Champagne yönüne yürüyün. Temasta hız düşer; aynı haritada yakınlaşın. Soldan alay seçin, Shift+tıklamayla konum emri veya alttan niyet/düzen verin. Emir kuyruğu ve yeniden düzenlenme süresi görünür.
+5. Yedeği koruyun; boş mühimmatlı alay kendi arabasına dönebilir. Bütün ordunun geri çekilmesi onu silmez: dinlenme, erzak ve yeni rota ile hazırlanın. Sonuçların tümü kayıt/yüklemeye dahildir.
 
 On kısa prosedürel foley taslağı bulunur; ses düzeyleri, eşzamanlı ses sınırı ve sessize alma uygulanmıştır. Bunlar profesyonel veya tarihsel ses kayıtları değildir; son dinleme ve bütün ekranların görsel kabulü bekler.
 

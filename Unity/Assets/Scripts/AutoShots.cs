@@ -192,6 +192,11 @@ namespace PowerAboveAll
                     case "desk":
                         RequireIdle(app);
                         if(value=="open")app.OpenBordeauxDesk();
+                        else if(value.StartsWith("view ",StringComparison.Ordinal))
+                        {
+                            string page=value.Substring(5);RequireChoice(page,"report","outbox","draft");
+                            app.GetComponent<CabinetHud>().OpenCorrespondencePage(app.State,page);
+                        }
                         else
                         {
                             var args=value.Split(' ');Arguments(args,3);
@@ -200,7 +205,10 @@ namespace PowerAboveAll
                         }
                         break;
                     case "week": RequireIdle(app); app.NextWeek(); break;
-                    case "march": RequireIdle(app); RememberBattleContext(app); app.March(); break;
+                    case "march": RequireIdle(app); if(app.State.World==null)RememberBattleContext(app); app.March(); break;
+                    case "time":
+                        RequireChoice(value,"pause","1","2","3");app.SetWorldSpeed(value=="pause"?0:int.Parse(value,CultureInfo.InvariantCulture));break;
+                    case "world": yield return WorldCommand(app,value); break;
                     case "petition": RequireIdle(app); app.ChoosePetition(value); break;
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
@@ -282,12 +290,61 @@ namespace PowerAboveAll
                 key == "ReportObservedDay" ? (object)CampaignCore.Knowledge(app.State,app.State.SelectedRegionId).ObservedDay :
                 key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :
                 key == "TaxIncome" ? CampaignCore.Forecast(app.State).TaxIncome :
+                key == "WorldSpeed" ? (object)(int)app.State.World.Clock.Speed :
+                key == "WorldArmyCount" ? (object)app.State.World.Armies.Count :
+                key == "WorldBattleCount" ? (object)app.State.World.Battles.Count :
+                key == "WorldConvoyCount" ? (object)app.State.World.Convoys.Count :
+                key == "WorldActivity" ? (object)app.State.World.Army(app.State.World.PlayerArmyId).Activity.ToString() :
+                key == "WorldMapVisible" ? (object)app.Map.gameObject.activeInHierarchy :
+                key == "WorldHasArena" ? (object)(app.GetComponent<TacticalBattle>()!=null) :
                 key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
                 key == "Language" ? L.Language : key == "Mode" ? app.Mode : key == "ResolvedBattleCount" ?
                 app.State.ResolvedBattles.Count : Field(typeof(CampaignState), key).GetValue(app.State);
             string observed = Convert.ToString(actual, CultureInfo.InvariantCulture);
             if (observed != expected) throw new InvalidOperationException("Expected " + value + ", observed=" + observed);
             assertions++; report.Add("  PASS " + value);
+        }
+
+        private IEnumerator WorldCommand(GameApp app,string value)
+        {
+            var args=value.Split(' ');
+            if(args[0]=="focus"){Arguments(args,1);app.FocusWorldArmy();yield return new WaitForSecondsRealtime(1);yield break;}
+            if(args[0]=="close")
+            {
+                Arguments(args,1);var unit=app.State.World.Army(app.State.World.PlayerArmyId).Units.Find(u=>u.Id==app.State.World.SelectedUnitId);
+                if(unit==null)throw new InvalidDataException("Select a world unit before the close view.");
+                app.StrategyCamera.Focus(WorldMapEntities.Position(unit.Position),.035f);yield return new WaitForSecondsRealtime(1);yield break;
+            }
+            if(args[0]=="retreat"){Arguments(args,1);app.Simulation.Retreat(app.State.World.PlayerArmyId);yield break;}
+            if(args[0]=="supplypanel"){Arguments(args,1);app.OpenWorldSupply();yield break;}
+            if(args[0]=="supply"||args[0]=="stock")
+            {
+                Arguments(args,1);var result=args[0]=="stock"?WorldSupply.Restock(app.State,"royal-depot"):WorldSupply.Dispatch(app.State,"royal-depot",app.State.World.PlayerArmyId);
+                if(!result.Ok)throw new InvalidOperationException("Supply action failed: "+result.Key);yield break;
+            }
+            if(args[0]=="convoy")
+            {
+                Arguments(args,1);var convoy=app.State.World.Convoys.FindLast(c=>c.ArmyId==app.State.World.PlayerArmyId);
+                if(convoy==null)throw new InvalidOperationException("No convoy to inspect.");
+                app.StrategyCamera.Focus(WorldMapEntities.Position(convoy.Position),4);yield return new WaitForSecondsRealtime(1);yield break;
+            }
+            if(args[0]=="unit")
+            {
+                Arguments(args,2);var unit=app.State.World.Army(app.State.World.PlayerArmyId).Units.Find(u=>u.Id==args[1]);
+                if(unit==null)throw new InvalidDataException("Unknown world unit.");app.State.World.SelectedUnitId=unit.Id;yield break;
+            }
+            if(args[0]=="wait")
+            {
+                Arguments(args,3);RequireChoice(args[1],"contact","ended","arrived","delivered");float until=Time.realtimeSinceStartup+Number(args[2],1200);
+                while(Time.realtimeSinceStartup<until)
+                {
+                    bool ready=args[1]=="contact"?app.BattleActive:args[1]=="ended"?app.State.World.Battles.Exists(b=>b.Ended):args[1]=="delivered"?app.State.World.Convoys.Exists(c=>c.ArmyId==app.State.World.PlayerArmyId&&c.Status==ConvoyStatus.Delivered):app.State.World.Army(app.State.World.PlayerArmyId).Activity==ArmyActivity.Holding;
+                    if(ready){assertions++;yield break;}yield return null;
+                }
+                File.WriteAllText(Path.Combine(folder,"world-timeout-"+args[1]+".json"),JsonUtility.ToJson(app.State,true));
+                throw new TimeoutException("World condition did not occur: "+args[1]);
+            }
+            throw new InvalidDataException("Unknown world command: "+value);
         }
 
         private static float PatronRelationship(CampaignState state)
@@ -485,11 +542,11 @@ namespace PowerAboveAll
             return type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 ?? throw new MissingFieldException(type.Name, name);
         }
-        private static float Number(string value)
+        private static float Number(string value,float maximum=120)
         {
             if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsed) ||
-                float.IsNaN(parsed) || float.IsInfinity(parsed) || parsed <= 0 || parsed > 120)
-                throw new InvalidDataException("Duration must be greater than 0 and at most 120 seconds: " + value);
+                float.IsNaN(parsed) || float.IsInfinity(parsed) || parsed <= 0 || parsed > maximum)
+                throw new InvalidDataException("Duration must be greater than 0 and at most "+maximum+" seconds: " + value);
             return parsed;
         }
         private static void WriteNew(string path, string text)

@@ -1,5 +1,7 @@
 # Power Above All — oynanış ve görsel dünya taslağı
 
+**Güncel kullanıcı kararı:** tek sürekli gerçek-zaman dünyası ve tek küresel harita. Politika, ekonomi, yapılaşma, fiziksel yürüyüş ve yerel savaş aynı anda gerçekleşir. `1 tur=1hafta`, hareket kotası, anlık March ve ayrı arena hedef davranış değildir. Aşağıdaki eski iki-faz varsayımlarını [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) geçersiz kılar. Sayı üstünlüğü önemlidir; hazırlık, mevzi, ikmal, keşif, yedek ve komuta sonucu değiştirebilir. Hedef toplam imhadan önce organizasyonu kırmaktır. Uygulama sınırları [STATUS.md](STATUS.md) içindedir.
+
 Bu belge kullanıcının yanıtları üzerine geliştirilmiş çalışma önerisidir. Kesinleşenler: parti öncesi rol seçimi; kişisel iktidar, ülke yönetimi ve savaşın birlikte temel deneyim olması; tarihsel koşullardan beslenen, sonuçlu geniş alternatif tarih; hoş ve yumuşak renkler, yer yer aydınlık ve gerektiğinde karanlık, tam gerçekçi olmayan tutarlı grafik. Görüşmenin cevaplanmamış coğrafya, karakter, süre ve nihai rol soruları [VISION.md](VISION.md) içinde açıktır. Buradaki bütün gelecek mekanikleri uygulanmış sayılmaz.
 
 ## Tarihî çerçeve ve oyun kurgusu

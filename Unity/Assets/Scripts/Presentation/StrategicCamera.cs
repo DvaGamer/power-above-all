@@ -17,7 +17,7 @@ namespace PowerAboveAll
         private float zoomVelocity, yawVelocity, pitchVelocity;
         private bool suspended, dragging;
         private Vector3 dragPoint;
-        public const float MinimumDistance = 12, MaximumDistance = 3400;
+        public const float MinimumDistance = .018f, MaximumDistance = 3400;
         public void HandleMapEvent(Event current, Vector3 screenPoint)
         {
             if (!view || suspended || current == null) return;
@@ -71,7 +71,7 @@ namespace PowerAboveAll
         {
             float far = Mathf.SmoothStep(0,1,Mathf.InverseLerp(900,MaximumDistance,distance));
             float x=Mathf.Lerp(1220,120,far),z=Mathf.Lerp(870,100,far);
-            return new Vector3(Mathf.Clamp(point.x,-x,x),0,Mathf.Clamp(point.z,-z,z));
+            return new Vector3(Mathf.Clamp(point.x,-x,x),Mathf.Clamp(point.y,0,WorldMapEntities.Ground),Mathf.Clamp(point.z,-z,z));
         }
 
         public void Tick(bool allowInput)
@@ -84,7 +84,7 @@ namespace PowerAboveAll
                 float x = (Held(KeyCode.D, KeyCode.RightArrow) ? 1 : 0) - (Held(KeyCode.A, KeyCode.LeftArrow) ? 1 : 0);
                 float z = (Held(KeyCode.W, KeyCode.UpArrow) ? 1 : 0) - (Held(KeyCode.S, KeyCode.DownArrow) ? 1 : 0);
                 Vector3 direction = Quaternion.Euler(0, Yaw, 0) * Vector3.ClampMagnitude(new Vector3(x, 0, z), 1);
-                desiredPan = direction * Mathf.Max(3, Distance * .65f) * (Input.GetKey(KeyCode.LeftShift) ? 1.8f : 1);
+                desiredPan = direction * Mathf.Max(.008f, Distance * .65f) * (Input.GetKey(KeyCode.LeftShift) ? 1.8f : 1);
                 float rotation = (Input.GetKey(KeyCode.E) ? 1 : 0) - (Input.GetKey(KeyCode.Q) ? 1 : 0);
                 targetYaw += rotation * 65 * dt;
                 if (Input.GetMouseButton(1))
@@ -115,14 +115,15 @@ namespace PowerAboveAll
         private bool Ground(Vector3 screen, out Vector3 point)
         {
             Ray ray = view.ScreenPointToRay(screen);
-            if (new Plane(Vector3.up, Vector3.zero).Raycast(ray, out float d) && d < 15000)
+            if (new Plane(Vector3.up, new Vector3(0,Distance<2?WorldMapEntities.Ground:0,0)).Raycast(ray, out float d) && d < 15000)
             { point = ray.GetPoint(d); return true; }
             point = Vector3.zero; return false;
         }
         private void Apply()
         {
             if (!view) return;
-            view.orthographic = false; view.fieldOfView = 45; view.nearClipPlane = .2f; view.farClipPlane = 10000;
+            view.orthographic = false; view.fieldOfView = 45; view.nearClipPlane = Mathf.Clamp(Distance*.015f,.000002f,.2f); view.farClipPlane = Distance<2?20:10000;
+            if(Distance<2){FocusPoint=new Vector3(FocusPoint.x,WorldMapEntities.Ground,FocusPoint.z);target=new Vector3(target.x,WorldMapEntities.Ground,target.z);}
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0);
             view.transform.SetPositionAndRotation(FocusPoint - rotation * Vector3.forward * Distance, rotation);
         }

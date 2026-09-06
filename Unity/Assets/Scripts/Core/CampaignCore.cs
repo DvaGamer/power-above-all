@@ -45,6 +45,13 @@ namespace PowerAboveAll
         public List<string> ResolvedBattles = new List<string>();
         public bool SubsidyParis;
         public bool PendingPetition, PetitionResolved;
+        // JsonUtility null sınıfı örnekleyebilir. Boş liste gerçek yokluğu korur.
+        [System.Runtime.Serialization.OptionalField] public List<WorldState> Worlds = new List<WorldState>();
+        public WorldState World
+        {
+            get => Worlds!=null&&Worlds.Count==1?Worlds[0]:null;
+            set { if(Worlds==null)Worlds=new List<WorldState>();Worlds.Clear();if(value!=null)Worlds.Add(value); }
+        }
         [System.Runtime.Serialization.OptionalField] public string RoleId;
         [System.Runtime.Serialization.OptionalField] public int NextMandateWeek;
         // v1/v2 arşivleri bu iki alanı taşımaz; v3 wire sözleşmesi varlıklarını ayrıca doğrular.
@@ -175,7 +182,7 @@ namespace PowerAboveAll
             var f=new EconomyForecast {
                 TaxIncome=Round(tax*(.75f+Faction(s,"assembly").Approval/200f)),
                 ArmyCost=ArmyCostFor(s,s.Troops),Production=Round(food),
-                CivilianConsumption=110,ArmyConsumption=ArmyFoodFor(s.Troops),SubsidyConsumption=s.SubsidyParis?20:0
+                CivilianConsumption=110,ArmyConsumption=s.World==null?ArmyFoodFor(s.Troops):0,SubsidyConsumption=s.SubsidyParis?20:0
             };
             f.NetGold=f.TaxIncome-f.ArmyCost;
             f.NetFood=f.Production-f.CivilianConsumption-f.ArmyConsumption-f.SubsidyConsumption;return f;
@@ -309,8 +316,13 @@ namespace PowerAboveAll
         }
         public static ActionResult NextWeek(CampaignState s)
         {
+            if(s.World!=null)return Result(false,"world.use_clock");
             if(s.PendingPetition)return Result(false,"error.petition.pending");
             if(MandateDue(s))return Result(false,"error.mandate.due");
+            return SettleCalendarPeriod(s);
+        }
+        internal static ActionResult SettleCalendarPeriod(CampaignState s)
+        {
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
             var plan=BuildWeekProjection(new EconomyView(s,HasRegionalAccord(s)?s.AccordRegionId:null));
             s.PendingVictoryId="";
@@ -319,13 +331,17 @@ namespace PowerAboveAll
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
             bool unequipped=(long)s.MilitarySupplies+materials<materialUse;
             s.Gold=Stock((long)s.Gold+f.NetGold);s.Food=Stock((long)s.Food+f.NetFood);
-            s.MilitarySupplies=Stock((long)s.MilitarySupplies+materials-materialUse);s.Week++;s.Moves=2;
+            s.MilitarySupplies=Stock((long)s.MilitarySupplies+materials-materialUse);s.Week++;s.Moves=s.World==null?2:0;
             RecordDumasInitiative(s,plan.Initiative);
             var urban=Faction(s,"urban");var army=Faction(s,"army");
-            bool strained=hunger||unpaid||unequipped;
-            int lost=strained?(int)Math.Ceiling(s.Troops*(hunger?.08d:unpaid?.04d:.02d)):0;
-            s.Troops-=lost;s.Supply=Clamp(s.Supply+(hunger?-25:unequipped?-18:unpaid?-12:10)-(Region(s,s.ArmyRegionId).Control<45?8:0));
-            s.Morale=Clamp(s.Morale+(strained?-15:3));s.Fatigue=Clamp(s.Fatigue-12);
+            // Sahra ordusu kendi erzakını yer; merkezdeki sivil açık onu aynı gün aç bırakmaz.
+            bool militaryHunger=hunger&&s.World==null;
+            bool strained=militaryHunger||unpaid||unequipped;
+            int lost=strained?(int)Math.Ceiling(s.Troops*(militaryHunger?.08d:unpaid?.04d:.02d)):0;
+            s.Troops-=lost;
+            if(s.World==null)s.Supply=Clamp(s.Supply+(militaryHunger?-25:unequipped?-18:unpaid?-12:10)-(Region(s,s.ArmyRegionId).Control<45?8:0));
+            s.Morale=Clamp(s.Morale+(strained?-15:3));
+            if(s.World==null)s.Fatigue=Clamp(s.Fatigue-12);
             army.Approval=Clamp(army.Approval+(strained?-7:1));s.Power=Clamp(s.Power+(strained?-5:.5f));
             if(strained)Character(s,"dumas").Loyalty=Clamp(Character(s,"dumas").Loyalty-5);
             if(s.SubsidyParis)
@@ -343,13 +359,13 @@ namespace PowerAboveAll
             }
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));
             s.DumasExtraRecruitUsed=false;
-            if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
+            if(strained)Record(s,"log.shortage",N(lost),militaryHunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
             CompleteRegionalAccordAfterWeek(s);
             CompleteArmyReductionAfterWeek(s);
             AnnounceDumasInitiativeAfterWeek(s,hunger);
             CompleteRegionalReformAfterWeek(s);
-            AdvanceCorrespondence(s);
+            if(s.World==null)AdvanceCorrespondence(s);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -371,7 +387,7 @@ namespace PowerAboveAll
         {
             Require(s!=null);Require(s.Week>=0&&s.Week<=MaximumWeek&&s.Moves>=0&&s.Moves<=2);
             if(s.Week<2)Require(!s.PendingPetition&&!s.PetitionResolved);
-            else if(s.Week==2)Require(s.PendingPetition!=s.PetitionResolved);
+            else if(s.Week==2||s.World!=null)Require(s.PendingPetition!=s.PetitionResolved);
             else Require(!s.PendingPetition&&s.PetitionResolved);
             foreach(int n in new[]{s.Gold,s.Food,s.MilitarySupplies,s.Manpower,s.Troops})Require(n>=0&&n<=MaximumStock);
             Require(Definition(s.ArmyRegionId)!=null&&Definition(s.SelectedRegionId)!=null);

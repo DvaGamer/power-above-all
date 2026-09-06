@@ -78,9 +78,9 @@ namespace PowerAboveAll.Tests
         }
         [Test] public void OlderArchiveMigratesWithoutStartingCorrespondence()
         {
-            string old=Save(CampaignCore.Create()).Replace("\"Version\":9","\"Version\":8");
+            string old=Save(CampaignCore.Create()).Replace("\"Version\":"+CampaignArchive.CurrentVersion,"\"Version\":8");
             var s=CampaignArchive.Deserialize(old);Assert.IsNull(CampaignCore.Desk(s));CampaignCore.Validate(s);
-            Assert.Throws<ArgumentException>(()=>CampaignArchive.Deserialize(Save(Start()).Replace("\"Version\":9","\"Version\":8")));
+            Assert.Throws<ArgumentException>(()=>CampaignArchive.Deserialize(Save(Start()).Replace("\"Version\":"+CampaignArchive.CurrentVersion,"\"Version\":8")));
         }
         [Test] public void CurrentArchiveRejectsNullOrMissingCorrespondence()
         {

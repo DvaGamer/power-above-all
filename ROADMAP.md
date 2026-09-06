@@ -1,5 +1,11 @@
 # Power Above All — görsel temel ve bağlantılı oynanış
 
+## Güncel bağlayıcı sıra — sürekli dünya
+
+Saat/tek-harita/komuta ve ilk askerî depo→konvoy→ordu kesiti uygulanmıştır. Şimdiki kalite sırası [PLAYABILITY_REPORT.md](PLAYABILITY_REPORT.md) içindeki on iştir: anlaşılır oturum hedefi ve öğretim, operasyonel rakip, toparlanma/takip, geçit doğruluğu, fiziksel asker toplanması, siyasi zamanlama ve sınırlı yerel inşaat. Erken/geç/hiç ikmal kararları artık aynı gerçek sefer kaydından karşılaştırılır. Tek başarılı build, bütün oyunun dengelendiği anlamına gelmez.
+
+Eski haftalı ve ayrı arena adımları aşağıda tarihçe olarak kalır. Yeni sıra: (1) saat/fiziksel yürüyüş/aynı harita muharebesi/kayıt, (2) cephe-yedek-komuta ve nedenleri okunur savaş, (3) gerçek coğrafyada ve native girdide uzun oyun/denge, (4) fiziksel depo/konvoy/yerel stok/asker toplanması, (5) inşaat ve siyasi süreçlerin süreye aktarımı. Her adım çalışan önceki kesitin üzerinde test edilir. Çok sayıda ülke veya yeni mod, bu oynanabilir döngünün önüne geçmez. Kesin uygulama ve kanıt [STATUS.md](STATUS.md) içindedir.
+
 ## 08:39 UTC — önceki sıranın yerini alan kullanıcı önceliği
 
 Gerçek global coğrafya → Fransa entegrasyonu → native girdilerle kamera → semantic LOD → harita/HUD/belge polish → RU/TR dört çözünürlük ve gerçek karşılaştırma. Bu milestone tamamlanmadan ülke/ekonomi/diplomasi kapsamı genişletilmez.

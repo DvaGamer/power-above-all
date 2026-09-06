@@ -2,6 +2,8 @@
 
 ## 6 Eylül 2026 — yeni kesin kullanıcı ilkeleri
 
+**Tek sürekli gerçek-zaman dünyası.** Hafta tur değildir; ayrı taktik arena yoktur. Saat duraklatılır veya 1/3600/86400 oyun saniyesi hızıyla ilerler. Fiziksel ordular, yollar ve muharebeler aynı haritadadır. Ekonomi ve politika çatışma sırasında devam eder. Eski aşağıdaki görüşme seçenekleri bu kesin kullanıcı kararını geçersiz kılamaz. Öncelik artık dengeli, anlaşılır ve yeniden oynanabilir bir sefer döngüsüdür; ayrıntılı kapsam [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md), doğrulama [STATUS.md](STATUS.md).
+
 **PLAYER ≠ STATE.** Oyuncu fiziksel bir yerde bulunan tek kişidir; kamera konumu varlık veya bilgi değildir. Ülkeyi doğrudan değiştirmek yerine insan, yetki, emir, gecikme, yorum, eylem ve geri gelen rapor üzerinden yönetir. Bilgi kaynak ve tarih taşır. Belirsizlik açıklanabilir olmalı, gecikme karar üretmeli; kurye mikro yönetimi ve boş bekleme hedef değildir.
 
 Uzun vadeli yön: kişisel seyahat/başkentten ayrılma bedeli; yetki ve sürekli direktifler; yetenekli ama siyasi açıdan tehlikeli generaller; fiziksel HQ, kısa okunur command delay ve son görevi sürdüren yerel komutanlar. Kullanıcı APM üstünlüğü yerine hazırlık, yedek, komuta yerleşimi ve zamanında plan değişimi istiyor. Ayrıntı ve gerçek küçük uygulama [COMMAND_SLICE.md](COMMAND_SLICE.md); hedeflerin tümü uygulanmış sayılmaz.

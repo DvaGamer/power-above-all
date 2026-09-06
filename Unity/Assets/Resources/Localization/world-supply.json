@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {"key":"supply.unit_replenishing","ru":"Командир отвёл полк к обозу за патронами","tr":"Komutan mühimmat için alayı arabaya çekti"},
+    {"key":"supply.title","ru":"Снабжение","tr":"İkmal"},
+    {"key":"supply.army_stock","ru":"При армии: еды на {0} дн. · в обозе {1} залпов","tr":"Orduda: {0} günlük erzak · arabada {1} salvo"},
+    {"key":"supply.depot_at","ru":"Склад · {0} →","tr":"Depo · {0} →"},
+    {"key":"supply.depot_stock","ru":"На складе: еда {0} · боезапас {1}","tr":"Depoda: erzak {0} · mühimmat {1}"},
+    {"key":"supply.send","ru":"Отправить: 40 еды + 96 залпов","tr":"Gönder: 40 erzak + 96 salvo"},
+    {"key":"supply.restock","ru":"Загрузить склад: −40 еды, −12 снаряжения","tr":"Depoya aktar: −40 erzak, −12 teçhizat"},
+    {"key":"supply.other_depot","ru":"Другой склад","tr":"Diğer depo"},
+    {"key":"supply.no_depot","ru":"Подконтрольный склад потерян.","tr":"Denetimimizde depo kalmadı."},
+    {"key":"supply.cargo","ru":"В пути: еда {0} · боезапас {1}","tr":"Yük: erzak {0} · mühimmat {1}"},
+    {"key":"supply.eta","ru":"До места встречи: примерно {0} ч.","tr":"Buluşmaya yaklaşık {0} saat."},
+    {"key":"supply.locate","ru":"Показать колонну / место потери →","tr":"Konvoyu / kayıp yerini göster →"},
+    {"key":"supply.status.travelling","ru":"Колонна в пути","tr":"Konvoy yolda"},
+    {"key":"supply.status.blocked","ru":"Дорога перекрыта · колонна остановилась","tr":"Yol kapalı · konvoy durdu"},
+    {"key":"supply.status.waiting","ru":"Ждёт армию в назначенной точке","tr":"Belirlenen yerde orduyu bekliyor"},
+    {"key":"supply.status.delivered","ru":"Груз передан армии","tr":"Yük orduya teslim edildi"},
+    {"key":"supply.status.captured","ru":"Колонна захвачена противником","tr":"Konvoy düşman eline geçti"},
+    {"key":"supply.unavailable","ru":"Этот склад не может выполнить приказ.","tr":"Bu depo emri yerine getiremiyor."},
+    {"key":"supply.already_sent","ru":"Колонна уже отправлена. Её местоположение доступно в снабжении.","tr":"Konvoy zaten yolda. Konumu ikmal dosyasında."},
+    {"key":"supply.empty_depot","ru":"На местном складе недостаточно запасов.","tr":"Yerel depoda yeterli stok yok."},
+    {"key":"supply.central_shortage","ru":"Нужно 40 еды и 12 снаряжения из центрального запаса.","tr":"Merkez stokundan 40 erzak ve 12 teçhizat gerekli."},
+    {"key":"supply.sent","ru":"Колонна отправлена к текущей позиции армии. При отходе она будет ждать у места встречи.","tr":"Konvoy ordunun mevcut konumuna çıktı. Ordu ayrılırsa buluşma yerinde bekler."},
+    {"key":"supply.stocked","ru":"Запасы перенесены из центрального амбара на столичный склад.","tr":"Stok merkez ambarından başkent deposuna aktarıldı."},
+    {"key":"supply.delivered","ru":"Колонна прибыла. Армия получила продовольствие и боеприпасы.","tr":"Konvoy ulaştı. Ordu erzak ve mühimmat aldı."},
+    {"key":"supply.captured","ru":"Колонна перехвачена. Груз потерян; откройте снабжение, чтобы увидеть место.","tr":"Konvoy ele geçirildi. Yük kayıp; yerini görmek için ikmali açın."},
+    {"key":"supply.depot_lost","ru":"Склад сменил владельца. Проверьте линию снабжения.","tr":"Depo el değiştirdi. İkmal hattını kontrol edin."}
+  ]
+}

@@ -88,6 +88,7 @@ namespace PowerAboveAll
         private float pulseStarted = -10f;
         private LineRenderer pulseRing;
         private bool built;
+        private bool continuousWorld;
 
         private void BuildLegacyAtlas(Camera camera)
         {
@@ -157,6 +158,7 @@ namespace PowerAboveAll
         public void Refresh(CampaignState state, string mode)
         {
             if (!built || state == null) return;
+            continuousWorld=state.World!=null;
             foreach (Seed seed in Seeds)
             {
                 var region = CampaignCore.Region(state, seed.Id);
@@ -179,17 +181,18 @@ namespace PowerAboveAll
             {
                 selectedId = state.SelectedRegionId; armyId = state.ArmyRegionId;
                 lastWeek = state.Week; lastMoves = state.Moves; lastTroops = state.Troops;
-                armyRoot.gameObject.SetActive(state.Troops > 0);
+                armyRoot.gameObject.SetActive(!continuousWorld && state.Troops > 0);
                 ClearChildren(routeRoot);
                 if (selectionChanged)
                 {
                     ClearChildren(selectionRoot);
                     if (cells.TryGetValue(selectedId ?? "", out var selectedCell))
                     {
-                        GeographicRegionBorder(selectedId, selectionRoot, selectionInkMat, .095f, .19f);
+                        GeographicRegionBorder(selectedId, selectionRoot, selectionInkMat, .19f);
                     }
                     RebuildHover();
                 }
+                if(continuousWorld){armyPositioned=false;return;}
                 if (!armyPositioned)
                 {
                     if (armyRoot.childCount == 0) MakeArmy(state.ArmyRegionId);
@@ -268,7 +271,7 @@ namespace PowerAboveAll
         {
             ClearChildren(hoverRoot);
             if (hoveredId != selectedId && cells.TryGetValue(hoveredId ?? "", out var cell))
-                GeographicRegionBorder(hoveredId, hoverRoot, hoverMat, .10f, .18f);
+                GeographicRegionBorder(hoveredId, hoverRoot, hoverMat, .18f);
         }
 
         public void ResetPresentation()

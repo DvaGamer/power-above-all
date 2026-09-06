@@ -38,13 +38,14 @@ namespace PowerAboveAll
 
     public static partial class CampaignCore
     {
+        public static int CurrentDay(CampaignState s)=>s.World==null?s.Week*7:(int)(s.World.Clock.Milliseconds/WorldClock.Day);
         public static CorrespondenceDesk Desk(CampaignState s) => s.Correspondence != null && s.Correspondence.Count == 1 ? s.Correspondence[0] : null;
         public static ActionResult OpenCorrespondence(CampaignState s)
         {
             if(Desk(s)!=null)return Result(false,"dispatch.already_open");
             if(s.PendingPetition||MandateDue(s))return Result(false,"dispatch.resolve_first");
             if(s.Week>MaximumWeek-4)return Result(false,"error.week.limit");
-            int today=s.Week*7;
+            int today=CurrentDay(s);
             var desk=new CorrespondenceDesk{OpenedDay=today};
             // Başlangıç dosyası kurgusal senaryo geçmişidir; geçmiş simülasyon replay'i değildir.
             desk.LastReport=MakeDispatch(Region(s,desk.RegionId),today-4,today,0,"routine");
@@ -56,13 +57,13 @@ namespace PowerAboveAll
             var desk=Desk(s);
             if(desk!=null&&desk.RegionId==regionId)
             {
-                var report=desk.LastReport;int age=s.Week*7-report.ObservedDay;
+                var report=desk.LastReport;int age=CurrentDay(s)-report.ObservedDay;
                 return new RegionKnowledge{RegionId=regionId,SourceId=desk.ExecutorId,ObservedDay=report.ObservedDay,
                     ReceivedDay=report.ArrivalDay,AgeDays=age,Unrest=report.Unrest,Control=report.Control,EliteLoyalty=report.EliteLoyalty,
                     Confidence=age>7?IntelligenceConfidence.Outdated:IntelligenceConfidence.Reported};
             }
             var r=Region(s,regionId);
-            return new RegionKnowledge{RegionId=regionId,SourceId="administration",ObservedDay=s.Week*7,ReceivedDay=s.Week*7,
+            return new RegionKnowledge{RegionId=regionId,SourceId="administration",ObservedDay=CurrentDay(s),ReceivedDay=CurrentDay(s),
                 Unrest=r.Unrest,Control=r.Control,EliteLoyalty=r.EliteLoyalty,Confidence=IntelligenceConfidence.Confirmed};
         }
         public static ActionResult CanSendCabinetOrder(CampaignState s,string intent,string autonomy,bool express)
@@ -84,7 +85,7 @@ namespace PowerAboveAll
         public static ActionResult SendCabinetOrder(CampaignState s,string intent,string autonomy,bool express)
         {
             var check=CanSendCabinetOrder(s,intent,autonomy,express);if(!check.Ok)return check;
-            var desk=Desk(s);int today=s.Week*7,journey=express?3:6;
+            var desk=Desk(s);int today=CurrentDay(s),journey=express?3:6;
             if(express)s.Gold-=12;if(intent=="bread")s.Food-=40;
             desk.Orders.RemoveAll(o=>o.ReportReceived);
             desk.Orders.Add(new CabinetOrder{Id=desk.NextOrderId++,IssuedDay=today,ArrivalDay=today+journey,
@@ -97,10 +98,13 @@ namespace PowerAboveAll
 
         private static void AdvanceCorrespondence(CampaignState s)
         {
-            var desk=Desk(s);if(desk==null)return;
             int today=s.Week*7;
             for(int day=today-6;day<=today;day++)
-            {
+                ProcessCorrespondenceDay(s,day);
+        }
+        internal static void ProcessCorrespondenceDay(CampaignState s,int day)
+        {
+            var desk=Desk(s);if(desk==null)return;
                 foreach(var order in desk.Orders)
                 {
                     if(order.Executed||day<order.ExecutionDay)continue;
@@ -125,7 +129,7 @@ namespace PowerAboveAll
                     desk.InTransit.Add(MakeDispatch(r,day,order.ReportDay,order.Id,order.Outcome));
                 }
                 // Haftalık durum raporu da yolculuk eder; eski paket daha yeni gözlemi geri alamaz.
-                if(day==today)desk.InTransit.Add(MakeDispatch(Region(s,desk.RegionId),day,day+4,0,"routine"));
+                if(day%7==0)desk.InTransit.Add(MakeDispatch(Region(s,desk.RegionId),day,day+4,0,"routine"));
                 for(int i=0;i<desk.InTransit.Count;)
                 {
                     var report=desk.InTransit[i];if(report.ArrivalDay>day){i++;continue;}
@@ -142,13 +146,12 @@ namespace PowerAboveAll
                     if(order.Outcome=="negotiated")desk.Loyalty=Clamp(desk.Loyalty+2);
                     Record(s,"log.dispatch.returned","dispatch.outcome."+order.Outcome);
                 }
-            }
         }
         private static void ValidateCorrespondence(CampaignState s)
         {
             Require(s.Correspondence!=null&&s.Correspondence.Count<=1);
             var d=Desk(s);if(d==null)return;
-            int today=s.Week*7;
+            int today=CurrentDay(s);
             Require(d.PlayerId=="adrien"&&d.PlayerRegionId=="ile"&&d.RegionId=="guyenne"&&d.ExecutorId=="delmas");
             Require(d.OpenedDay>=0&&d.OpenedDay<=today&&d.NextOrderId>0&&d.NextOrderId<=2000001);
             Require(Percent(d.Competence)&&Percent(d.Loyalty)&&Percent(d.Ambition));
@@ -161,7 +164,7 @@ namespace PowerAboveAll
                 Require(o!=null&&o.Id>0&&o.Id<d.NextOrderId&&ids.Add(o.Id)&&o.ExecutorId==d.ExecutorId);
                 Require(o.Intent=="bread"||o.Intent=="tax"||o.Intent=="order"||o.Intent=="report");
                 Require(o.Autonomy=="strict"||o.Autonomy=="mission");int journey=o.Express?3:6;
-                Require(o.IssuedDay>=d.OpenedDay&&o.IssuedDay<=today&&o.IssuedDay%7==0&&o.ArrivalDay==o.IssuedDay+journey);
+                Require(o.IssuedDay>=d.OpenedDay&&o.IssuedDay<=today&&(s.World!=null||o.IssuedDay%7==0)&&o.ArrivalDay==o.IssuedDay+journey);
                 Require(o.ExecutionDay==o.ArrivalDay+(o.Intent=="report"?0:2)&&o.ReportDay==o.ExecutionDay+journey);
                 Require(o.Executed==(o.ExecutionDay<=today)&&o.ReportReceived==(o.ReportDay<=today));
                 Require(o.Executed?OutcomeMatches(o.Intent,o.Outcome):o.Outcome=="");

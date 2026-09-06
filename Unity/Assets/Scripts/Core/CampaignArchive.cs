@@ -12,7 +12,12 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 9;
+        public const int CurrentVersion = 12;
+
+        [DataContract] private sealed class RequiredWorldEnvelope
+        { [DataMember(IsRequired=true)] public RequiredWorldState State=null; }
+        [DataContract] private sealed class RequiredWorldState
+        { [DataMember(IsRequired=true)] public List<WorldState> Worlds=null; }
 
         [Serializable] private sealed class Envelope
         {
@@ -100,6 +105,7 @@ namespace PowerAboveAll
         public static string Serialize(CampaignState state, bool prettyPrint = true)
         {
             CampaignCore.Validate(state);
+            WorldValidation.Validate(state);
             var serializer = new DataContractJsonSerializer(typeof(Envelope));
             using (var stream = new MemoryStream())
             using (var writer = JsonReaderWriterFactory.CreateJsonWriter(stream, Encoding.UTF8, false, prettyPrint, "  "))
@@ -167,6 +173,12 @@ namespace PowerAboveAll
                         if(required == null || required.State == null || required.State.Correspondence == null)
                             throw new SerializationException("Missing required correspondence data.");
                     }
+                if(envelope!=null&&envelope.Version>=10)
+                    using(var stream=new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required=(RequiredWorldEnvelope)new DataContractJsonSerializer(typeof(RequiredWorldEnvelope)).ReadObject(stream);
+                        if(required?.State?.Worlds==null)throw new SerializationException("Missing continuous-world container.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -175,6 +187,13 @@ namespace PowerAboveAll
             if (envelope == null || envelope.State == null || envelope.Version < 1 || envelope.Version > CurrentVersion)
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
+            if(state.World!=null&&state.World.Schema<3)
+                throw new NotSupportedException("This continuous-world save predates physical supply. Start a new campaign; the original file was not changed.");
+            if(envelope.Version<10)
+            {
+                if(state.Worlds!=null&&state.Worlds.Count>0)throw new ArgumentException("Continuous world data in an older archive.",nameof(json));
+                state.Worlds=new List<WorldState>();
+            }
             if(envelope.Version < 9)
             {
                 if(state.Correspondence != null && state.Correspondence.Count != 0)
@@ -231,6 +250,7 @@ namespace PowerAboveAll
                 state.Mandates = new List<MandateObligation>();
             }
             CampaignCore.Validate(state);
+            WorldValidation.Validate(state);
             return state;
         }
 

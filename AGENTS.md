@@ -15,6 +15,8 @@ Never implement the first obvious solution. For major features, generate 3 mater
 
 ### Güncel öncelik: dünya atlası, kamera ve arayüz
 
+En yeni kullanıcı kararı haftalık tur/ayrı savaş yönünü geçersiz kılar: **tek sürekli gerçek-zaman dünyası, tek atlas, fiziksel ordular ve aynı haritada çatışma**. [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) ilk uygulama kararıdır. Önce saat/hızlar/yürüyüş/temas/kalıcı sonuç/kayıt vertical slice tamamlanır. Aşağıdaki eski yeni-mekanik kısıtı bu açık kullanıcı talimatını engellemez. NextWeek'i otomatik tıklamak veya eski dioramayı haritaya bindirmek yeterli çözüm değildir.
+
 Son kullanıcı yönü PLAYER ≠ STATE ilkesini ekledi. Önceki yeni-mekanik sınırlamasının dar istisnası: Paris→Bordeaux→görevli→gecikmeli emir→yerel yorum→rapor ve ayrı HQ/alay iletişim kesiti. Bütün dünyaya uygulanmış sayılmayacak; kamera hareketi karakter konumunu veya bilgisini güncelleyemez. Uygulama öncesi yukarıdaki kütüphanenin komuta/edebiyat kartlarını kullanın. Genel seyahat, tüm ülke idaresi ve kapsamlı istihbarat bu küçük testin dışındadır.
 
 6 Eylül yeni kullanıcı talimatı önceki gece planından üstündür. Coğrafi temel küreseldir; ayrıntılı oynanabilir içerik Fransa ve gerekli komşulardır. Gerçek GIS verisi, 1789 siyasi katmanından ayrılır. Serbest kamera, semantic zoom, harita merkezli HUD, RU/TR dört çözünürlük ve gerçek Windows build/screenshot karşılaştırması tamamlanana kadar yeni büyük mekanik eklemeyin. Görsel üretimde [ART_PRODUCTION_RULES.md](ART_PRODUCTION_RULES.md) uygulanır; imagegen final asset yöntemi değildir.

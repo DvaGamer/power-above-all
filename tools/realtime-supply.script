@@ -1,0 +1,43 @@
+new
+lang ru
+atlas france
+world supplypanel
+shot 00-france-supply-ru
+select normandy
+march
+time 3
+world wait arrived 30
+time pause
+world focus
+world supply
+expect WorldConvoyCount 1
+world convoy
+shot 01-dispatched-ru
+time 2
+wait 2
+time pause
+state 02-transit
+remember transit
+save
+load
+same transit
+world supplypanel
+world convoy
+shot 02-transit-ru
+lang tr
+shot 03-transit-tr
+time 3
+world wait delivered 30
+time pause
+world focus
+shot 04-arrival-tr
+state 04-arrival
+remember delivered
+save
+load
+same delivered
+expect WorldHasArena False
+expect WorldMapVisible True
+world stock
+shot 05-restock-tr
+quit

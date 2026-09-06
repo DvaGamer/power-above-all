@@ -141,7 +141,13 @@ function Get-ReviewPlan([string]$Path) {
   if ($lines.Count -lt 2 -or $lines[0] -ne 'new' -or $lines[-1] -ne 'quit' -or @($lines | Where-Object { $_ -eq 'quit' }).Count -ne 1) { throw "Review must start with new and have one final quit." }
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
-    if ($line -match '^desk(?:\s|$)' -and $line -cnotmatch '^desk (open|(bread|tax|order|report) (strict|mission) (normal|express))$') { throw "Unsupported cabinet correspondence command: $line" }
+    if ($line -match '^time(?:\s|$)' -and $line -cnotmatch '^time (pause|1|2|3)$') { throw "Unsupported world speed: $line" }
+    if ($line -match '^world(?:\s|$)' -and $line -cnotmatch '^world (focus|close|retreat|supply|stock|supplypanel|convoy|unit [a-zA-Z0-9_-]+|wait (contact|ended|arrived|delivered) [0-9]+(?:\.[0-9]+)?)$') { throw "Unsupported world review command: $line" }
+    if ($line -match '^world wait \w+ ([0-9]+(?:\.[0-9]+)?)$') {
+      [double]$worldWait=[double]::Parse($Matches[1],[Globalization.CultureInfo]::InvariantCulture)
+      if($worldWait -le 0 -or $worldWait -gt 1200){throw "World wait must be between 0 and 1200 seconds: $line"}
+    }
+    if ($line -match '^desk(?:\s|$)' -and $line -cnotmatch '^desk (open|view (report|outbox|draft)|(bread|tax|order|report) (strict|mission) (normal|express))$') { throw "Unsupported cabinet correspondence command: $line" }
     if ($line -match '^atlas(?:\s|$)' -and $line -cnotmatch '^atlas (world|europe|france|region|oblique|clean|panels)$') { throw "Unsupported atlas review view: $line" }
     if ($line -match '^accord(?:\s|$)' -and $line -cne 'accord grant') { throw "Unsupported regional accord order: $line" }
     if ($line -match '^scroll(?:\s|$)') {
@@ -173,7 +179,7 @@ function Get-ReviewPlan([string]$Path) {
       if ($name -notmatch '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z') { throw "Unsafe artifact name: $name" }
       if ($kind -eq 'shot') { $captures += "$name.png" } else { $states += "$name.json" }
     }
-    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return') { $assertions++ }
+    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return' -or $line -match '^world wait ') { $assertions++ }
   }
   if ($captures.Count -eq 0 -or $assertions -eq 0) { throw "Review needs frames and assertions." }
   if (@($captures | Select-Object -Unique).Count -ne $captures.Count -or @($states | Select-Object -Unique).Count -ne $states.Count) { throw "Duplicate artifact names." }
