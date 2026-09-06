@@ -12,7 +12,12 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 12;
+        public const int CurrentVersion = 13;
+
+        [DataContract] private sealed class RequiredCommissionEnvelope
+        { [DataMember(IsRequired=true)] public RequiredCommissionState State=null; }
+        [DataContract] private sealed class RequiredCommissionState
+        { [DataMember(IsRequired=true)] public List<FirstCommission> Commissions=null; }
 
         [DataContract] private sealed class RequiredWorldEnvelope
         { [DataMember(IsRequired=true)] public RequiredWorldState State=null; }
@@ -173,6 +178,12 @@ namespace PowerAboveAll
                         if(required == null || required.State == null || required.State.Correspondence == null)
                             throw new SerializationException("Missing required correspondence data.");
                     }
+                if(envelope!=null&&envelope.Version>=13)
+                    using(var stream=new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required=(RequiredCommissionEnvelope)new DataContractJsonSerializer(typeof(RequiredCommissionEnvelope)).ReadObject(stream);
+                        if(required?.State?.Commissions==null)throw new SerializationException("Missing first-commission container.");
+                    }
                 if(envelope!=null&&envelope.Version>=10)
                     using(var stream=new MemoryStream(Encoding.UTF8.GetBytes(json)))
                     {
@@ -187,6 +198,11 @@ namespace PowerAboveAll
             if (envelope == null || envelope.State == null || envelope.Version < 1 || envelope.Version > CurrentVersion)
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
+            if(envelope.Version<13)
+            {
+                if(state.Commissions!=null&&state.Commissions.Count>0)throw new ArgumentException("First commission in an older archive.",nameof(json));
+                state.Commissions=new List<FirstCommission>();
+            }
             if(state.World!=null&&state.World.Schema<3)
                 throw new NotSupportedException("This continuous-world save predates physical supply. Start a new campaign; the original file was not changed.");
             if(envelope.Version<10)

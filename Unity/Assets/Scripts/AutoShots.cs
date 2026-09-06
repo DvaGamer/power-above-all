@@ -139,6 +139,10 @@ namespace PowerAboveAll
                         else app.ResolveMandate(CampaignCore.MandateId(app.State.Obligation), value);
                         break;
                     case "mandate-terms": RequireIdle(app); app.GetComponent<CabinetHud>().ShowMandateTerms(); break;
+                    case "first-report":
+                        RequireChoice(value,"open","close");
+                        if(value=="open")app.GetComponent<CabinetHud>().OpenCommission();else app.GetComponent<CabinetHud>().CloseCommission(app);
+                        break;
                     case "patron-repair": RequireIdle(app); app.RepairPatronTrust(); break;
                     case "accord": RequireChoice(value, "grant"); RequireIdle(app); app.GrantRegionalAccord(); break;
                     case "victory":
@@ -291,6 +295,10 @@ namespace PowerAboveAll
                 key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :
                 key == "TaxIncome" ? CampaignCore.Forecast(app.State).TaxIncome :
                 key == "WorldSpeed" ? (object)(int)app.State.World.Clock.Speed :
+                key == "FirstReportResolved" ? (object)(CampaignCore.Commission(app.State)?.Resolved??false) :
+                key == "FirstReportSucceeded" ? (object)(CampaignCore.Commission(app.State)?.Succeeded??false) :
+                key == "FirstReportKept" ? (object)(CampaignCore.Commission(app.State)?.Kept??0) :
+                key == "FirstReportBroken" ? (object)(CampaignCore.Commission(app.State)?.Broken??0) :
                 key == "WorldArmyCount" ? (object)app.State.World.Armies.Count :
                 key == "WorldBattleCount" ? (object)app.State.World.Battles.Count :
                 key == "WorldConvoyCount" ? (object)app.State.World.Convoys.Count :
@@ -308,6 +316,13 @@ namespace PowerAboveAll
         private IEnumerator WorldCommand(GameApp app,string value)
         {
             var args=value.Split(' ');
+            if(args[0]=="day")
+            {
+                Arguments(args,2);long target=(long)(Number(args[1],60)*(double)WorldClock.Day);float until=Time.realtimeSinceStartup+120;
+                while(app.State.World.Clock.Milliseconds<target&&Time.realtimeSinceStartup<until)yield return null;
+                if(app.State.World.Clock.Milliseconds<target)throw new TimeoutException("World did not reach requested day.");
+                assertions++;yield break;
+            }
             if(args[0]=="focus"){Arguments(args,1);app.FocusWorldArmy();yield return new WaitForSecondsRealtime(1);yield break;}
             if(args[0]=="close")
             {

@@ -1,0 +1,92 @@
+new
+role-menu
+role-start crown
+lang ru
+first-report open
+expect FirstReportResolved False
+shot 00-crown-brief-ru
+lang tr
+shot 01-crown-brief-tr
+first-report close
+mandate issue
+mandate fulfil
+expect FirstReportKept 1
+first-report open
+shot 01b-kept-tr
+first-report close
+world supply
+time 3
+world day 6
+time pause
+world supply
+time 3
+world day 13
+time pause
+world stock
+world supply
+time 3
+world day 14
+time pause
+petition negotiate
+remember mid-report
+save
+load
+same mid-report
+time 3
+world day 20
+time pause
+world stock
+world supply
+time 3
+world day 28
+expect WorldSpeed 0
+expect FirstReportResolved True
+expect FirstReportSucceeded True
+wait 1.2
+shot 02-crown-success-tr
+lang ru
+shot 03-crown-success-ru
+state 03-crown-success
+remember success
+save
+load
+same success
+first-report close
+time 2
+wait 1
+time pause
+first-report open
+shot 04-frozen-report-ru
+role-menu
+role-start army
+lang ru
+shot 05-army-brief-ru
+first-report close
+mandate issue
+time 3
+world day 16
+time pause
+expect FirstReportBroken 1
+expect HasObligation False
+first-report open
+shot 06-overdue-ru
+first-report close
+time 3
+world day 28
+expect FirstReportSucceeded False
+expect FirstReportResolved True
+lang tr
+wait 1.2
+shot 07-army-failure-tr
+state 07-army-failure
+remember failed-report
+save
+load
+same failed-report
+role-menu
+role-start assembly
+first-report open
+shot 08-assembly-brief-tr
+expect WorldMapVisible True
+expect WorldHasArena False
+quit

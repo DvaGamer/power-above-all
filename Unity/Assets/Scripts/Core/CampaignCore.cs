@@ -53,6 +53,7 @@ namespace PowerAboveAll
             set { if(Worlds==null)Worlds=new List<WorldState>();Worlds.Clear();if(value!=null)Worlds.Add(value); }
         }
         [System.Runtime.Serialization.OptionalField] public string RoleId;
+        [System.Runtime.Serialization.OptionalField] public List<FirstCommission> Commissions = new List<FirstCommission>();
         [System.Runtime.Serialization.OptionalField] public int NextMandateWeek;
         // v1/v2 arşivleri bu iki alanı taşımaz; v3 wire sözleşmesi varlıklarını ayrıca doğrular.
         [System.Runtime.Serialization.OptionalField] public string AccordRegionId = "";
@@ -382,6 +383,7 @@ namespace PowerAboveAll
             ValidateArmyEstablishmentState(s);
             ValidateOfficerCommissionState(s);
             ValidateRegionalReformState(s);
+            ValidateCommission(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

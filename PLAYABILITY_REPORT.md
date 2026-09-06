@@ -2,6 +2,10 @@
 
 Bu bir tamamlanmış oyun ilanı değildir. Yeni hedef tek haritada yeniden oynanabilir ve anlaşılır seferdir. İlk bağlı çalışma; siyasi rol → hazırlık → gerçek yürüyüş → aynı-harita muharebe → örgütsel kayıp/geri çekilme → ikmal ve dinlenme döngüsüdür.
 
+**Sonraki aşama uygulandı:** [İlk hami raporu](FIRST_COMMISSION.md), yeni rol kampanyasının 28 gününe hedef ve kalıcı sonuç ekler. Taç kasa/merkez erzakını, meclis Champagne'ı, ordu yaşayan kuvvet/moral/taşınan erzakı korur. Ortak ölçütler kişisel iktidar, hami güveni ve verilen sözlerdir. Vade ve iki günlük ek süre önceden görünür; ihlal, açık dilekçe arkasına saklanamaz. Rapor dünya saatiyle tam sınırda gelir; aynı sefer sürdürülebilir.
+
+Yeni tam kapı `first-report-release-20260906-153138-885-781be7cd`: **590/590 Unity, yeni Windows build, 10 PNG / 21 kontrol / 2 durum, 10 browser**. Her rolün normal eylemlerle başarılı/eylemsiz başarısız yolları test edildi. Windows'ta gerçekten geçen taç planı: 1108 livre, 318 merkez erzakı, 1200 asker ve bir tutulmuş söz; rapor öncesi iktidar57, ödülden sonra61. İkmal göndermeyen ve verdiği sözü ihlal eden ordu örneği939asker, yaklaşık2,9moral, sıfır taşınan erzakla raporu geçemedi. Oturumun30–45dakika sürdüğü veya bağımsız oyuncuların eğlendiği iddia edilmez.
+
 ## Artık çalışan bağlar
 
 Saat duraklatılır; I saniye, II saat, III gün ölçeğidir. Render zamanı simülasyonu sürüklemez; büyük aralıklar sınırlı iş bütçesiyle hesaplanır. Temas hız politikasını uygular. Takvim, ülke hesabı ve yazışma yerel çatışma sırasında devam eder.
@@ -10,7 +14,7 @@ Altı görev aynı alay verisine bağlıdır: merkez, iki kanat, yedek, süvari 
 
 Paris'ten çıkan ikmalde stok çıkışta düşer, araba dünyada yol alır, yalnız teslimde orduya eklenir. Yol kesilebilir ve yük ele geçirilebilir. Oyuncu nerede kaldığını, ne taşıdığını ve yaklaşık süresini görebilir. Ordu ayrıldıysa araba eski buluşma yerinde bekler. Ulusal stok ile taşınan rasyon ayrıdır; aynı erzak haftalık hesapta tekrar tüketilmez. Dinlenme düzen/moral/yorgunluğa, cephane ise sonlu araba stoğuna bağlıdır.
 
-Kayıt v12; eski dünya şeması açıkça reddedilir. Kayıt/yükleme emir kuyruğunu, hareketi, muharebeyi ve yoldaki yükü korur. Aynı ordunun arena kopyası üretilmez.
+Kayıt v13; v12 dünya kaydı hedefsiz eski sefer olarak açılır, schema3'ten eski dünya açıkça reddedilir. Kayıt/yükleme emir kuyruğunu, hareketi, muharebeyi, yoldaki yükü ve tarihli ilk raporu korur. Aynı ordunun arena kopyası üretilmez.
 
 ## Balans kanıtı ve sınırı
 
@@ -32,7 +36,7 @@ Son tam doğrulama: `playable-balance-20260906-135642-436-62670a8a`, 577/577 Uni
 
 ## Şimdiki oyunda en yüksek getirili on devam işi
 
-1. Mevcut üç rol/mandat etrafında30–45dakikalık açık sefer hedefi ve anlaşılır yenilgi/başarı raporu. Yeni kaynak sayısı artırılmadan bir oturumun neden tekrar oynanacağını belirlemek.
+1. Uygulanan ilk28gün raporunu farklı oyuncu kararlarıyla ölçmek; özellikle savaş ve sivil yatıştırma seçeneklerini değişen düşman baskısı altında karşılaştırmak. İlk hedef artık vardır; süre ve tekrar oynama değeri henüz oyuncu testi bekler.
 2. İlk yürüyüş/ikmal/komut/yedek kararını harita üstünde öğreten kısa bağlamsal yönlendirme. Gecikme, kalan erzak ve iletişim nedenini ezberletmeden göstermek.
 3. Mevcut ikinci ordunun yol ve depo tehdidine tepki veren operasyonel planı. Salt sabit Champagne karşılaşmasından çıkıp hazırlık kararını kampanyada üretmek.
 4. Muharebe sonrası bir günlük temas korumasını gerçek toparlanma, takip ve güvenli geri yol kararlarıyla değiştirmek; yeni üçüncü kuvvetin müdahalesini sınamak.

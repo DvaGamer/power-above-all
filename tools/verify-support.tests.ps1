@@ -133,6 +133,12 @@ Reject { Get-ReviewPlan $badPoint } 'Nonfinite battlefield destination is reject
 $duplicateBattleState = Fixture 'duplicate-battle-state.script' "new`nexpect Week 0`nstate report`nbattle state report`nshot sample`nquit"
 Reject { Get-ReviewPlan $duplicateBattleState } 'Campaign and battle state artifact names cannot collide'
 $badScript = Fixture 'unsafe.script' "new`nexpect Week 0`nshot ../human-file`nquit"
+$reportScript = Fixture 'first-report.script' "new`nfirst-report open`nworld day 28`nshot report`nfirst-report close`nquit"
+Check ((Get-ReviewPlan $reportScript).Assertions -eq 1) 'Calendar observation is counted as an assertion'
+$lateDay = Fixture 'late-day.script' "new`nworld day 61`nshot report`nquit"
+Reject { Get-ReviewPlan $lateDay } 'Calendar review is bounded to sixty days'
+$invalidReport = Fixture 'invalid-report.script' "new`nfirst-report succeed`nexpect Week 0`nshot report`nquit"
+Reject { Get-ReviewPlan $invalidReport } 'Report action cannot inject a successful outcome'
 Reject { Get-ReviewPlan $badScript } 'Artifact path traversal rejected'
 $duplicateScript = Fixture 'duplicate.script' "new`nexpect Week 0`nshot sample`nshot sample`nquit"
 Reject { Get-ReviewPlan $duplicateScript } 'Duplicate artifacts rejected'

@@ -42,8 +42,9 @@ namespace PowerAboveAll
             if (BlocksMapInput) return true;
             if (PanelsHidden) return new Rect(12,12,140,32).Contains(point);
             return point.y<82 || point.y>843 || new Rect(258,90,922,38).Contains(point)
-                ||new Rect(385,680,670,150).Contains(point)||(!regionalScale&&new Rect(18,185,240,485).Contains(point))||new Rect(1080,747,338,33).Contains(point)||new Rect(16,90,230,36).Contains(point)
+                ||(!ShowCommission&&(new Rect(385,680,670,150).Contains(point)||(!regionalScale&&new Rect(18,185,240,485).Contains(point))||new Rect(1080,747,338,33).Contains(point)))||new Rect(16,90,230,36).Contains(point)
                 ||(ShowWorldSupply&&new Rect(1080,185,338,440).Contains(point))
+                ||new Rect(1190,95,228,28).Contains(point)||(ShowCommission&&CommissionRect.Contains(point))
                 || (regionalScale && new Rect(300,802,837,28).Contains(point))
                 || (regionalScale && showProvince && point.x<ProvinceWidth && point.y<800 && point.y>=(correspondenceVisible?142:94)) || (showDocument && point.x>1140 && point.y<800);
         }
@@ -69,6 +70,7 @@ namespace PowerAboveAll
             if (app == null || app.ViewState == null) return;
             EnsureStyles();
             ObserveCorrespondence(app.State);
+            ObserveCommission(app);
             regionalScale = app.StrategyCamera.Distance >=2 && app.StrategyCamera.Distance < 420;
             if (cachedLanguage != L.Language) { cachedLanguage = L.Language; provinceScroll = documentScroll = Vector2.zero; }
             CampaignState state = app.ViewState; EconomyForecast forecast = CampaignCore.Forecast(state);
@@ -76,11 +78,12 @@ namespace PowerAboveAll
             if(!CampaignCore.HasPendingVictory(state))showVictory=false;
             bool previousEnabled = GUI.enabled;
             if (BlocksMapInput) GUI.enabled = false;
+            if(ShowCommission&&CommissionRect.Contains(ViewLayout.ToCanvas(Input.mousePosition)))GUI.enabled=false;
             Atlas(app);
             DrawWorldEntities(app);
             if (!PanelsHidden)
             {
-                Top(app, forecast); AtlasNavigation(app);
+                Top(app, forecast); AtlasNavigation(app); CommissionBadge(app);
                 Color oldColor=GUI.color; GUI.color=new Color(oldColor.r,oldColor.g,oldColor.b,Mathf.Clamp01((Time.unscaledTime-panelOpenedAt)/.14f));
                 if(showProvince && regionalScale) Province(app);
                 if(showDocument) Cabinet(app, forecast);
@@ -88,10 +91,11 @@ namespace PowerAboveAll
                 if(showProvince && regionalScale && Press(correspondenceVisible?new Rect(328,153,23,24):new Rect(214,105,23,24),"×"))showProvince=false;
                 if(showDocument && Press(new Rect(1409,105,23,24),"×"))showDocument=false;
                 Bottom(app);
-                WorldArmyDesk(app);
+                if(!ShowCommission)WorldArmyDesk(app);
             }
             else if(Press(new Rect(12,12,140,32),T("ui.world.restore")))PanelsHidden=false;
             GUI.enabled = previousEnabled;
+            CommissionDesk(app);
             if (showHelp) Help();
             if (confirmNew) Confirm(app);
             if (showVictory && !state.PendingPetition && !CampaignCore.MandateDue(state)) VictoryDecision(app);

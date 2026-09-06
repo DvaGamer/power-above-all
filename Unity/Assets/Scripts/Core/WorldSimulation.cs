@@ -26,6 +26,7 @@ namespace PowerAboveAll
             AddArmy(world,"resistance","world.army.resistance","insurgent",hostile,Math.Max(600,resistance?.EnemyTroops??900),77,"local-command",55);
             campaign.World=world;campaign.Moves=0;
             WorldSupply.Initialize(campaign);
+            CampaignCore.StartCommission(campaign);
             var simulation=new WorldSimulation(campaign);simulation.ExportPlayerArmy();return simulation;
         }
         private static void AddArmy(WorldState world,string id,string name,string faction,WorldSite seat,int strength,float morale,string person,float skill)
@@ -102,12 +103,14 @@ namespace PowerAboveAll
         {
             var clock=State.Clock;LastStepCount=0;
             if(clock.Speed==WorldSpeed.Pause)return;
+            if(CampaignCore.ProcessCommissionTime(Campaign)){SetSpeed(WorldSpeed.Pause);return;}
             while(clock.PendingMilliseconds>=WorldCombat.TickMilliseconds&&LastStepCount<FrameWorkBudget)
             {
                 bool fighting=State.HasCombat;
                 long step=fighting?WorldCombat.TickMilliseconds:Math.Min(clock.PendingMilliseconds,900000);
                 if(fighting)foreach(var battle in State.Battles)if(!battle.Ended)step=Math.Min(step,battle.NextTickAt-clock.Milliseconds);
                 step=Math.Min(step,Math.Min(State.NextConditionAt,Math.Min(State.NextDayAt,State.NextEconomyAt))-clock.Milliseconds);
+                step=Math.Min(step,CampaignCore.NextCommissionBoundary(Campaign)-clock.Milliseconds);
                 if(!fighting)
                 {
                     foreach(var army in State.Armies)
@@ -140,6 +143,7 @@ namespace PowerAboveAll
                 {CampaignCore.ProcessCorrespondenceDay(Campaign,(int)(clock.Milliseconds/WorldClock.Day));State.NextDayAt+=WorldClock.Day;}
                 if(clock.Milliseconds>=State.NextConditionAt)
                 {AdvanceCondition();WorldSupply.QuarterHour(State);State.NextConditionAt+=900000;}
+                if(CampaignCore.ProcessCommissionTime(Campaign)){SetSpeed(WorldSpeed.Pause);break;}
                 if(FindContacts())
                 {
                     clock.Speed=State.BattlePolicy==BattleTimePolicy.Pause?WorldSpeed.Pause:WorldSpeed.Normal;

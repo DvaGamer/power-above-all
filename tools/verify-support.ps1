@@ -142,7 +142,9 @@ function Get-ReviewPlan([string]$Path) {
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
     if ($line -match '^time(?:\s|$)' -and $line -cnotmatch '^time (pause|1|2|3)$') { throw "Unsupported world speed: $line" }
-    if ($line -match '^world(?:\s|$)' -and $line -cnotmatch '^world (focus|close|retreat|supply|stock|supplypanel|convoy|unit [a-zA-Z0-9_-]+|wait (contact|ended|arrived|delivered) [0-9]+(?:\.[0-9]+)?)$') { throw "Unsupported world review command: $line" }
+    if ($line -match '^world(?:\s|$)' -and $line -cnotmatch '^world (focus|close|retreat|supply|stock|supplypanel|convoy|day [0-9]+|unit [a-zA-Z0-9_-]+|wait (contact|ended|arrived|delivered) [0-9]+(?:\.[0-9]+)?)$') { throw "Unsupported world review command: $line" }
+    if ($line -match '^world day ([0-9]+)$' -and ([double]$Matches[1] -lt 1 -or [double]$Matches[1] -gt 60)) { throw "World day must be between 1 and 60: $line" }
+    if ($line -match '^first-report(?:\s|$)' -and $line -cnotmatch '^first-report (open|close)$') { throw "Unsupported first report action: $line" }
     if ($line -match '^world wait \w+ ([0-9]+(?:\.[0-9]+)?)$') {
       [double]$worldWait=[double]::Parse($Matches[1],[Globalization.CultureInfo]::InvariantCulture)
       if($worldWait -le 0 -or $worldWait -gt 1200){throw "World wait must be between 0 and 1200 seconds: $line"}
@@ -179,7 +181,7 @@ function Get-ReviewPlan([string]$Path) {
       if ($name -notmatch '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z') { throw "Unsafe artifact name: $name" }
       if ($kind -eq 'shot') { $captures += "$name.png" } else { $states += "$name.json" }
     }
-    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return' -or $line -match '^world wait ') { $assertions++ }
+    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return' -or $line -match '^world (wait|day) ') { $assertions++ }
   }
   if ($captures.Count -eq 0 -or $assertions -eq 0) { throw "Review needs frames and assertions." }
   if (@($captures | Select-Object -Unique).Count -ne $captures.Count -or @($states | Select-Object -Unique).Count -ne $states.Count) { throw "Duplicate artifact names." }

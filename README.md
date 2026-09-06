@@ -23,11 +23,11 @@ Gerçek küresel GIS atlası üstünde Fransa odaklı 12 bölge, kişisel hamile
 - Sonlu depo ve konvoy yükü, yol kesilmesi, teslim, yerel erzak tüketimi ve dinlenme. Konvoy yola çıktığında stok düşer; ordu ancak teslim alırsa kullanır.
 - Resimli kişiler, guaj atlas, şehir siluetleri ve kaydırılan kâğıt belgeler; en-boy oranını koruyan **1440×900** temel arayüz.
 
-Arşiv **v12 / dünya schema3**: saat, yollar, aynı alaylar, muharebeler, emirler, yerel stok ve yoldaki konvoy korunur. Daha eski dünya kayıtları açık yeni-kampanya mesajıyla reddedilir; kaynak dosya değiştirilmez. Eski siyasi arşivlerin okunabilmesi onların yeni dünya gibi oynanabildiği anlamına gelmez. Otomatik kare kontrolü görsel kalite kabulü değildir.
+Arşiv **v13 / dünya schema3**: saat, yollar, aynı alaylar, muharebeler, emirler, yerel stok, yoldaki konvoy ve ilk görev raporu korunur. **v12 kayıtları açılır; geçmiş kampanyaya geriye dönük bir görev eklenmez.** Fiziksel ikmalden önceki dünya şemaları açık yeni-kampanya mesajıyla reddedilir; kaynak dosya değiştirilmez. Eski siyasi arşivlerin okunabilmesi onların yeni dünya gibi oynanabildiği anlamına gelmez. Otomatik kare kontrolü görsel kalite kabulü değildir.
 
 ## Unity'de ilk deneme
 
-1. Yeni kampanya ve rol seçin. Alt sağdaki `|| I II III`, Space ve 1/2/3 zamanı yönetir. I gerçek saniye, II saat, III gün hızıdır.
+1. Yeni kampanya ve rol seçin. **İlk görev** dosyası, haminizin 28 gün sonraki raporda ne beklediğini gösterir. Üst sağdan tekrar açın; yardım ve gerekli bölge/ikmal/hesap dosyasına doğrudan geçin. Alt sağdaki `|| I II III`, Space ve 1/2/3 zamanı yönetir. I gerçek saniye, II saat, III gün hızıdır.
 2. Fransa üstünde bir bölge seçip orduyu gönderin. Rota zaman içinde yürünür. G orduya odaklanır; WASD/MMB kaydırır, tekerlek yakınlaşır, Q/E veya sağ sürükleme döndürür.
 3. Sakin deneme için Normandiya'ya gidin; ordu raporundaki **Снабжение / İkmal** dosyasını açıp Paris'ten yük gönderin. Dosyadan kolonu bulun; teslim zamanı ve kalan günleri izleyin. Ordu uzaklaşırsa konvoy gönderildiği buluşma yerinde bekler.
 4. Muharebe için Champagne yönüne yürüyün. Temasta hız düşer; aynı haritada yakınlaşın. Soldan alay seçin, Shift+tıklamayla konum emri veya alttan niyet/düzen verin. Emir kuyruğu ve yeniden düzenlenme süresi görünür.

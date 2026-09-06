@@ -1,0 +1,18 @@
+new
+role-menu
+role-start army
+lang ru
+first-report open
+shot 00-army-ru
+lang tr
+shot 01-army-tr
+expect FirstReportResolved False
+role-menu
+role-start assembly
+lang ru
+shot 02-assembly-ru
+lang tr
+shot 03-assembly-tr
+expect WorldMapVisible True
+expect WorldHasArena False
+quit

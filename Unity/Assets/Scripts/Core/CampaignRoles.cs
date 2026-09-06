@@ -154,6 +154,8 @@ namespace PowerAboveAll
             if (state.Obligation == null) return Result(false, "error.mandate.none");
             if (string.IsNullOrEmpty(expectedId) || expectedId != MandateId(state.Obligation)) return Result(false, "error.mandate.stale");
             if (choice != "fulfil" && choice != "break") return Result(false, "error.mandate.choice");
+            if (choice == "fulfil" && state.World != null && state.World.Clock.Milliseconds >= state.Obligation.DueWeek * WorldClock.Week + MandateGrace)
+                return Result(false, "log.commission.promise_expired");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (choice == "fulfil")
             {
@@ -171,6 +173,7 @@ namespace PowerAboveAll
             var terms = GetObligationTerms(state);
             ApplyMandateEffect(state, obligation.RegionId, choice == "fulfil" ? terms.Fulfil : terms.Break);
             state.Obligation = null;
+            CountCommissionPromise(state, choice == "fulfil");
             return Record(state, "log.mandate." + obligation.Kind + "." + choice,
                 "region." + obligation.RegionId, N(obligation.GoldDue), N(obligation.FoodDue));
         }

@@ -1,5 +1,21 @@
 # Power Above All — proje durumu
 
+## Güncel aşama: ilk hami raporu
+
+6 Eylül 2026: [ilk görev](FIRST_COMMISSION.md) Unity'de çalışır. Yeni kampanyada üç rol, 28 oyun gününe bağlı farklı hedefler alır; mevcut yardım/söz, siyasi güven, Champagne ve askerî ikmal kararları birlikte değerlendirilir. Koşullar baştan görünür. Sonuç anındaki değerler ve +4/−4 siyasi etki bir kez kaydedilir; rapordan sonra aynı dünya sürdürülebilir. Açık belge sözün vadesini durdurmaz; iki günlük ek süre sonunda ihlal işlenir.
+
+Son kaynak: `first-report-release-20260906-153138-885-781be7cd` **GREEN: 590/590 Unity testi, yeni Windows build, 10 gerçek PNG, 21 kontrol, 2 durum ve 10 browser testi**. Runtime SHA256 `14FD80B878C778997461759D3919239C44BE5F8A4AC3E23F203A8F960EC7C022`. Ana projenin Assets/Packages/ProjectSettings içindeki 310 dosyası test edilen izole kaynakla aynı. **955 RU/TR anahtarı, 33 asset; 96 doğrulama yardımcısı kontrolü.** `PLAY_GAME.cmd` son tam GREEN build'i seçer.
+
+Windows senaryosu: taç rolü 1108 livre, 318 merkez erzakı, 1200 asker ve tutulmuş sözle başarılı oldu; rapor öncesi iktidar57, ödül sonrası61. İkmal göndermeyen ve sözünü ihlal eden ordu 939 asker, yaklaşık2,9moral ve sıfır taşınan erzakla başarısız oldu. Her üç rolün eylemli/eylemsiz karşılaştırması, yüksek hızda tam zaman sınırı, geç ödeme ve kayıt sonrası yinelenmeyen sonuç test edildi. Bunlar bağımsız oyuncu beğenisi veya 30–45 dakikalık oturum süresi kabulü değildir.
+
+Gerçek native inceleme `native-input-20260906-152148-ed417164`: aynı etkileşim kodlu önceki590adayda **exit0 / 3PNG / 4kontrol / 1durum**. İlk görevden Champagne düğmesine gerçek tıklama, seçili bölge ve kamera geçişi doğrulandı. Sonraki kaynak farkı yalnız rapor altında ordu kartını gizlemek ve tamamlanan/bozulan sözün alt metnini düzeltmektir. Bu önceki binary, son build doğrulaması olarak sunulmaz.
+
+Rapor **v13 / dünya schema3** ile saklanır. v12 dünyaları açılır; geçmiş sefere geriye dönük hedef eklenmez. İlk görevi görmek için yeni rol kampanyası başlatılır. Operasyonel düşman ve ayrıntılı muharebe sonrası neden raporu bu aşamada yapılmadı; sonraki kalite işleridir.
+
+Son binary ile RU/TR: 1440×900 tam kapıda; 1366×768 `commission-release-768-20260906-153413-771-eb3d3898`, 1920×1080 `commission-release-1080-20260906-153527-551-d1199eb7`, 2560×1440 `commission-release-1440p-20260906-153705-102-eea6190f` ayrı incelemelerde **native0 / 4PNG / 3kontrol** ile geçti. Root son768RU ordu görevi, 1440pTR meclis görevi ve1440×900RU başarı karelerini gerçekten gördü. Ordu kartının rapor altında kırpılması giderildi; yakın atlasın ve genel UI'nin profesyonel kalite kabulü hâlâ ayrı iştir.
+
+## Önceki dünya ve ikmal aşaması
+
 Son güncelleme: **6 Eylül 2026**. Yeni bağlayıcı yön: tek gerçek-zaman dünyası, tek küresel harita; hafta bir tur değildir, ayrı savaş arenası yoktur. Oyuncu bir kişidir; emir insan, mesafe ve bilgi üzerinden işler. [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) eski haftalı/ayrı-savaş tasarımının yerine geçer.
 
 Güncel uygulama [273e32d](https://github.com/DvaGamer/power-above-all/commit/273e32d649349c80242a5a3bfe530aaa1c020647) olarak `research/reference-library` dalına gönderildi. [Taslak PR #2](https://github.com/DvaGamer/power-above-all/pull/2) yeni gerçek-zaman/komuta/ikmal kapsamıyla güncellendi; bu uygulama commit'inin push ve PR CI kontrolleri geçti. CI tarayıcı regresyonudur; Unity/Windows kanıtları aşağıdadır. `main` ile birleşmedi.
