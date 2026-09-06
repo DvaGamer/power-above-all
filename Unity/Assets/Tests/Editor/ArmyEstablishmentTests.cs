@@ -14,7 +14,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":8", json);
+            StringAssert.Contains("\"Version\":" + CampaignArchive.CurrentVersion, json);
             var loaded = CampaignArchive.Deserialize(json);
             Assert.AreEqual(before, Snapshot(loaded)); return loaded;
         }
@@ -383,7 +383,7 @@ namespace PowerAboveAll.Tests
         [TestCase(8, "text_due")]
         public void V6AndCurrentRequireAllThreeExplicitTypedArmyFields(int version, string corruption)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             switch (corruption)
             {
                 case "missing_policy": json = json.Replace("\"ArmyPolicyId\":", "\"IgnoredPolicy\":"); break;
@@ -429,7 +429,7 @@ namespace PowerAboveAll.Tests
 
         static string Older(string json, int version)
         {
-            json = json.Replace("\"Version\":8", "\"Version\":" + version)
+            json = json.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version)
                 .Replace("\"ArmyPolicyId\":", "\"IgnoredArmyPolicy\":")
                 .Replace("\"ArmyTargetTroops\":", "\"IgnoredArmyTarget\":")
                 .Replace("\"ArmyReductionDueWeek\":", "\"IgnoredArmyDue\":");
@@ -498,14 +498,14 @@ namespace PowerAboveAll.Tests
         public void AnOldVersionNumberCannotSilentlyEraseANewBudgetPolicy(int version)
         {
             var state = CampaignCore.Create(); Success(CampaignCore.SetArmyEstablishment(state, "budget", 1200));
-            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
         }
 
         [Test]
         public void LegacyMigrationAcceptsAnAbsentPolicyButNeverLaundersAnExplicitEmptyPolicy()
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":8", "\"Version\":5");
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":5");
             string absent = json.Replace("\"ArmyPolicyId\":", "\"IgnoredPolicy\":");
             Assert.AreEqual("campaign", CampaignArchive.Deserialize(absent).ArmyPolicyId);
             string empty = json.Replace("\"ArmyPolicyId\":\"campaign\"", "\"ArmyPolicyId\":\"\"");

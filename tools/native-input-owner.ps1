@@ -32,8 +32,8 @@ namespace PowerAboveAllReview {
 '@
 }
 
-function Get-NativeKeyDescriptor([ValidateSet('Enter', 'Escape', 'Right', 'Left', 'Space', 'Digit1', 'Digit2', 'Digit3', 'Digit4')][string]$Key) {
-    $virtualKey = @{ Enter = 13; Escape = 27; Right = 39; Left = 37; Space = 32; Digit1 = 49; Digit2 = 50; Digit3 = 51; Digit4 = 52 }[$Key]
+function Get-NativeKeyDescriptor([ValidateSet('Enter', 'Escape', 'Right', 'Left', 'Up', 'Down', 'Space', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'W', 'A', 'S', 'D', 'Q', 'E', 'F', 'G', 'Home', 'Tab')][string]$Key) {
+    $virtualKey = @{ Enter = 13; Escape = 27; Right = 39; Left = 37; Up = 38; Down = 40; Space = 32; Digit1 = 49; Digit2 = 50; Digit3 = 51; Digit4 = 52; W = 87; A = 65; S = 83; D = 68; Q = 81; E = 69; F = 70; G = 71; Home = 36; Tab = 9 }[$Key]
     $mapped = [PowerAboveAllReview.NativeArguments]::MapVirtualKeyW($virtualKey, 4)
     if ($mapped -eq 0) { throw "No hardware scan code mapping for $Key; no input sent." }
     $prefix = $mapped -band 0xff00

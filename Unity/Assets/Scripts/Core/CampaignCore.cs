@@ -58,6 +58,7 @@ namespace PowerAboveAll
         [System.Runtime.Serialization.OptionalField] public bool DumasOfficerCommission, DumasExtraRecruitUsed;
         [System.Runtime.Serialization.OptionalField] public string ReformRegionId = "", ReformModeId = "";
         [System.Runtime.Serialization.OptionalField] public int ReformStepsRemaining;
+        [System.Runtime.Serialization.OptionalField] public List<CorrespondenceDesk> Correspondence = new List<CorrespondenceDesk>();
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -182,6 +183,7 @@ namespace PowerAboveAll
         public static ActionResult Act(CampaignState s,string action,string id)
         {
             var r=Region(s,id);if(r==null)return Result(false,"error.region");
+            if(Desk(s)?.RegionId==id)return Result(false,"dispatch.use_desk");
             var urban=Faction(s,"urban");
             switch(action)
             {
@@ -347,6 +349,7 @@ namespace PowerAboveAll
             CompleteArmyReductionAfterWeek(s);
             AnnounceDumasInitiativeAfterWeek(s,hunger);
             CompleteRegionalReformAfterWeek(s);
+            AdvanceCorrespondence(s);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -355,6 +358,7 @@ namespace PowerAboveAll
         public static void Validate(CampaignState s)
         {
             ValidateBase(s);
+            ValidateCorrespondence(s);
             ValidateRoleState(s);
             ValidateRegionalAccordState(s);
             ValidateVictoryDecisionState(s);

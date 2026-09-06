@@ -1,0 +1,99 @@
+{
+  "entries": [
+    {
+      "key": "battle.command.hq",
+      "ru": "Штаб Дюма · переместить",
+      "tr": "Dumas karargâhını taşı"
+    },
+    {
+      "key": "battle.command.place_hq",
+      "ru": "ПКМ — новое место штаба",
+      "tr": "Sağ tuş — karargâh hedefi"
+    },
+    {
+      "key": "battle.command.hq_hint",
+      "ru": "Штаб ближе — связь быстрее.\nПКМ после выбора штаба.",
+      "tr": "Yakın karargâh, hızlı iletişim.\nSeçtikten sonra sağ tıklayın."
+    },
+    {
+      "key": "battle.command.hq_threat",
+      "ru": "Противник у штаба: связь хуже.",
+      "tr": "Düşman karargâh yakınında; iletişim aksıyor."
+    },
+    {
+      "key": "battle.command.hold",
+      "ru": "Удерживать",
+      "tr": "Mevziyi tut"
+    },
+    {
+      "key": "battle.command.reserve",
+      "ru": "Беречь резерв",
+      "tr": "Yedeği koru"
+    },
+    {
+      "key": "battle.command.flank",
+      "ru": "Прикрывать фланг",
+      "tr": "Kanadı koru"
+    },
+    {
+      "key": "battle.command.status",
+      "ru": "Приказ в пути · {0} с. Остался прежний приказ.\nДистанция +{1} · состояние +{2} · связь/местность +{3} с.",
+      "tr": "Emir yolda · {0} sn. Önceki emir sürüyor.\nMesafe +{1} · durum +{2} · iletişim/arazi +{3} sn."
+    },
+    {
+      "key": "battle.command.received",
+      "ru": "Приказ получен: {0}. Подразделение отвечает.",
+      "tr": "Emir alındı: {0}. Birlik uyguluyor."
+    },
+    {
+      "key": "battle.command.sent",
+      "ru": "Приказ отправлен через штаб. До получения действует прежнее распоряжение.",
+      "tr": "Emir karargâhtan çıktı. Alınana kadar önceki emir sürer."
+    },
+    {
+      "key": "battle.command.queue_full",
+      "ru": "У полка уже два приказа в пути. Дайте офицеру их получить.",
+      "tr": "Alaya iki emir zaten yolda. Subayın almasını bekleyin."
+    },
+    {
+      "key": "battle.command.volley_expired",
+      "ru": "Приказ получен, но цель уже недоступна. Залп отменён.",
+      "tr": "Emir ulaştı, ancak hedef artık uygun değil. Yaylım yapılmadı."
+    },
+    {
+      "key": "battle.command.withdraw_local",
+      "ru": "Командир бережёт резерв: отводит полк после тяжёлых потерь или падения морали.",
+      "tr": "Komutan yedeği koruyor: ağır kayıp veya düşük moral nedeniyle çekiliyor."
+    },
+    {
+      "key": "battle.command.square_local",
+      "ru": "Командир прикрыл фланг: заметив кавалерию, построил каре.",
+      "tr": "Komutan kanadı korudu: süvariyi görünce kare düzenine geçti."
+    },
+    {
+      "key": "battle.command.kind.move",
+      "ru": "движение",
+      "tr": "hareket"
+    },
+    {
+      "key": "battle.command.kind.formation",
+      "ru": "построение",
+      "tr": "düzen"
+    },
+    {
+      "key": "battle.command.kind.fire",
+      "ru": "режим огня",
+      "tr": "ateş düzeni"
+    },
+    {
+      "key": "battle.command.kind.volley",
+      "ru": "залп",
+      "tr": "yaylım"
+    },
+    {
+      "key": "battle.command.kind.intent",
+      "ru": "задача командиру",
+      "tr": "komutana görev"
+    }
+  ]
+}

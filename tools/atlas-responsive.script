@@ -1,0 +1,42 @@
+new
+lang ru
+atlas france
+shot 00-france-ru
+atlas europe
+shot 01-europe-ru
+atlas world
+shot 02-world-ru
+select ile
+atlas region
+shot 03-paris-ru
+panel economy
+shot 04-panels-ru
+lang tr
+shot 05-panels-tr
+atlas clean
+shot 06-clean-tr
+atlas panels
+desk open
+expect KnownUnrest 35
+expect ReportAge 4
+lang ru
+scroll province 0
+shot 07-desk-ru
+desk order mission express
+week
+shot 08-letter-pending-ru
+expect SelectedUnrest 21
+expect KnownUnrest 35
+lang tr
+scroll province 0
+shot 09-letter-pending-tr
+week
+petition negotiate
+expect KnownUnrest 21
+expect ReportObservedDay 7
+scroll province 190
+shot 10-reply-tr
+lang ru
+scroll province 190
+shot 11-reply-ru
+quit

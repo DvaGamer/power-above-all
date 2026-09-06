@@ -10,6 +10,7 @@ namespace PowerAboveAll
         public int Troops, EnemyTroops;
         public float Supply = 75, Morale = 75, Fatigue = 10, CommanderCompetence = 60;
         public int Seed = 1789;
+        public bool CommandNetwork;
         public string RegionNameKey = "";
         [NonSerialized] public Func<bool, float, float> CampaignMoraleAfterBattle;
     }
@@ -58,6 +59,10 @@ namespace PowerAboveAll
             public readonly Vector3[] Route = new Vector3[13];
             public readonly Vector3[] DestinationPoints = new Vector3[5];
             public readonly List<Miniature> Figures = new List<Miniature>();
+            public readonly List<RegimentCommand> Commands = new List<RegimentCommand>();
+            public RegimentIntent Intent;
+            public string LastReceivedOrder = "", LocalInitiative = "";
+            public float LastReceivedAt = -1, LastInitiativeAt = -100;
         }
 
         sealed class Puff
@@ -139,6 +144,7 @@ namespace PowerAboveAll
             BuildLandscape();
             DeployArmy(true, originalTroops);
             DeployArmy(false, enemyOriginalTroops);
+            BuildHeadquarters();
             if (regiments.Count > 0) selected.Add(regiments[0]);
             battleCamera.rect = ViewLayout.CameraRect(ViewLayout.BattleViewport);
             battleCamera.orthographic = true;
@@ -215,6 +221,7 @@ namespace PowerAboveAll
             Vector2 pointer = ViewLayout.ToCanvas(Input.mousePosition);
             float uiY = pointer.y;
             hovered = null;
+            if(CommandNetwork && pointer.x>=892 && uiY>=638 && uiY<738)return;
             if (pointer.x < 0 || pointer.x > ViewLayout.Width || uiY < 142 || uiY > 729 || ended) return;
             float best = 46f * ViewLayout.Scale;
             foreach (Regiment regiment in regiments)
@@ -240,14 +247,14 @@ namespace PowerAboveAll
                     }
                 }
             }
-            if (Input.GetMouseButtonDown(1) && selected.Count > 0)
+            if (Input.GetMouseButtonDown(1) && (selectingHeadquarters || selected.Count > 0))
             {
                 Ray ray = battleCamera.ScreenPointToRay(Input.mousePosition);
                 Plane ground = new Plane(Vector3.up, Vector3.zero);
                 if (ground.Raycast(ray, out float distance))
                 {
                     Vector3 point = ray.GetPoint(distance);
-                    ShowOrderResult(MoveSelected(new Vector2(point.x, point.z)));
+                    ShowOrderResult(selectingHeadquarters?MoveHeadquarters(new Vector2(point.x,point.z)):MoveSelected(new Vector2(point.x, point.z)));
                 }
             }
         }
@@ -1183,6 +1190,7 @@ namespace PowerAboveAll
             if (Button(new Rect(1230, 87, 176, 32), "battle.retreat")) ShowOrderResult(Retreat());
             GUI.enabled = true;
             DrawRegimentLabels();
+            DrawCommandDesk();
             Panel(new Rect(0, 738, 1440, 162), Paint(0x243B37));
             Panel(new Rect(18, 738, 1402, 1), Paint(0xCAB36F));
             for (int i = 0; i < 4 && i < regiments.Count; i++)

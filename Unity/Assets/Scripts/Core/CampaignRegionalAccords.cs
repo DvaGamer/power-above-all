@@ -58,6 +58,7 @@ namespace PowerAboveAll
         {
             if (!ValidRegionalAccordCampaign(state)) return Result(false, "error.accord.state");
             if (Definition(regionId) == null) return Result(false, "error.region");
+            if (Desk(state)?.RegionId == regionId) return Result(false, "dispatch.outside_slice");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (MandateDue(state)) return Result(false, "error.mandate.due");
             if (HasRegionalAccord(state)) return Result(false, "error.accord.active", "region." + state.AccordRegionId);

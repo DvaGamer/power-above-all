@@ -35,13 +35,13 @@ function Invoke-OwnedProcess([string]$FilePath, [string[]]$Arguments, [int]$Time
   } finally { $ownedProcess.Dispose() }
 }
 
-function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory, [ValidateRange(1, 300)][int]$TimeoutSeconds = 300) {
+function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory, [ValidateRange(1, 300)][int]$TimeoutSeconds = 300, [int]$Width=1440, [int]$Height=900) {
   if (-not (Test-Path -LiteralPath $CheckerPath -PathType Leaf)) { throw "Frame checker missing: $CheckerPath" }
   $pythonPath = (Get-Command python.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
   $stdoutPath = Join-Path $OutputDirectory 'frames.log'
   $stderrPath = Join-Path $OutputDirectory 'frames.stderr.log'
   # Yerel pipeline yerine sahip olunan gizli surec: cikis kodu ve iki akis ayri kanit olur.
-  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder) $TimeoutSeconds (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
+  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder, '--width', [string]$Width, '--height', [string]$Height) $TimeoutSeconds (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
   $receiptPath = Join-Path $OutputDirectory 'frames-process.json'
   [IO.File]::WriteAllText($receiptPath, ([ordered]@{ executable = $pythonPath; exitCode = $frameExit; completedUtc = [DateTime]::UtcNow.ToString('O'); stdout = $stdoutPath; stderr = $stderrPath } | ConvertTo-Json), [Text.Encoding]::UTF8)
   if ($frameExit -ne 0) { throw "Frame checker exited $frameExit; see frames.log and frames.stderr.log." }
@@ -53,7 +53,7 @@ function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$Outp
   $frames = @($parsedFrames)
   if ($frames.Count -eq 0) { throw 'Frame checker reported zero frames.' }
   foreach ($frame in $frames) {
-    if ($frame.width -ne 1440 -or $frame.height -ne 900 -or @($frame.problems).Count -ne 0) { throw "Frame checker reported a broken image: $($frame.name)" }
+    if ($frame.width -ne $Width -or $frame.height -ne $Height -or @($frame.problems).Count -ne 0) { throw "Frame checker reported a broken image: $($frame.name)" }
   }
   $sheet = Join-Path $Folder 'contact-sheet.jpg'
   if (-not (Test-Path -LiteralPath $sheet -PathType Leaf) -or (Get-Item -LiteralPath $sheet).Length -eq 0) { throw 'Frame contact sheet is missing or empty.' }
@@ -110,6 +110,8 @@ function Assert-BattleReviewCommand([string]$Line) {
   switch ($parts[1]) {
     'select' { $valid = $parts.Count -eq 4 -and $parts[2] -match '^[1-4]$' -and $parts[3] -in @('replace', 'add', 'toggle') }
     'formation' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('line', 'column', 'square') }
+    'intent' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('hold', 'reserve', 'flank') }
+    'hq' { $valid = $parts.Count -eq 4 -and $parts[2] -match '^-?[0-9]+(?:\.[0-9]+)?$' -and $parts[3] -match '^-?[0-9]+(?:\.[0-9]+)?$' }
     'fire' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('hold', 'free') }
     'pause' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('on', 'off') }
     'volley' { $valid = $parts.Count -eq 2 }
@@ -139,6 +141,8 @@ function Get-ReviewPlan([string]$Path) {
   if ($lines.Count -lt 2 -or $lines[0] -ne 'new' -or $lines[-1] -ne 'quit' -or @($lines | Where-Object { $_ -eq 'quit' }).Count -ne 1) { throw "Review must start with new and have one final quit." }
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
+    if ($line -match '^desk(?:\s|$)' -and $line -cnotmatch '^desk (open|(bread|tax|order|report) (strict|mission) (normal|express))$') { throw "Unsupported cabinet correspondence command: $line" }
+    if ($line -match '^atlas(?:\s|$)' -and $line -cnotmatch '^atlas (world|europe|france|region|oblique|clean|panels)$') { throw "Unsupported atlas review view: $line" }
     if ($line -match '^accord(?:\s|$)' -and $line -cne 'accord grant') { throw "Unsupported regional accord order: $line" }
     if ($line -match '^scroll(?:\s|$)') {
       if ($line -cnotmatch '^scroll (document|province) (\S+)$') { throw "Unsupported review scroll: $line" }

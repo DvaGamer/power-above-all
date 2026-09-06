@@ -108,6 +108,7 @@ namespace PowerAboveAll
         {
             if (!ValidRegionalReformCampaign(state)) return Result(false, "error.reform.state");
             if (Definition(regionId) == null) return Result(false, "error.region");
+            if (Desk(state)?.RegionId == regionId) return Result(false, "dispatch.outside_slice");
             if (!KnownReformMode(modeId)) return Result(false, "error.reform.mode");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (MandateDue(state)) return Result(false, "error.mandate.due");

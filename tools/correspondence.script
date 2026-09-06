@@ -1,0 +1,47 @@
+new
+lang ru
+desk open
+atlas france
+expect KnownUnrest 35
+expect ReportAge 4
+shot 00-desk-ru
+desk order mission express
+expect Gold 828
+expect SelectedUnrest 35
+state 00-sent
+scroll province 490
+shot 01-sent-ru
+week
+expect Week 1
+expect SelectedUnrest 21
+expect KnownUnrest 35
+expect ReportAge 11
+state 01-executed-unreported
+scroll province 0
+shot 02-old-report-ru
+remember before-view
+atlas region
+atlas oblique
+expect KnownUnrest 35
+same before-view
+save
+remember in-flight
+load
+same in-flight
+week
+petition negotiate
+expect KnownUnrest 21
+expect SelectedUnrest 23
+expect ReportObservedDay 7
+state 02-returned
+scroll province 650
+shot 03-result-ru
+lang tr
+shot 04-result-tr
+scroll province 0
+shot 05-report-tr
+save
+remember returned
+load
+same returned
+quit

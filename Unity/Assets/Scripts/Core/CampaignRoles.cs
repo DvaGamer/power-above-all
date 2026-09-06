@@ -113,6 +113,7 @@ namespace PowerAboveAll
             if (!ValidRoleData(state)) return Result(false, "error.role.invalid");
             if (state.RoleId == "legacy") return Result(false, "error.role.legacy");
             if (Definition(regionId) == null) return Result(false, "error.mandate.region");
+            if (Desk(state)?.RegionId == regionId) return Result(false, "dispatch.outside_slice");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (state.Obligation != null) return Result(false, "error.mandate.open");
             string patronId = PatronIdForRole(state.RoleId);

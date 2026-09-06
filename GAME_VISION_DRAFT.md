@@ -16,6 +16,18 @@ Başarılı bir parti oyuncunun anlatabileceği bir hikâye üretmeli: “Orduyu
 
 ## Üç deneyimin birbirine bağlanması
 
+### Kullanıcı tarafından kesinleştirilen ilke: oyuncu devlet değildir
+
+**PLAYER → PEOPLE → ORDERS → DELAY → INTERPRETATION → ACTION → REPORT → CONSEQUENCE.**
+
+Oyuncu başkentteki bir makamda bulunan somut kişidir. Serbest kamera o kişinin bedeni veya bilgisi değildir. Gerçek dünya durumu, kişinin son doğrulanmış bilgisi ve harita bakışı ayrı tutulur. Bilginin tarihi, kaynağı ve Confirmed/Reported/Estimated/Rumored/Unknown/Outdated niteliği vardır; belirsizlik sebepsiz zar atışı değildir.
+
+Uzak bölgedeki sonuç bir tıkla gerçekleşmez: bir kişi emri alır, yorumlar, uygular ve raporlar. Yetki seviyesi, sürekli direktif, sadakat, yetenek ve kişisel çıkar hem fayda hem siyasi risk yaratır. Yolculuk, başkentte bulunmamanın bedelini taşır; ordu oyuncudan bağımsız bir komuta örgütüdür. En yetenekli general aynı zamanda rakip olabilir.
+
+Taktik ustalık korunur: kısa, anlaşılır emir iletimi; hazırlık, yedek, kararın zamanlaması ve birliklerin mevcut hareketine bağlı atalet. Ştabın yeri, komutan inisiyatifi ve intent küçük deneylerle sınanır. Son emir bağlantı kesilince ortadan kaybolmaz. Kurye mikroyönetimi, sürekli onay, amaçsız bekleme ve keyfî itaatsizlik hedef değildir.
+
+**Uygulama durumu:** Paris–Bordeaux ve ayrı HQ/alay küçük kesitleri Unity/Windows içinde çalışır; ayrıntı [COMMAND_SLICE.md](COMMAND_SLICE.md). Bordeaux dosyası açılınca HUD ve harita son alınan raporu okur; kamerayla bilgi yenilenmez. Diğer bölgeler eski kurallardadır. Oyuncu seyahati, cephede bulunma şartı, bütün ülke idaresi ve kapsamlı istihbarat henüz yoktur. Genişletme öncesi bu küçük kesit oynanarak değerlendirilir. Dünya atlası/kamera/HUD milestone'u sürer. Unity Hub erişimi tamamlandı.
+
 | Deneyim | Oyuncunun yaptığı iş | Diğer katmanda görülen sonuç |
 | --- | --- | --- |
 | Kişisel iktidar | Yardım istemek, söz vermek, ittifak kurmak, nüfuz ve makam dağıtmak | Gelir veya ikmal yolu açılır; bir kişinin pazarlık gücü artar, rakibi rahatsız olur. |

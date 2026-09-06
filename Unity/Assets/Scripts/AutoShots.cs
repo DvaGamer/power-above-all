@@ -22,6 +22,7 @@ namespace PowerAboveAll
         private readonly List<string> states = new List<string>();
         private readonly Dictionary<string, string> remembered = new Dictionary<string, string>();
         private int commands, assertions;
+        private int expectedWidth=1440,expectedHeight=900;
         private CampaignState battleCampaignBefore;
         private MarchPreview battleArrival;
         private string battleTarget, battleId;
@@ -81,6 +82,11 @@ namespace PowerAboveAll
 
         private IEnumerator Run()
         {
+            var launchArgs=Environment.GetCommandLineArgs();
+            int wi=Array.IndexOf(launchArgs,"-screen-width"),hi=Array.IndexOf(launchArgs,"-screen-height");
+            if(wi>=0&&(wi+1>=launchArgs.Length||!int.TryParse(launchArgs[wi+1],out expectedWidth)))throw new InvalidDataException("Invalid review width.");
+            if(hi>=0&&(hi+1>=launchArgs.Length||!int.TryParse(launchArgs[hi+1],out expectedHeight)))throw new InvalidDataException("Invalid review height.");
+            if(expectedWidth<640||expectedWidth>7680||expectedHeight<480||expectedHeight>4320)throw new InvalidDataException("Review dimensions outside supported range.");
             Application.runInBackground = true;
             originalLanguage = L.Language;
             if (string.IsNullOrWhiteSpace(folder)) throw new InvalidDataException("Missing -shots folder.");
@@ -173,7 +179,26 @@ namespace PowerAboveAll
                         break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
+                    case "atlas":
+                        RequireIdle(app); RequireChoice(value,"world","europe","france","region","oblique","clean","panels");
+                        if(value=="world")app.StrategyCamera.SetView(Vector3.zero,3000,0,85);
+                        else if(value=="europe")app.StrategyCamera.SetView(AtlasProjection.Project(12,49),570,0,72);
+                        else if(value=="france")app.StrategyCamera.SetView(AtlasProjection.Project(2.3f,46.6f),150,0,65);
+                        else if(value=="region")app.StrategyCamera.SetView(app.Map.RegionWorld(app.State.SelectedRegionId),35,-25,58);
+                        else if(value=="oblique")app.StrategyCamera.SetView(app.Map.RegionWorld(app.State.SelectedRegionId),48,95,40);
+                        else app.GetComponent<CabinetHud>().PanelsHidden=value=="clean";
+                        yield return new WaitForSecondsRealtime(1.3f); break;
                     case "act": RequireIdle(app); app.Act(value); break;
+                    case "desk":
+                        RequireIdle(app);
+                        if(value=="open")app.OpenBordeauxDesk();
+                        else
+                        {
+                            var args=value.Split(' ');Arguments(args,3);
+                            RequireChoice(args[0],"bread","tax","order","report");RequireChoice(args[1],"strict","mission");RequireChoice(args[2],"normal","express");
+                            app.SendCabinetOrder(args[0],args[1],args[2]=="express");
+                        }
+                        break;
                     case "week": RequireIdle(app); app.NextWeek(); break;
                     case "march": RequireIdle(app); RememberBattleContext(app); app.March(); break;
                     case "petition": RequireIdle(app); app.ChoosePetition(value); break;
@@ -252,6 +277,9 @@ namespace PowerAboveAll
                 key == "ArmyConsumption" ? (object)CampaignCore.Forecast(app.State).ArmyConsumption :
                 key == "ForageFood" ? (object)CampaignCore.Forecast(app.State).ForageFood :
                 key == "SelectedUnrest" ? (object)CampaignCore.Region(app.State,app.State.SelectedRegionId).Unrest :
+                key == "KnownUnrest" ? (object)CampaignCore.Knowledge(app.State,app.State.SelectedRegionId).Unrest :
+                key == "ReportAge" ? (object)CampaignCore.Knowledge(app.State,app.State.SelectedRegionId).AgeDays :
+                key == "ReportObservedDay" ? (object)CampaignCore.Knowledge(app.State,app.State.SelectedRegionId).ObservedDay :
                 key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :
                 key == "TaxIncome" ? CampaignCore.Forecast(app.State).TaxIncome :
                 key == "BattleActive" ? (object)app.BattleActive : key == "Busy" ? app.Busy :
@@ -330,6 +358,10 @@ namespace PowerAboveAll
                     if (!int.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out int slot)) throw new InvalidDataException("Battle slot must be 1..4.");
                     CheckOrder(battle.SelectPlayerRegiment(slot, (BattleSelectionMode)Enum.Parse(typeof(BattleSelectionMode), parts[2], true))); break;
                 case "move": Arguments(parts, 3); CheckOrder(battle.MoveSelected(new Vector2(Coordinate(parts[1]), Coordinate(parts[2])))); break;
+                case "hq": Arguments(parts,3);CheckOrder(battle.MoveHeadquarters(new Vector2(Coordinate(parts[1]),Coordinate(parts[2]))));break;
+                case "intent":
+                    Arguments(parts,2);RequireChoice(parts[1],"hold","reserve","flank");
+                    CheckOrder(battle.SetSelectedIntent(parts[1]=="reserve"?RegimentIntent.PreserveReserve:parts[1]=="flank"?RegimentIntent.GuardFlank:RegimentIntent.Hold));break;
                 case "formation":
                     Arguments(parts, 2); RequireChoice(parts[1], "line", "column", "square");
                     CheckOrder(battle.SetSelectedFormation((BattleFormation)Enum.Parse(typeof(BattleFormation), parts[1], true))); break;
@@ -414,7 +446,7 @@ namespace PowerAboveAll
             captures.Add(name + ".png"); report.Add("  wrote " + name + ".png");
         }
 
-        private static bool CompletePng(string path)
+        private bool CompletePng(string path)
         {
             byte[] png;
             try { if (!File.Exists(path)) return false; png = File.ReadAllBytes(path); }
@@ -426,7 +458,7 @@ namespace PowerAboveAll
                 if (png[i] != signature[i]) throw new InvalidDataException("Invalid PNG signature: " + path);
             int width = (png[16] << 24) | (png[17] << 16) | (png[18] << 8) | png[19];
             int height = (png[20] << 24) | (png[21] << 16) | (png[22] << 8) | png[23];
-            if (width != 1440 || height != 900) throw new InvalidDataException("Expected 1440x900 frame, observed " + width + "x" + height);
+            if (width != expectedWidth || height != expectedHeight) throw new InvalidDataException("Expected "+expectedWidth+"x"+expectedHeight+" frame, observed " + width + "x" + height);
             return true;
         }
 

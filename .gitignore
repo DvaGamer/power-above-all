@@ -1,5 +1,7 @@
 node_modules/
 output/
+References/_local_media/
+__pycache__/
 *.log
 .playwright-cli/
 Unity/[Ll]ibrary/

@@ -39,7 +39,7 @@ namespace PowerAboveAll
             if (victoryRecognition == null || victoryBonus == null) return;
             if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
             { CloseVictoryDecision(); Event.current.Use(); return; }
-            CampaignState state = app.State;
+            CampaignState state = app.ViewState;
             var commander = state.Characters.Find(person => person.Id == "dumas");
             Fill(new Rect(0, 36, 1440, 864), new Color(.10f, .16f, .14f, .54f));
             Fill(new Rect(291, 150, 872, 624), new Color(.06f, .10f, .08f, .32f));
@@ -71,7 +71,7 @@ namespace PowerAboveAll
             float x = rect.x + 15, width = rect.width - 30;
             Text(new Rect(x, rect.y + 15, width, 48), T(recognize ? "ui.victory.recognize_title" : "ui.victory.bonus_title"), heading);
             Text(new Rect(x, rect.y + 65, width, 40), T(recognize ? "ui.victory.recognize_note" : "ui.victory.bonus_note"), small);
-            var state = app.State;
+            var state = app.ViewState;
             string effects = recognize
                 ? T("ui.victory.recognize_effects", AccordMeasure(state.Fatigue), AccordMeasure(state.Fatigue + terms.FatigueDelta),
                     Change(terms.RelationshipDelta), Change(terms.AmbitionDelta), AccordMeasure(state.Power), AccordMeasure(state.Power - terms.PowerCost))

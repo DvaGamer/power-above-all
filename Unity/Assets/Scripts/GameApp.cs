@@ -7,10 +7,14 @@ namespace PowerAboveAll
     public sealed class GameApp : MonoBehaviour
     {
         public CampaignState State { get; private set; }
+        public CampaignState ViewState { get; private set; }
         public string Mode { get; private set; } = "control";
         public string Message => L.Text(messageKey, messageArgs);
         public CampaignMap Map { get; private set; }
         public Camera Camera { get; private set; }
+        public StrategicCamera StrategyCamera { get; private set; }
+        private float lastMapClick;
+        private string lastMapClickRegion;
         public bool BattleActive => battle != null && battle.Active;
         public bool Busy => BattleActive || dispatchPending;
         public bool ChoosingRole { get; private set; }
@@ -67,6 +71,8 @@ namespace PowerAboveAll
             RenderSettings.ambientLight = new Color(.66f, .69f, .61f);
             Map = new GameObject("State atlas").AddComponent<CampaignMap>();
             Map.Build(Camera);
+            StrategyCamera = gameObject.AddComponent<StrategicCamera>();
+            StrategyCamera.Initialize(Camera);
             hud = gameObject.AddComponent<CabinetHud>();
             battle = gameObject.AddComponent<TacticalBattle>();
             sound = gameObject.AddComponent<CabinetAudio>();
@@ -83,7 +89,9 @@ namespace PowerAboveAll
         private void Update()
         {
             Camera.rect = ViewLayout.CameraRect(BattleActive ? ViewLayout.BattleViewport
-                : new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
+                : new Rect(0, 0, 1, 1));
+            bool pointerOnMap = !hud.IsPointerOverInterface(ViewLayout.ToCanvas(Input.mousePosition));
+            if (!BattleActive) StrategyCamera.Tick(!CampaignInputBlocked && !hud.BlocksMapInput && pointerOnMap);
             if (dispatchPending)
             {
                 Map.SetHovered(null);
@@ -109,18 +117,29 @@ namespace PowerAboveAll
             Map.SetHovered(Map.Pick(Input.mousePosition));
             if (Input.GetKeyDown(KeyCode.F5)) Save();
             if (Input.GetKeyDown(KeyCode.F9)) Load();
+            if (!pointerOnMap) { Map.SetHovered(null); return; }
+            if (Input.GetKeyDown(KeyCode.F)) StrategyCamera.Focus(Map.RegionWorld(State.SelectedRegionId));
+            if (Input.GetKeyDown(KeyCode.G)) StrategyCamera.Focus(Map.RegionWorld(State.ArmyRegionId));
             if (Input.GetMouseButtonDown(0))
             {
                 var p = Input.mousePosition;
                 if (Camera.pixelRect.Contains(p))
                 {
                     var id = Map.Pick(p);
-                    if (!string.IsNullOrEmpty(id)) SelectRegion(id);
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        SelectRegion(id);
+                        if (lastMapClickRegion == id && Time.unscaledTime - lastMapClick < .32f) StrategyCamera.Focus(Map.RegionWorld(id));
+                        lastMapClickRegion = id; lastMapClick = Time.unscaledTime;
+                    }
                 }
             }
         }
         private void OnGUI()
         {
+            if (!BattleActive && !CampaignInputBlocked && !hud.BlocksMapInput &&
+                !hud.IsPointerOverInterface(ViewLayout.ToCanvas(Input.mousePosition)))
+                StrategyCamera.HandleMapEvent(Event.current,Input.mousePosition);
             var old = GUI.matrix;
             ViewLayout.DrawFrame();
             GUI.matrix = ViewLayout.GuiMatrix;
@@ -174,7 +193,33 @@ namespace PowerAboveAll
             }
             GUI.matrix = old;
         }
-        private void Refresh() { Map.Refresh(State, Mode); }
+        private void Refresh()
+        {
+            ViewState = State;
+            var desk = CampaignCore.Desk(State);
+            if(desk != null)
+            {
+                ViewState = CampaignArchive.Deserialize(CampaignArchive.Serialize(State, false));
+                var report = CampaignCore.Knowledge(State, desk.RegionId);
+                var visible = CampaignCore.Region(ViewState, desk.RegionId);
+                visible.Unrest = report.Unrest; visible.Control = report.Control; visible.EliteLoyalty = report.EliteLoyalty;
+                // UI forecasts cannot advance or inspect messages that have not reached the cabinet.
+                ViewState.Correspondence.Clear();
+            }
+            Map.Refresh(ViewState, Mode);
+        }
+        public void OpenBordeauxDesk()
+        {
+            if(CampaignInputBlocked)return;
+            if(CampaignCore.Desk(State)==null)Report(CampaignCore.OpenCorrespondence(State));
+            if(CampaignCore.Desk(State)!=null){SelectRegion("guyenne");StrategyCamera.Focus(Map.RegionWorld("guyenne"),100);}
+        }
+        public void SendCabinetOrder(string intent,string autonomy,bool express)
+        {
+            if(CampaignInputBlocked)return;
+            var result=CampaignCore.SendCabinetOrder(State,intent,autonomy,express);Report(result);
+            if(result.Ok)Feedback("seal");
+        }
         private void DrawBattleLanguageBar()
         {
             Color paper = new Color(.953f, .906f, .792f), muted = new Color(.69f, .75f, .68f);
@@ -227,11 +272,14 @@ namespace PowerAboveAll
         public void SelectRegion(string id)
         {
             if (CampaignInputBlocked || CampaignCore.Region(State, id) == null) return;
-            State.SelectedRegionId = id; Refresh(); Feedback("paper");
+            State.SelectedRegionId = id; hud.NotifyRegionSelected(); Refresh(); Feedback("paper");
         }
         public void Act(string action)
         {
             if (CampaignInputBlocked) return;
+            var desk=CampaignCore.Desk(State);
+            if(desk!=null && State.SelectedRegionId==desk.RegionId)
+            {SendCabinetOrder(action,"strict",false);return;}
             var result = CampaignCore.Act(State, action, State.SelectedRegionId); Report(result);
             if (result.Ok) { Feedback(action); Map.Pulse(State.SelectedRegionId); }
         }
@@ -368,9 +416,11 @@ namespace PowerAboveAll
             Dispatch("app.dispatch", () =>
             {
                 Map.SetVisible(false);
+                StrategyCamera.Suspend();
                 var commander = State.Characters.Find(c => c.Id == "dumas");
                 battle.Begin(new BattleSetup { Troops = State.Troops, EnemyTroops = resistance.EnemyTroops, Supply = arrival.Supply, Morale = arrival.Morale,
                     Fatigue = arrival.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
+                    CommandNetwork = CampaignCore.Desk(State) != null,
                     CampaignMoraleAfterBattle = (won, morale) => CampaignCore.BattleReturnMorale(arrival.Morale, morale, won),
                     Seed = 1789 + State.Week * 31 + State.Moves, RegionNameKey = "region." + pendingTarget }, Camera, CompleteBattle);
             });
@@ -391,11 +441,9 @@ namespace PowerAboveAll
         }
         private void RestoreAtlas()
         {
-            Camera.orthographic = true; Camera.orthographicSize = 28.3f;
-            Camera.transform.SetPositionAndRotation(new Vector3(-5.8f, 65, 2.7f), Quaternion.Euler(90, 0, 0));
-            Camera.rect = ViewLayout.CameraRect(new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
-            Camera.backgroundColor = new Color(.655f, .729f, .69f);
-            Camera.nearClipPlane = .1f; Camera.farClipPlane = 200;
+            StrategyCamera.Resume();
+            Camera.rect = ViewLayout.CameraRect(new Rect(0, 0, 1, 1));
+            Camera.backgroundColor = new Color(.51f, .69f, .71f);
             Map.SetVisible(true); Refresh();
         }
         public void Save() { if (!Busy && !ChoosingRole) WriteSave(true); }

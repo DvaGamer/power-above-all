@@ -12,7 +12,7 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 8;
+        public const int CurrentVersion = 9;
 
         [Serializable] private sealed class Envelope
         {
@@ -88,6 +88,15 @@ namespace PowerAboveAll
             [DataMember(IsRequired = true)] public int ReformStepsRemaining = 0;
         }
 
+        [DataContract] private sealed class RequiredCorrespondenceEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredCorrespondenceState State = null;
+        }
+        [DataContract] private sealed class RequiredCorrespondenceState
+        {
+            [DataMember(IsRequired = true)] public List<CorrespondenceDesk> Correspondence = null;
+        }
+
         public static string Serialize(CampaignState state, bool prettyPrint = true)
         {
             CampaignCore.Validate(state);
@@ -151,6 +160,13 @@ namespace PowerAboveAll
                         if (required == null || required.State == null || required.State.ReformRegionId == null || required.State.ReformModeId == null)
                             throw new SerializationException("Missing required regional reform data.");
                     }
+                if (envelope != null && envelope.Version >= 9)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredCorrespondenceEnvelope)new DataContractJsonSerializer(typeof(RequiredCorrespondenceEnvelope)).ReadObject(stream);
+                        if(required == null || required.State == null || required.State.Correspondence == null)
+                            throw new SerializationException("Missing required correspondence data.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -159,6 +175,12 @@ namespace PowerAboveAll
             if (envelope == null || envelope.State == null || envelope.Version < 1 || envelope.Version > CurrentVersion)
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
+            if(envelope.Version < 9)
+            {
+                if(state.Correspondence != null && state.Correspondence.Count != 0)
+                    throw new ArgumentException("Invalid correspondence in an older archive.", nameof(json));
+                state.Correspondence = new List<CorrespondenceDesk>();
+            }
             if (envelope.Version < 3)
             {
                 if (!string.IsNullOrEmpty(state.AccordRegionId) || state.AccordUntilWeek != 0)

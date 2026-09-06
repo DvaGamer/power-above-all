@@ -15,7 +15,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), archive = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":8", archive);
+            StringAssert.Contains("\"Version\":" + CampaignArchive.CurrentVersion, archive);
             var loaded = CampaignArchive.Deserialize(archive); Assert.AreEqual(before, Snapshot(loaded)); return loaded;
         }
         static void Refused(CampaignState state, Func<ActionResult> action, string key)
@@ -402,7 +402,7 @@ namespace PowerAboveAll.Tests
 
         static string Older(string json, int version)
         {
-            json = json.Replace("\"Version\":8", "\"Version\":" + version)
+            json = json.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version)
                 .Replace("\"ReformRegionId\":", "\"IgnoredReformRegion\":")
                 .Replace("\"ReformModeId\":", "\"IgnoredReformMode\":")
                 .Replace("\"ReformStepsRemaining\":", "\"IgnoredReformSteps\":");
@@ -462,7 +462,7 @@ namespace PowerAboveAll.Tests
         public void OlderVersionNumbersCannotSilentlyEraseAPaidProject(int version)
         {
             var state = CampaignCore.Create(); Success(CampaignCore.BeginRegionalReform(state, "normandy", "provisioning"));
-            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
         }
 

@@ -1,13 +1,16 @@
 # Gerçek Windows fare/tuş yolu için dar inceleme yardımcısı.
 # Yalnız bu yardımcının başlattığı, output/verify altındaki player'a girdi gönderir.
 param(
-    [Parameter(Mandatory = $true)][ValidateSet('Start', 'Inspect', 'Click', 'ShiftClick', 'RightMouse', 'Key', 'Scroll')][string]$Action,
+    [Parameter(Mandatory = $true)][ValidateSet('Start', 'Inspect', 'Click', 'ShiftClick', 'RightMouse', 'Key', 'Scroll', 'MiddleDrag', 'RightDrag')][string]$Action,
     [string]$PlayerPath,
     [string]$ScriptPath,
     [string]$ReceiptPath,
     [double]$X = 0,
     [double]$Y = 0,
-    [ValidateSet('Enter', 'Escape', 'Right', 'Left', 'Space', 'Digit1', 'Digit2', 'Digit3', 'Digit4')][string]$Key = 'Enter',
+    [double]$EndX = 0,
+    [double]$EndY = 0,
+    [ValidateRange(70,2000)][int]$HoldMilliseconds = 70,
+    [ValidateSet('Enter', 'Escape', 'Right', 'Left', 'Up', 'Down', 'Space', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'W', 'A', 'S', 'D', 'Q', 'E', 'F', 'G', 'Home', 'Tab')][string]$Key = 'Enter',
     [ValidateRange(-10, 10)][int]$Wheel = 0,
     [ValidateRange(180, 300)][int]$PlayerTimeoutSeconds = 180,
     [switch]$VisiblePlayer
@@ -103,7 +106,7 @@ $width = $bounds.Right - $bounds.Left
 $height = $bounds.Bottom - $bounds.Top
 if ($width -lt 640 -or $height -lt 400) { throw 'Unexpected or minimized player client.' }
 
-if ($Action -in @('Click', 'ShiftClick', 'RightMouse', 'Scroll')) {
+if ($Action -in @('Click', 'ShiftClick', 'RightMouse', 'Scroll', 'MiddleDrag', 'RightDrag')) {
     if ([double]::IsNaN($X) -or [double]::IsInfinity($X) -or [double]::IsNaN($Y) -or [double]::IsInfinity($Y) -or $X -lt 0 -or $X -ge 1440 -or $Y -lt 0 -or $Y -ge 900) { throw 'Coordinates must be finite points inside the 1440x900 design canvas.' }
     # ViewLayout yatay/dikey boşluk eklediği için en-boy oranını koru.
     $scale = [Math]::Min($width / 1440.0, $height / 900.0)
@@ -111,7 +114,24 @@ if ($Action -in @('Click', 'ShiftClick', 'RightMouse', 'Scroll')) {
     $screenY = $origin.Y + ($height - 900 * $scale) / 2 + $Y * $scale
     if (-not [PowerAboveAllReview.InputWindow]::SetCursorPos([int]$screenX, [int]$screenY)) { throw 'Cursor positioning failed; no input sent.' }
     Assert-NativePointerTarget $handle ([int]$screenX) ([int]$screenY)
-    if ($Action -eq 'ShiftClick') {
+    if ($Action -in @('MiddleDrag', 'RightDrag')) {
+        if ([double]::IsNaN($EndX) -or [double]::IsInfinity($EndX) -or [double]::IsNaN($EndY) -or [double]::IsInfinity($EndY) -or $EndX -lt 0 -or $EndX -ge 1440 -or $EndY -lt 0 -or $EndY -ge 900) { throw 'Drag endpoint must remain in the design canvas.' }
+        $endScreenX = $origin.X + ($width - 1440 * $scale) / 2 + $EndX * $scale
+        $endScreenY = $origin.Y + ($height - 900 * $scale) / 2 + $EndY * $scale
+        $mouseDown = 32; $mouseUp = 64
+        if ($Action -eq 'RightDrag') { $mouseDown = 8; $mouseUp = 16 }
+        try {
+            [PowerAboveAllReview.InputWindow]::mouse_event($mouseDown, 0, 0, 0, [UIntPtr]::Zero)
+            for ($step = 1; $step -le 20; $step++) {
+                if ([PowerAboveAllReview.InputWindow]::GetForegroundWindow() -ne $handle) { throw 'Focus changed during drag; releasing button.' }
+                $nextX = [int]($screenX + ($endScreenX - $screenX) * $step / 20)
+                $nextY = [int]($screenY + ($endScreenY - $screenY) * $step / 20)
+                [void][PowerAboveAllReview.InputWindow]::SetCursorPos($nextX, $nextY)
+                Assert-NativePointerTarget $handle $nextX $nextY
+                Start-Sleep -Milliseconds 20
+            }
+        } finally { [PowerAboveAllReview.InputWindow]::mouse_event($mouseUp, 0, 0, 0, [UIntPtr]::Zero) }
+    } elseif ($Action -eq 'ShiftClick') {
         $shiftInput = Get-NativeShiftClickDescriptor (([PowerAboveAllReview.InputWindow]::GetAsyncKeyState(0xa0) -band 0x8000) -ne 0) (([PowerAboveAllReview.InputWindow]::GetAsyncKeyState(0xa1) -band 0x8000) -ne 0)
         Invoke-NativeShiftClickSequence -Send {
             param([string]$Step)
@@ -133,9 +153,14 @@ if ($Action -in @('Click', 'ShiftClick', 'RightMouse', 'Scroll')) {
 } elseif ($Action -eq 'Key') {
     $keyInput = Get-NativeKeyDescriptor $Key
     if ([PowerAboveAllReview.InputWindow]::GetForegroundWindow() -ne $handle) { throw 'Focus changed before key press; no input sent.' }
+    if (([PowerAboveAllReview.InputWindow]::GetAsyncKeyState($keyInput.VirtualKey) -band 0x8000) -ne 0) { throw 'Key is already held; no input sent.' }
     try {
         [PowerAboveAllReview.InputWindow]::keybd_event($keyInput.VirtualKey, $keyInput.ScanCode, $keyInput.DownFlags, [UIntPtr]::Zero)
-        Start-Sleep -Milliseconds 70
+        $remaining = $HoldMilliseconds
+        while ($remaining -gt 0) {
+            if ([PowerAboveAllReview.InputWindow]::GetForegroundWindow() -ne $handle) { throw 'Focus changed during key hold; releasing key.' }
+            $pause = [Math]::Min(50, $remaining); Start-Sleep -Milliseconds $pause; $remaining -= $pause
+        }
     } finally { [PowerAboveAllReview.InputWindow]::keybd_event($keyInput.VirtualKey, $keyInput.ScanCode, $keyInput.UpFlags, [UIntPtr]::Zero) }
 }
 Start-Sleep -Milliseconds 300

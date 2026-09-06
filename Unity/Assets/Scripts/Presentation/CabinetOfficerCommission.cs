@@ -39,15 +39,15 @@ namespace PowerAboveAll
             string name = T("character.dumas.name");
             float nameHeight = body.CalcHeight(new GUIContent(name), 152);
             Text(new Rect(90, y + 2, 152, nameHeight), name, body);
-            var general = app.State.Characters.Find(person => person.Id == "dumas");
+            var general = app.ViewState.Characters.Find(person => person.Id == "dumas");
             Text(new Rect(90, y + nameHeight + 10, 152, 58),
                 T("ui.commission.character", Number(general.Loyalty), Number(general.Ambition)), small);
             y += Mathf.Max(105, nameHeight + 80);
             Paragraph(ref y, T(terms.IsActive ? "ui.commission.active" : "ui.commission.offer"), body, 238, 12);
-            Paragraph(ref y, T("ui.commission.camp", T("region." + app.State.ArmyRegionId)), small, 238, 12);
-            if (app.State.SelectedRegionId != app.State.ArmyRegionId)
+            Paragraph(ref y, T("ui.commission.camp", T("region." + app.ViewState.ArmyRegionId)), small, 238, 12);
+            if (app.ViewState.SelectedRegionId != app.ViewState.ArmyRegionId)
             {
-                if (Press(new Rect(4, y, 238, 34), T("ui.forage.show_camp"))) app.SelectRegion(app.State.ArmyRegionId);
+                if (Press(new Rect(4, y, 238, 34), T("ui.forage.show_camp"))) app.SelectRegion(app.ViewState.ArmyRegionId);
                 y += 46;
             }
             Rule(4, y, 238); y += 15;

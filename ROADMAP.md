@@ -1,5 +1,11 @@
 # Power Above All — görsel temel ve bağlantılı oynanış
 
+## 08:39 UTC — önceki sıranın yerini alan kullanıcı önceliği
+
+Gerçek global coğrafya → Fransa entegrasyonu → native girdilerle kamera → semantic LOD → harita/HUD/belge polish → RU/TR dört çözünürlük ve gerçek karşılaştırma. Bu milestone tamamlanmadan ülke/ekonomi/diplomasi kapsamı genişletilmez.
+
+Dar yeni-mekanik istisnası [COMMAND_SLICE.md](COMMAND_SLICE.md): Paris–Bordeaux bilgi/emir/kişi/yanıt ve ayrı HQ/alay komutası. İki küçük deney uygulanıp520test ve gerçek Windows senaryolarıyla doğrulandı; seyahat, genel standing orders ve bütün ülkenin kişilerle yönetimi sonraki değerlendirme bekler. [STATUS](STATUS.md) ve [referans dersleri](References/Design_Lessons.md) güncel boşlukları gösterir. Aşağıdaki06:10gece kaydı geçmiş aşamadır.
+
 **6 Eylül 2026 güncel talimat: geliştirme sürüyor.** Kullanıcı on saatlik özerk çalışma istedi. Önceki durdurma ve yalnız polish sınırı sona erdi. Kullanıcının onaylı yönü [VISION.md](VISION.md), ilk rol kesitinin çalışma varsayımları [ROLE_SLICE.md](ROLE_SLICE.md), güncel kanıt [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
 **Güncel durum, 06:10 UTC:** Unity'de roller, siyasi sözler ve güven, bölgesel anlaşma, ordu hedefi/subay hakkı, Dumas'nın ikmal girişimi ve ilk bölgesel iaşe/ticaret projesi bağlı bir kesit oluşturur. Son Windows kapısı **GREEN496**; reform rotası18PNG/72kontrol/14JSON ile geçti, RU/TR kareler ayrıca incelendi. Kullanıcı son oyunu açıp inceliyor. Kesin kanıt ve kalan işler [STATUS.md](STATUS.md) ve [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir; Tarayıcı0.1 referans olarak kalır.

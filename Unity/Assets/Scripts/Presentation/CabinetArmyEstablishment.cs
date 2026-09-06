@@ -51,11 +51,11 @@ namespace PowerAboveAll
             y += 43;
             Paragraph(ref y, T("ui.establishment.title"), heading, 238, 10);
             Paragraph(ref y, T("ui.establishment.rule", CampaignCore.ArmyReductionBatch, CampaignCore.ArmyReductionWeeks), small, 238, 14);
-            bool active = app.State.ArmyPolicyId == "budget";
-            if (active && establishmentDraft != app.State.ArmyTargetTroops && establishmentCurrent != null)
+            bool active = app.ViewState.ArmyPolicyId == "budget";
+            if (active && establishmentDraft != app.ViewState.ArmyTargetTroops && establishmentCurrent != null)
                 Paragraph(ref y, establishmentCurrent.DueWeek > 0 ? T("ui.establishment.entry_due", Number(establishmentCurrent.TargetTroops),
                     MandatePresentation.Date(establishmentCurrent.DueWeek)) : T("ui.establishment.entry_idle", Number(establishmentCurrent.TargetTroops)), small, 238, 12);
-            Paragraph(ref y, T(active && establishmentDraft == app.State.ArmyTargetTroops ?
+            Paragraph(ref y, T(active && establishmentDraft == app.ViewState.ArmyTargetTroops ?
                 "ui.establishment.target_active" : "ui.establishment.target_draft"), tiny, 238, 8);
             bool changed = false;
             if (Press(new Rect(4, y, 62, 34), "−200", establishmentDraft > 0))
@@ -73,7 +73,7 @@ namespace PowerAboveAll
                 { establishmentDraft = target; changed = true; }
             }
             y += 43;
-            if (changed) { RefreshEstablishmentDraft(app.State); app.Feedback("paper"); }
+            if (changed) { RefreshEstablishmentDraft(app.ViewState); app.Feedback("paper"); }
             var terms = establishmentPreview;
             if (terms == null)
             {
@@ -89,7 +89,7 @@ namespace PowerAboveAll
             if (terms.NextBatchTroops > 0)
             {
                 Paragraph(ref y, T("ui.establishment.conditions"), small, 238, 12);
-                Paragraph(ref y, T(active && establishmentDraft == app.State.ArmyTargetTroops ? "ui.establishment.first" :
+                Paragraph(ref y, T(active && establishmentDraft == app.ViewState.ArmyTargetTroops ? "ui.establishment.first" :
                     "ui.establishment.draft_first", MandatePresentation.Date(terms.DueWeek)), body, 238, 7);
                 Paragraph(ref y, T("ui.establishment.transfer", Number(terms.TroopsAfterBatch), Number(terms.NextBatchTroops)), body, 238, 7);
                 Paragraph(ref y, T("ui.establishment.cost", Number(terms.ArmyCostAfterBatch), Number(terms.ArmyConsumptionAfterBatch)), small, 238, 7);
@@ -105,8 +105,8 @@ namespace PowerAboveAll
             if (establishmentDraft == 0)
             {
                 var warning = new GUIStyle(small); warning.normal.textColor = red;
-                Paragraph(ref y, T(app.State.Troops == 0 ? "ui.establishment.no_garrison_now" : "ui.establishment.no_garrison",
-                    T("region." + app.State.ArmyRegionId)), warning, 238, 14);
+                Paragraph(ref y, T(app.ViewState.Troops == 0 ? "ui.establishment.no_garrison_now" : "ui.establishment.no_garrison",
+                    T("region." + app.ViewState.ArmyRegionId)), warning, 238, 14);
             }
             Rule(4, y, 238); y += 15;
             if (establishmentCheck != null && !establishmentCheck.Ok && establishmentCheck.Key != "error.establishment.unchanged")

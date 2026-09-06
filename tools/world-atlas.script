@@ -1,0 +1,40 @@
+new
+lang ru
+remember before-camera
+atlas france
+expect Week 0
+expect Gold 840
+shot 00-france-ru
+atlas europe
+shot 01-europe-ru
+atlas world
+shot 02-world-ru
+atlas region
+shot 03-paris-ru
+atlas oblique
+shot 04-paris-turned-ru
+atlas clean
+shot 05-clean-paris-ru
+atlas panels
+same before-camera
+atlas france
+panel economy
+shot 06-economy-ru
+lang tr
+shot 07-economy-tr
+select normandy
+act bread
+expect Food 320
+march
+settle 5
+expect ArmyRegionId normandy
+expect Food 308
+atlas region
+shot 08-rouen-tr
+save
+remember after-march
+load
+same after-march
+atlas france
+shot 09-france-tr
+quit

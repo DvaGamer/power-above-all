@@ -1,0 +1,279 @@
+{
+  "entries": [
+    {
+      "key": "dispatch.already_open",
+      "ru": "Досье уже открыто.",
+      "tr": "Dosya zaten açık."
+    },
+    {
+      "key": "dispatch.resolve_first",
+      "ru": "Сначала ответьте на неотложное обращение.",
+      "tr": "Önce acil başvuruyu yanıtlayın."
+    },
+    {
+      "key": "dispatch.not_open",
+      "ru": "Откройте переписку с Бордо.",
+      "tr": "Bordeaux yazışmasını açın."
+    },
+    {
+      "key": "dispatch.pending",
+      "ru": "Предыдущий приказ в пути. Ожидается ответ; можно отправить отдельный запрос сведений.",
+      "tr": "Önceki emir yolda. Yanıt bekleniyor; ayrıca bilgi isteyebilirsiniz."
+    },
+    {
+      "key": "dispatch.express_cost",
+      "ru": "Срочному курьеру нужно 12 ливров.",
+      "tr": "Hızlı kurye için 12 livre gerekir."
+    },
+    {
+      "key": "dispatch.accord",
+      "ru": "Налоговый приказ противоречит действующему соглашению.",
+      "tr": "Vergi emri yürürlükteki anlaşmaya aykırı."
+    },
+    {
+      "key": "dispatch.ready",
+      "ru": "Можно отправить.",
+      "tr": "Gönderilebilir."
+    },
+    {
+      "key": "log.dispatch.opened",
+      "ru": "Париж. Адриен де Варенн открыл переписку с Бордо.",
+      "tr": "Paris. Adrien de Varenne Bordeaux yazışmasını açtı."
+    },
+    {
+      "key": "log.dispatch.sent",
+      "ru": "Письмо запечатано: {0}. Известий об исполнении ещё нет.",
+      "tr": "Mektup mühürlendi: {0}. Uygulama haberi henüz yok."
+    },
+    {
+      "key": "log.dispatch.returned",
+      "ru": "Курьер из Бордо: {0}",
+      "tr": "Bordeaux kuryesi: {0}"
+    },
+    {
+      "key": "dispatch.file",
+      "ru": "ПЕРЕПИСКА · ЛИЧНОЕ ДЕЛО",
+      "tr": "YAZIŞMA · ÖZEL DOSYA"
+    },
+    {
+      "key": "dispatch.recipient",
+      "ru": "Этьен Дельма · губернатор",
+      "tr": "Étienne Delmas · vali"
+    },
+    {
+      "key": "dispatch.identity",
+      "ru": "Адриен де Варенн · Париж\nКарта перед вами. Вы остались в кабинете.",
+      "tr": "Adrien de Varenne · Paris\nÖnünüzde harita var. Siz çalışma odasındasınız."
+    },
+    {
+      "key": "dispatch.reported",
+      "ru": "Донесение от {0}\nСведениям {1} дн.",
+      "tr": "{0} tarihli rapor\nBilgi {1} günlük."
+    },
+    {
+      "key": "dispatch.outdated",
+      "ru": "Устаревшее донесение · {0}\nСведениям {1} дн.",
+      "tr": "Eski rapor · {0}\nBilgi {1} günlük."
+    },
+    {
+      "key": "dispatch.received_date",
+      "ru": "Получено в Париже: {0}",
+      "tr": "Paris'e ulaştı: {0}"
+    },
+    {
+      "key": "dispatch.knowledge",
+      "ru": "Цифры переписаны из письма. Сейчас положение могло измениться.",
+      "tr": "Rakamlar mektuptan aktarıldı. Şimdiki durum değişmiş olabilir."
+    },
+    {
+      "key": "dispatch.person",
+      "ru": "Дельма: опыт {0}, верность {1}, амбиции {2}. Умеет действовать, дорожит собственным влиянием.",
+      "tr": "Delmas: yetkinlik {0}, sadakat {1}, hırs {2}. İş bitirir; kendi nüfuzunu önemser."
+    },
+    {
+      "key": "dispatch.authority",
+      "ru": "ЧТО ЕМУ ПОЗВОЛЕНО",
+      "tr": "YETKİ SINIRI"
+    },
+    {
+      "key": "dispatch.strict",
+      "ru": "Только переговоры",
+      "tr": "Yalnız müzakere"
+    },
+    {
+      "key": "dispatch.mission",
+      "ru": "Пусть выбирает способ",
+      "tr": "Yöntemi kendisi seçsin"
+    },
+    {
+      "key": "dispatch.risk.strict",
+      "ru": "Письмо ограничит способ действий. Местное соглашение даст более скромный результат.",
+      "tr": "Mektup yöntemi sınırlar. Yerel uzlaşma daha sınırlı sonuç verir."
+    },
+    {
+      "key": "dispatch.risk.mission",
+      "ru": "Для Дельма это возможность усилить власть. Он может опереться на гарнизон.",
+      "tr": "Delmas bunu nüfuz fırsatı sayabilir. Garnizona dayanmayı seçebilir."
+    },
+    {
+      "key": "dispatch.express",
+      "ru": "Срочный курьер · 12 ливров",
+      "tr": "Hızlı kurye · 12 livre"
+    },
+    {
+      "key": "dispatch.normal",
+      "ru": "Обычная почта",
+      "tr": "Olağan posta"
+    },
+    {
+      "key": "dispatch.schedule",
+      "ru": "Доставка около {0}. Ответ об исполнении ожидается к {1}.",
+      "tr": "Teslim yaklaşık {0}. Uygulama yanıtı {1} civarında beklenir."
+    },
+    {
+      "key": "dispatch.send.order",
+      "ru": "Поручить навести порядок",
+      "tr": "Düzeni sağlama görevi ver"
+    },
+    {
+      "key": "dispatch.send.bread",
+      "ru": "Выделить хлеб · 40",
+      "tr": "Tahıl ayır · 40"
+    },
+    {
+      "key": "dispatch.send.tax",
+      "ru": "Поручить сбор налога",
+      "tr": "Vergi toplama emri ver"
+    },
+    {
+      "key": "dispatch.send.report",
+      "ru": "Запросить свежие сведения",
+      "tr": "Yeni bilgi iste"
+    },
+    {
+      "key": "dispatch.intent.order",
+      "ru": "Восстановить порядок",
+      "tr": "Düzeni sağla"
+    },
+    {
+      "key": "dispatch.intent.bread",
+      "ru": "Распределить хлеб",
+      "tr": "Tahıl dağıt"
+    },
+    {
+      "key": "dispatch.intent.tax",
+      "ru": "Собрать налог",
+      "tr": "Vergi topla"
+    },
+    {
+      "key": "dispatch.intent.report",
+      "ru": "Прислать донесение",
+      "tr": "Rapor gönder"
+    },
+    {
+      "key": "dispatch.departed",
+      "ru": "Отправлено из Парижа: {0}",
+      "tr": "Paris'ten çıktı: {0}"
+    },
+    {
+      "key": "dispatch.awaiting",
+      "ru": "Ответ ожидается к {0}. Приказ уже отправлен; его текст не изменить.",
+      "tr": "Yanıt {0} civarında beklenir. Emir gönderildi; metni değiştirilemez."
+    },
+    {
+      "key": "dispatch.outcome.routine",
+      "ru": "Очередное донесение.",
+      "tr": "Düzenli rapor."
+    },
+    {
+      "key": "dispatch.outcome.report",
+      "ru": "Получены новые сведения.",
+      "tr": "Yeni bilgi ulaştı."
+    },
+    {
+      "key": "dispatch.outcome.force",
+      "ru": "Дельма вывел гарнизон. На улицах тише; в Париже возмущены.",
+      "tr": "Delmas garnizonu çıkardı. Sokaklar sakin; Paris tepkili."
+    },
+    {
+      "key": "dispatch.outcome.negotiated",
+      "ru": "Городские представители согласились на переговоры.",
+      "tr": "Şehir temsilcileri müzakereyi kabul etti."
+    },
+    {
+      "key": "dispatch.outcome.relief",
+      "ru": "Хлеб распределён через городские лавки.",
+      "tr": "Tahıl şehir dükkânlarından dağıtıldı."
+    },
+    {
+      "key": "dispatch.outcome.rationed",
+      "ru": "Дельма распределил хлеб под надзором гарнизона.",
+      "tr": "Delmas tahılı garnizon gözetiminde dağıttı."
+    },
+    {
+      "key": "dispatch.outcome.tax",
+      "ru": "Сбор завершён. В казну доставлено 100 ливров.",
+      "tr": "Tahsilat tamamlandı. Hazineye 100 livre ulaştı."
+    },
+    {
+      "key": "dispatch.reason.force",
+      "ru": "Вы оставили способ на его усмотрение. Он выбрал давление и поддержку местной элиты; его амбиции усилились.",
+      "tr": "Yöntemi ona bıraktınız. Baskı ve yerel seçkinlerin desteğini seçti; hırsı arttı."
+    },
+    {
+      "key": "dispatch.reason.negotiated",
+      "ru": "Он соблюл требование обойтись без войск. Контроль укрепился медленнее, доверие к вам выросло.",
+      "tr": "Askersiz çözüm sınırına uydu. Denetim daha yavaş güçlendi; size güveni arttı."
+    },
+    {
+      "key": "dispatch.reason.relief",
+      "ru": "Чёткое поручение оставило ему мало поводов менять порядок раздачи.",
+      "tr": "Açık emir dağıtım düzenini değiştirmek için az gerekçe bıraktı."
+    },
+    {
+      "key": "dispatch.reason.rationed",
+      "ru": "Широкие полномочия позволили ему превратить помощь в средство контроля.",
+      "tr": "Geniş yetki yardımı denetim aracına çevirmesine olanak verdi."
+    },
+    {
+      "key": "dispatch.reason.tax",
+      "ru": "Местное недовольство выросло до того, как сбор дошёл до Парижа.",
+      "tr": "Tahsilat Paris'e ulaşmadan önce yerel huzursuzluk arttı."
+    },
+    {
+      "key": "dispatch.reason.report",
+      "ru": "На письме стоит день наблюдения, а не сегодняшняя дата.",
+      "tr": "Mektuptaki tarih bugünü değil, gözlem gününü gösterir."
+    },
+    {
+      "key": "dispatch.open",
+      "ru": "Париж · Открыть кабинет →",
+      "tr": "Paris · Yazışmayı aç →"
+    },
+    {
+      "key": "dispatch.at_desk",
+      "ru": "Адриен · Париж · Переписка →",
+      "tr": "Adrien · Paris · Yazışma →"
+    },
+    {
+      "key": "dispatch.forecast_notice",
+      "ru": "Расчёты по последним донесениям · Бордо: сведения приходят письмами · Tab — убрать панели",
+      "tr": "Hesaplar son raporlara dayanır · Bordeaux bilgisi mektupla gelir · Tab — panelleri gizle"
+    },
+    {
+      "key": "dispatch.result_dates",
+      "ru": "Исполнено: {0}\nОтвет получен: {1}",
+      "tr": "Uygulandı: {0}\nYanıt alındı: {1}"
+    },
+    {
+      "key": "dispatch.outside_slice",
+      "ru": "В этом срезе доступны письма о хлебе, налогах и порядке. Эта мера ещё не включена в переписку.",
+      "tr": "Bu kesitte ekmek, vergi ve asayiş mektupları var. Bu tedbir henüz yazışmaya bağlanmadı."
+    },
+    {
+      "key": "dispatch.use_desk",
+      "ru": "Этот вопрос решается через переписку с губернатором.",
+      "tr": "Bu konu valiyle yazışma üzerinden yürütülür."
+    }
+  ]
+}

@@ -5,7 +5,9 @@ param(
   [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$')][string]$Label = 'player-review',
   [string]$ScriptPath = '',
   [ValidateSet('Default', 'Direct3D11', 'Direct3D12')][string]$GraphicsApi = 'Default',
-  [switch]$VisiblePlayer
+  [switch]$VisiblePlayer,
+  [ValidateRange(640,7680)][int]$Width=1440,
+  [ValidateRange(480,4320)][int]$Height=900
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'verify-support.ps1')
@@ -44,7 +46,7 @@ if ($gates.Preflight.StartsWith('PASSED')) {
   $shotDir = Join-Path $out 'shots'
   $playerLog = Join-Path $out 'player.log'
   try {
-    $arguments = @('-shots', $shotDir, '-script', $scriptCopy, '-logFile', $playerLog, '-screen-width', '1440', '-screen-height', '900', '-screen-fullscreen', '0') + @(Get-ReviewGraphicsArguments $GraphicsApi)
+    $arguments = @('-shots', $shotDir, '-script', $scriptCopy, '-logFile', $playerLog, '-screen-width', [string]$Width, '-screen-height', [string]$Height, '-screen-fullscreen', '0') + @(Get-ReviewGraphicsArguments $GraphicsApi)
     $playerExit = Invoke-OwnedProcess $PlayerPath $arguments 300 $repo -Visible:$VisiblePlayer
     Say "Player native exit: $playerExit"
     $playerText = Assert-CleanLog $playerLog
@@ -56,7 +58,7 @@ if ($gates.Preflight.StartsWith('PASSED')) {
   # Cikis hatasi oyuncu kapisini kirmaya devam eder; var olan kareler tani icin ayri kontrol edilir.
   if (Test-Path -LiteralPath $shotDir -PathType Container) {
     try {
-      $frameSummary = Invoke-FrameReview (Join-Path $PSScriptRoot 'shot-check.py') $shotDir $out
+      $frameSummary = Invoke-FrameReview (Join-Path $PSScriptRoot 'shot-check.py') $shotDir $out -Width $Width -Height $Height
       $gates.Frames = "PASSED: $frameSummary"
       Say $gates.Frames
     } catch { Failed 'Frames' $_.Exception.Message }
