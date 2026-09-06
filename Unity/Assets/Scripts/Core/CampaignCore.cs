@@ -56,6 +56,8 @@ namespace PowerAboveAll
         [System.Runtime.Serialization.OptionalField] public string ArmyPolicyId = "campaign";
         [System.Runtime.Serialization.OptionalField] public int ArmyTargetTroops, ArmyReductionDueWeek;
         [System.Runtime.Serialization.OptionalField] public bool DumasOfficerCommission, DumasExtraRecruitUsed;
+        [System.Runtime.Serialization.OptionalField] public string ReformRegionId = "", ReformModeId = "";
+        [System.Runtime.Serialization.OptionalField] public int ReformStepsRemaining;
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -166,8 +168,8 @@ namespace PowerAboveAll
             {
                 var r=Region(s,d.Id);
                 float unrest=view.Unrest(r),control=view.Control(r);
-                if(d.Id!=view.ExemptRegion)tax+=d.BaseTax*(1-unrest/150f)*(.5f+control/200f);
-                food+=d.BaseFood*(1-unrest/200f);
+                if(d.Id!=view.ExemptRegion)tax+=view.TaxBase(d)*(1-unrest/150f)*(.5f+control/200f);
+                food+=view.FoodBase(d)*(1-unrest/200f);
             }
             var f=new EconomyForecast {
                 TaxIncome=Round(tax*(.75f+Faction(s,"assembly").Approval/200f)),
@@ -344,6 +346,7 @@ namespace PowerAboveAll
             CompleteRegionalAccordAfterWeek(s);
             CompleteArmyReductionAfterWeek(s);
             AnnounceDumasInitiativeAfterWeek(s,hunger);
+            CompleteRegionalReformAfterWeek(s);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -358,6 +361,7 @@ namespace PowerAboveAll
             ValidateDumasInitiativeState(s);
             ValidateArmyEstablishmentState(s);
             ValidateOfficerCommissionState(s);
+            ValidateRegionalReformState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

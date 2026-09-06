@@ -2,7 +2,7 @@
 
 ## 6 Eylül 2026 — yeni görsel hedef: boyanmış atlas ve yaşayan minyatürler
 
-Kullanıcı yeni yön verdi: yer yer aydınlık, gerektiğinde karanlık; tam gerçekçilik yerine hoş, hafif tatlı bir renk dünyası; rastgele yapay zekâ üretimi gibi görünmeyen, bilinçli ve tutarlı sanat yönetimi. Önceki yalnız solgun/koyu yorum bu talebe göre güncellenir. Bu yön kullanıcı isteğine karşı geliştirilen **çalışma sanat kararıdır**; ekran görüntüsüyle henüz kabul edilmiş son görünüm değildir.
+Kullanıcı yeni yön verdi: yer yer aydınlık, gerektiğinde karanlık; tam gerçekçilik yerine hoş, hafif tatlı bir renk dünyası; rastgele yapay zekâ üretimi gibi görünmeyen, bilinçli ve tutarlı sanat yönetimi. Önceki yalnız solgun/koyu yorum bu talebe göre güncellenir. Bu yön kullanıcı isteğine karşı geliştirilen **çalışma sanat kararıdır**. Atlas, deniz, yerleşim siluetleri, savaş minyatürleri ve belge arayüzü gerçek RU/TR karelerde incelendi; son küçük deniz ve bahçe değişiklikleri ayrıca karşılaştırılarak kabul edildi. Kullanıcı 06:08 UTC'de açılan oyunu şimdi kendisi inceliyor; ekip içi kare kabulü kullanıcının estetik onayı yerine geçmez.
 
 Seçilen kavram: **güneşli guaj atlas ve yaşayan tarihî minyatürler**. Diğer değerlendirilen yollar, pastel oyuncak tiyatrosu ile renk yıkamalı mürekkep gravürüydü. Seçilen yol sıcaklık, anlaşılır siluetler ve tarihî kabine kimliğini bir araya getirir. Ana harita boyanmış bir atlas; savaş, aynı dünyanın içindeki ışık alan küçük bir arazi parçası; politik belgeler ve krizin çerçevesi koyu mürekkep tonlarıdır.
 

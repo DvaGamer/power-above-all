@@ -1,0 +1,93 @@
+# Gercek Windows girdisi: taslak secimleri, bir Begin ve asil projeyi End.
+# Uc75 saniyelik pencere icin root PlayerTimeoutSeconds300 kullanir.
+# Script reform draft/begin/end komutu gondermez; stok veya adim yazmaz.
+new
+lang ru
+select normandy
+panel reform
+expect Week 0
+expect Gold 840
+expect Food 360
+expect Power 55
+expect Troops 1200
+expect Manpower 2400
+expect MilitarySupplies 120
+expect SelectedRegionId normandy
+expect SelectedUnrest 30
+expect SelectedControl 80
+expect HasRegionalReform False
+expect ReformStatus closed
+remember unmodified-draft
+state 00-start
+shot 00-start
+
+# Pencere1: root commerce sonra provisioning dugmelerine gercek tiklar.
+# Her iki ara kare root tarafindan gorulmeli; yalniz finalstate bu gecisleri kanitlamaz.
+wait 75
+same unmodified-draft
+expect HasRegionalReform False
+expect ReformStatus closed
+expect Week 0
+state 01-native-drafts-only
+shot 01-native-drafts-only
+
+# Pencere2: root document sonuna kaydirir ve provisioning icin Begin'e bir kez tiklar.
+wait 75
+expect Week 0
+expect Gold 720
+expect Food 360
+expect Power 51
+expect Troops 1200
+expect Manpower 2400
+expect MilitarySupplies 120
+expect HasRegionalReform True
+expect ReformStatus pending
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+expect ReformStepsRemaining 4
+expect SelectedRegionId normandy
+expect Moves 2
+expect Fatigue 0
+expect BattleActive False
+expect ResolvedBattleCount 0
+state 02-native-paid-pending
+shot 02-native-paid-pending
+
+# Sonraki pencere oncesi normal harita secimi; proje Normandy'de kalir.
+select brittany
+panel reform
+scroll document 0
+expect SelectedRegionId brittany
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+expect ReformStepsRemaining 4
+state 03-original-region-after-selection
+shot 03-original-region-after-selection
+
+# Pencere3: root asil Normandy projesini belge altindaki End ile iptal eder.
+wait 75
+expect Week 0
+expect Gold 720
+expect Food 360
+expect Power 51
+expect Troops 1200
+expect Manpower 2400
+expect MilitarySupplies 120
+expect Moves 2
+expect Fatigue 0
+expect SelectedRegionId brittany
+expect HasRegionalReform False
+expect ReformStatus closed
+expect ReformStepsRemaining 0
+expect PendingPetition False
+expect BattleActive False
+expect ResolvedBattleCount 0
+state 04-native-original-project-ended
+shot 04-native-original-project-ended
+remember native-ended
+save
+load
+same native-ended
+state 05-ended-loaded
+shot 05-ended-loaded
+quit

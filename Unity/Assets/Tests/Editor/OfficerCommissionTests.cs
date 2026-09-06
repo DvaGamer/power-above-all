@@ -13,7 +13,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":7", json);
+            StringAssert.Contains("\"Version\":8", json);
             var loaded = CampaignArchive.Deserialize(json); Assert.AreEqual(before, Snapshot(loaded)); return loaded;
         }
         static void Refused(CampaignState state, Func<ActionResult> action, string key)
@@ -278,15 +278,21 @@ namespace PowerAboveAll.Tests
             Assert.AreEqual(JsonUtility.ToJson(CampaignCore.GetOfficerCommissionTerms(state)), JsonUtility.ToJson(CampaignCore.GetOfficerCommissionTerms(loaded)));
         }
 
-        [TestCase("missing_right")]
-        [TestCase("null_right")]
-        [TestCase("invalid_right")]
-        [TestCase("missing_used")]
-        [TestCase("null_used")]
-        [TestCase("invalid_used")]
-        public void V7RequiresBothExplicitBooleanFields(string corruption)
+        [TestCase(7, "missing_right")]
+        [TestCase(7, "null_right")]
+        [TestCase(7, "invalid_right")]
+        [TestCase(7, "missing_used")]
+        [TestCase(7, "null_used")]
+        [TestCase(7, "invalid_used")]
+        [TestCase(8, "missing_right")]
+        [TestCase(8, "null_right")]
+        [TestCase(8, "invalid_right")]
+        [TestCase(8, "missing_used")]
+        [TestCase(8, "null_used")]
+        [TestCase(8, "invalid_used")]
+        public void V7AndCurrentRequireBothExplicitBooleanFields(int version, string corruption)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":8", "\"Version\":" + version);
             string field = corruption.EndsWith("right") ? "DumasOfficerCommission" : "DumasExtraRecruitUsed";
             string original = "\"" + field + "\":false";
             string replacement = corruption.StartsWith("missing") ? "\"Ignored" + field + "\":false" :
@@ -335,7 +341,7 @@ namespace PowerAboveAll.Tests
 
         static string Older(string json, int version)
         {
-            json = json.Replace("\"Version\":7", "\"Version\":" + version)
+            json = json.Replace("\"Version\":8", "\"Version\":" + version)
                 .Replace("\"DumasOfficerCommission\":", "\"IgnoredCommission\":")
                 .Replace("\"DumasExtraRecruitUsed\":", "\"IgnoredExtra\":");
             if (version < 6) json = json.Replace("\"ArmyPolicyId\":", "\"IgnoredArmy\":")
@@ -410,7 +416,7 @@ namespace PowerAboveAll.Tests
         {
             var state = Ready(); Success(CampaignCore.RecruitThroughDumas(state));
             if (revoked) Success(CampaignCore.RevokeOfficerCommission(state));
-            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":7", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":8", "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
         }
     }

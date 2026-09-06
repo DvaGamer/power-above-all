@@ -2,6 +2,20 @@
 
 ## Geliştirme altında — Unreleased
 
+### 6 Eylül 2026 — Unity 0.2 prototipi
+
+Bu kayıt geliştirme altındaki Unity paketini özetler; yeni bir yayın etiketi oluşturmaz. Tarayıcı 0.1 referansı ve npm sürümü korunur.
+
+- Üç başlangıç rolü, vadeli hami sözleri, güven kaybı ve siyasi telafi; bölgesel vergi tatili ve Dumas'nın gerçek gıda ihtiyacına bağlı bağımsız erzak girişimi birbirine bağlandı.
+- Ordu bütçe hedefi ve iki haftalık kademeli rezerve dönüş, sıfır ordu sonrası yeniden alım, Dumas'ya subay hakkı verme ve ücretli ek alım eklendi. Mevcut askerler, sözler ve haftalık haklar kayıt/yüklemede korunur.
+- Erzak/ticaret reformu 120 livre ve 4 kişisel güç karşılığında başlar; dört uygun başarılı hafta sonunda hazırlanır, sonraki bütçeyi etkiler. Gerçek yerel koşullar hazırlığı duraklatabilir. Sponsor ilişkisi, iptal ve başka bölgede yeni ödeme ayrı sonuçlardır.
+- Düşman kuvveti oyuncunun asker sayısından değil, bölgenin özgün vergi tabanı ve gerçek huzursuzluk/denetim/elit muhalefetinden hesaplanır. Bölgesel kararlar savaşa ve konuşlandırılan gerçek kuvvete yansır.
+- Ortak taktik emir yolu, aynı adımda karşılıklı ateş, cephanesiz yakın temas ve doğal savaş sonucu aktarımı doğrulandı. Zafer sonrası yetki veya prim seçeneği gerçek yaşayan orduyu ve kaynakları kullanır; teklifi kapatma, yeniden açma ve reddetme ayrıdır.
+- Guaj atlas, resimli kişiler, şehir ve bahçe siluetleri, deniz tonları, alay etiketleri ve kaydırılan belgeler iyileştirildi. Ekonomi halk desteğinin gerçek sonraki hesap etkisini gösterir; engellenen haftayı uygulanmış saymaz.
+- Arşiv v8 üç reform alanını ekler; v1–v7 göçlerinde önceki söz, accord, zafer, Dumas, ordu hedefi ve subay hakkı kuralları korunur. Eksik zorunlu alan ve tutarsız state reddedilir.
+- Son tam doğrulama: **496 Unity testi, yeni Windows build, 18 PNG, 72 durum kontrolü, 14 JSON ve 10 tarayıcı testi**; 141 dosyalık build manifesti. **25 kaynakta 692 RU/TR anahtarı** doğrulandı. Başlatıcı sağlam GREEN build'i önceliklendirir; açık Unity import kaybını veya bozulmuş manifesti kabul etmez.
+- Gerçek Windows girdileri çoklu seçim, tek elle salvo ve çeşitli siyasi belge akışlarını doğruladı. Reformun native fare senaryosu hazırdır, henüz yürütülmedi. Görsel ve ses kabulünün kalan sınırları [NIGHT_REPORT.md](NIGHT_REPORT.md) içinde belirtilir.
+
 ### 6 Eylül 2026 — gece kontrol noktaları
 
 - Dumas açlıktan sonra sonraki haftaya kendi erzak toplama emrini hazırlar. Normal ikmal ihtiyacı kaldırabilir; veto ilişkiyi azaltır. Tam açığı kapatan en fazla40 gıda, yerel huzursuzluk ve generalin siyasi nüfuzuyla bağlantılıdır. Ekonomi tahmini ve gerçek hesap aynı planı kullanır; v5 arşiv eski söz ve zafer verilerini korur.

@@ -30,7 +30,7 @@ Her ciddi kararın beş cevabı görünmeli: kim yararlanıyor, kim bedel ödüy
 
 **İlk on dakika:** atlası ve günlük gelir/ikmal tahminini oku; bir bölge seç; kriz için mevcut kaynak veya rol ayrıcalığı kullan; yürüyüşü önizle; bir haftayı geçir; bir sözün veya halk talebinin karşılığını ver. Her şeyi ilk anda öğretmek yerine seçili işlemin sebebi gösterilir.
 
-**Orta oyun hedefi:** birden fazla haklı talep aynı bütçeyi paylaşır. Hazırlık yapan oyuncu seçenek kazanır; sorunları erteleyen oyuncu daha pahalı tavizlerle karşılaşır. Bölgesel reformlar, kişilerin bağımsız talepleri ve uzun anlaşmalar bu evrenin sonraki geliştirme adaylarıdır.
+**Orta oyun hedefi:** birden fazla haklı talep aynı bütçeyi paylaşır. Hazırlık yapan oyuncu seçenek kazanır; sorunları erteleyen oyuncu daha pahalı tavizlerle karşılaşır. İlk bölgesel iaşe/ticaret projesi ve Dumas'nın açlık sonrası girişimi bu bağlantının küçük oynanabilir örnekleridir. Daha kapsamlı reformlar, birden fazla kişinin bağımsız talepleri ve uzun anlaşmalar sonraki geliştirme adaylarıdır.
 
 **Başarı ve düşüş:** devletin durumuyla oyuncunun kişisel konumu ayrı değerlendirilmeli. Güçlü ülke ve zayıf hükümdar, güçlü oyuncu ve yıpranmış ülke farklı hikâyelerdir. Görevden düşme, sürgün, rol değiştirme ve kesin parti sonu kullanıcı görüşmesinde açık; mevcut oyuna keyfî sekiz haftalık kapanış eklenmez.
 
@@ -57,6 +57,6 @@ Taktik adaletin ölçüsü yalnız zafer sayısı değildir. Aynı anda hazır k
 
 ## Üretim ve kabul
 
-Mevcut çalışan kesit; üç başlangıç rolünü ve iki haftalık söz vadelerini, bölgesel anlaşmaları, ordu mevcudunun kademeli azaltılmasını ve subay atama yetkisini birbirine bağlıyor. Yürüyüş öncesi bölgenin koşullarından hesaplanan direniş görülebiliyor; olağan taktik muharebede verilen emirler ve gerçek kayıplar seferin kaynaklarına ve siyasi sonuçlarına dönüyor. Bu akışlar gerçek Windows oyuncusunda ve iki dilde sınandı; mevcut kesit, bütün oyunun veya bu vizyonun tamamlandığı anlamına gelmiyor. Geniş dünya haritası, tam diplomasi, kariyerler ve rejim yolları sonraki tasarım kararları ve üretim kapsamıdır.
+Mevcut çalışan kesit; üç başlangıç rolünü ve iki haftalık söz vadelerini, bölgesel anlaşmaları, ordu mevcudunun kademeli azaltılmasını ve subay atama yetkisini birbirine bağlıyor. Bir bölgenin iaşe/ticaret projesi dört uygun haftalık hazırlıktan sonra üretim ve vergi bileşimini değiştiriyor; tamamlanma ve iptal farklı hamilere ilişki sonucu taşıyor. Ekonomi, halk desteği ve bölgesel huzursuzluk arasındaki mevcut bağ önceden görülebiliyor. Yürüyüş öncesi bölgenin koşullarından hesaplanan direniş okunabiliyor; olağan taktik muharebede verilen emirler ve gerçek kayıplar seferin kaynaklarına ve siyasi sonuçlarına dönüyor. Bu temel akışlar gerçek Windows oyuncusunda ve iki dilde sınandı; mevcut kesit, bütün oyunun veya bu vizyonun tamamlandığı anlamına gelmiyor. Geniş dünya haritası, tam diplomasi, kariyerler ve rejim yolları sonraki tasarım kararları ve üretim kapsamıdır.
 
 Bir kesit ancak şu sorular olumlu cevaplandığında kapanır: farklı başlangıç aynı sorun için farklı makul karar doğuruyor mu; bedel başka bir ana sisteme ulaşıyor mu; oyuncu sebebi ekranda görüyor mu; kayıt/yükleme sonucu koruyor mu; iki dilde okunuyor mu; gerçek Windows oyuncusunda çalışıyor mu? Görsel ve ses kalitesi yalnız derleme sonucundan çıkarılmaz.

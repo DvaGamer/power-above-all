@@ -324,6 +324,21 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("officers"); Feedback("seal"); }
         }
+        public void BeginRegionalReform(string regionId, string modeId)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.BeginRegionalReform(State, regionId, modeId);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("reform"); Map.Pulse(regionId); Feedback("seal"); }
+        }
+        public void EndRegionalReform()
+        {
+            if (CampaignInputBlocked) return;
+            string regionId = State.ReformRegionId;
+            var result = CampaignCore.EndRegionalReform(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("reform"); Map.Pulse(regionId); Feedback("quill"); }
+        }
         public void RecruitThroughDumas()
         {
             if (CampaignInputBlocked) return;

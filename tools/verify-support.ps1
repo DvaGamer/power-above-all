@@ -148,7 +148,10 @@ function Get-ReviewPlan([string]$Path) {
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
     if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
     if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
-    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment|officers)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment|officers|reform)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^reform(?:\s|$)' -and $line -cnotmatch '^reform ((draft|begin) (provisioning|commerce)|end)$') { throw "Unsupported regional reform order: $line" }
+    if ($line -match '^expect\s+HasRegionalReform(?:\s|$)' -and $line -cnotmatch '^expect HasRegionalReform (True|False)$') { throw "Regional reform assertion requires True or False: $line" }
+    if ($line -match '^expect\s+ReformStatus(?:\s|$)' -and $line -cnotmatch '^expect ReformStatus (closed|proposed|pending|blocked|active)$') { throw "Unsupported regional reform status assertion: $line" }
     if ($line -match '^commission(?:\s|$)' -and $line -cnotmatch '^commission (grant|recruit|revoke)$') { throw "Unsupported officer commission order: $line" }
     if ($line -match '^expect\s+(HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed)(?:\s|$)' -and $line -cnotmatch '^expect (HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed) (True|False)$') { throw "Officer commission assertion requires True or False: $line" }
     if ($line -match '^expect\s+ResistanceActive(?:\s|$)' -and $line -cnotmatch '^expect ResistanceActive (True|False)$') { throw "Resistance assertion requires True or False: $line" }

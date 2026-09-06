@@ -41,7 +41,7 @@ namespace PowerAboveAll
         public void OpenDocument(string name)
         {
             if(name=="victory"){showVictory=true;return;}
-            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment"&&name!="officers")return;
+            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment"&&name!="officers"&&name!="reform")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
         }
 
@@ -126,6 +126,7 @@ namespace PowerAboveAll
             ObserveDumasInitiative(state);
             ObserveArmyEstablishment(state);
             ObserveOfficerCommission(state);
+            ObserveRegionalReform(state);
             resistancePreview=CampaignCore.GetRegionalResistance(state,state.SelectedRegionId);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
@@ -449,6 +450,7 @@ namespace PowerAboveAll
             RegionalResistanceReport(ref y);
             Pair(4,y,195,T("ui.population"),T("ui.million",(definition.Population/1000000f).ToString("0.0",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"))));y+=30;
             Pair(4,y,195,T("ui.tax.base"),Number(definition.BaseTax));y+=30;Pair(4,y,195,T("ui.food.base"),Number(definition.BaseFood));y+=39;
+            RegionalReformEntry(app,ref y,195);
             Rule(4,y,195);y+=17;Text(new Rect(4,y,195,22),T("ui.army.dispatch"),tiny);y+=28;
             Text(new Rect(4,y,195,29),T("city."+state.ArmyRegionId),heading);y+=36;
             Pair(4,y,195,T("ui.troops"),Number(state.Troops));y+=29;Pair(4,y,195,T("ui.moves"),Number(state.Moves));y+=33;
@@ -517,7 +519,7 @@ namespace PowerAboveAll
             string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<names.Length;i++)
             {
-                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative"||document=="officers")&&names[i]=="council")||(document=="establishment"&&names[i]=="economy");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
+                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative"||document=="officers")&&names[i]=="council")||((document=="establishment"||document=="reform")&&names[i]=="economy");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
                 if(GUI.Button(rect,T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i]),tabStyle)){OpenDocument(names[i]);app.Feedback("paper");}
             }
             if(document=="journal")
@@ -526,7 +528,7 @@ namespace PowerAboveAll
                 foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
             }
             documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
-            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else if(document=="establishment")ArmyEstablishment(app);else if(document=="officers")OfficerCommission(app);else Journal(app);
+            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else if(document=="establishment")ArmyEstablishment(app);else if(document=="officers")OfficerCommission(app);else if(document=="reform")RegionalReform(app);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
@@ -573,6 +575,7 @@ namespace PowerAboveAll
             float y=0;Paragraph(ref y,T("ui.economy.title"),heading,242,10);
             Paragraph(ref y,T("ui.economy.intro"),small,242,18);
             ArmyEstablishmentEntry(app,ref y);
+            RegionalReformEntry(app,ref y,238);
             if(!weekCheck.Ok)
             {
                 var warning=new GUIStyle(small);warning.normal.textColor=red;

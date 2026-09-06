@@ -159,6 +159,18 @@ namespace PowerAboveAll
                         else app.RevokeOfficerCommission();
                         break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
+                    case "reform":
+                        RequireIdle(app);
+                        string[] reform = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (reform.Length == 1 && reform[0] == "end") app.EndRegionalReform();
+                        else if (reform.Length == 2 && (reform[0] == "begin" || reform[0] == "draft"))
+                        {
+                            RequireChoice(reform[1], "provisioning", "commerce");
+                            if (reform[0] == "begin") app.BeginRegionalReform(app.State.SelectedRegionId, reform[1]);
+                            else app.GetComponent<CabinetHud>().PreviewRegionalReform(reform[1]);
+                        }
+                        else throw new InvalidDataException("reform requires draft/begin provisioning/commerce, or end.");
+                        break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
                     case "act": RequireIdle(app); app.Act(value); break;
@@ -168,7 +180,7 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative", "establishment", "officers");
+                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative", "establishment", "officers", "reform");
                         app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
@@ -229,6 +241,8 @@ namespace PowerAboveAll
                 key == "HasDumasInitiative" ? CampaignCore.HasDumasInitiative(app.State) :
                 key == "HasArmyEstablishment" ? CampaignCore.HasArmyEstablishment(app.State) :
                 key == "HasOfficerCommission" ? CampaignCore.HasOfficerCommission(app.State) :
+                key == "HasRegionalReform" ? CampaignCore.HasRegionalReform(app.State) :
+                key == "ReformStatus" ? (object)CampaignCore.GetRegionalReformTerms(app.State).StatusId :
                 key == "ResistanceTroops" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).EnemyTroops :
                 key == "UrbanApproval" ? (object)app.State.Factions.Find(faction=>faction.Id=="urban").Approval :
                 key == "ResistanceActive" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).RequiresBattle :

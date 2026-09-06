@@ -22,12 +22,16 @@ namespace PowerAboveAll
             public readonly CampaignState State;
             public readonly string ExemptRegion;
             private readonly string adjustedRegion, forageRegion;
+            private readonly string reformRegion, reformMode;
             private readonly float unrestDelta, controlDelta;
             public EconomyView(CampaignState state, string exemptRegion, string adjustedRegion = null,
-                float unrestDelta = 0, float controlDelta = 0, string forageRegion = null)
+                float unrestDelta = 0, float controlDelta = 0, string forageRegion = null,
+                bool overrideReform = false, string reformRegion = null, string reformMode = null)
             {
                 State = state; ExemptRegion = exemptRegion; this.adjustedRegion = adjustedRegion;
                 this.unrestDelta = unrestDelta; this.controlDelta = controlDelta; this.forageRegion = forageRegion;
+                this.reformRegion = overrideReform ? reformRegion : state.ReformStepsRemaining == 0 ? state.ReformRegionId : null;
+                this.reformMode = overrideReform ? reformMode : state.ReformStepsRemaining == 0 ? state.ReformModeId : null;
             }
             public float Unrest(RegionState region)
             {
@@ -37,9 +41,15 @@ namespace PowerAboveAll
             public float Control(RegionState region)
             { return region.Id == adjustedRegion ? Clamp(region.Control + controlDelta) : region.Control; }
             public EconomyView WithForage(string regionId)
-            { return new EconomyView(State, ExemptRegion, adjustedRegion, unrestDelta, controlDelta, regionId); }
+            { return new EconomyView(State, ExemptRegion, adjustedRegion, unrestDelta, controlDelta, regionId, true, reformRegion, reformMode); }
             public EconomyView WithExemption(string regionId)
-            { return new EconomyView(State, regionId, adjustedRegion, unrestDelta, controlDelta, forageRegion); }
+            { return new EconomyView(State, regionId, adjustedRegion, unrestDelta, controlDelta, forageRegion, true, reformRegion, reformMode); }
+            public EconomyView WithReform(string regionId, string modeId)
+            { return new EconomyView(State, ExemptRegion, adjustedRegion, unrestDelta, controlDelta, forageRegion, true, regionId, modeId); }
+            public int TaxBase(RegionDefinition definition)
+            { return definition.Id == reformRegion ? ReformedTaxBase(definition, reformMode) : definition.BaseTax; }
+            public int FoodBase(RegionDefinition definition)
+            { return definition.Id == reformRegion ? ReformedFoodBase(definition, reformMode) : definition.BaseFood; }
         }
 
         private sealed class WeekProjection

@@ -82,6 +82,18 @@ foreach ($order in @('recruit 400', 'revoke 0', 'grant loyalty 100', 'reset')) {
 }
 $ambiguousCommission = Fixture 'ambiguous-commission.script' "new`nexpect DumasExtraRecruitUsed maybe`nshot sample`nquit"
 Reject { Get-ReviewPlan $ambiguousCommission } 'Officer commission assertion rejects ambiguous boolean'
+$reformPlan = Fixture 'regional-reform-commands.script' "new`npanel reform`nreform draft provisioning`nreform draft commerce`nreform begin provisioning`nexpect HasRegionalReform True`nexpect ReformStatus pending`nreform end`nreform begin commerce`nshot sample`nquit"
+Check ((Get-ReviewPlan $reformPlan).Commands -eq 11) 'Reform review accepts two UI drafts, two paid modes and unpriced cancellation'
+foreach ($order in @('begin provisioning 0', 'begin commerce steps 0', 'draft active', 'end refund', 'finish', 'begin Provisioning')) {
+  $badReform = Fixture ('reform-invalid-' + [Guid]::NewGuid().ToString('N') + '.script') "new`nreform $order`nexpect Week 0`nshot sample`nquit"
+  Reject { Get-ReviewPlan $badReform } "Reform cannot inject price, progress, status or refund: $order"
+}
+foreach ($assertion in @('HasRegionalReform maybe', 'ReformStatus completed', 'ReformStatus active extra')) {
+  $badReformAssertion = Fixture ('reform-assertion-' + [Guid]::NewGuid().ToString('N') + '.script') "new`nexpect $assertion`nshot sample`nquit"
+  Reject { Get-ReviewPlan $badReformAssertion } "Reform receipt rejects unsupported state expectation: $assertion"
+}
+$reformJourney = Get-ReviewPlan (Join-Path $PSScriptRoot 'regional-reform.script')
+Check ($reformJourney.Captures.Count -eq 18 -and $reformJourney.States.Count -eq 14 -and $reformJourney.Assertions -ge 50) 'Real reform journey retains both draft pairs, five weeks and pending-active-ended-restarted save receipts'
 $resistancePlan = Fixture 'regional-resistance.script' "new`nselect champagne`nexpect ResistanceActive True`nexpect ResistanceTroops 1114`nshot sample`nquit"
 $accordPlan = Fixture 'accord-grant.script' "new`naccord grant`nexpect HasAccord True`nshot sample`nquit"
 Check ((Get-ReviewPlan $accordPlan).Commands -eq 5) 'Regional accord review uses the existing grant command'

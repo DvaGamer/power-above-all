@@ -12,7 +12,7 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 7;
+        public const int CurrentVersion = 8;
 
         [Serializable] private sealed class Envelope
         {
@@ -76,6 +76,18 @@ namespace PowerAboveAll
             [DataMember(IsRequired = true)] public bool DumasExtraRecruitUsed = false;
         }
 
+        [DataContract] private sealed class RequiredRegionalReformEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredRegionalReformState State = null;
+        }
+
+        [DataContract] private sealed class RequiredRegionalReformState
+        {
+            [DataMember(IsRequired = true)] public string ReformRegionId = null;
+            [DataMember(IsRequired = true)] public string ReformModeId = null;
+            [DataMember(IsRequired = true)] public int ReformStepsRemaining = 0;
+        }
+
         public static string Serialize(CampaignState state, bool prettyPrint = true)
         {
             CampaignCore.Validate(state);
@@ -132,6 +144,13 @@ namespace PowerAboveAll
                         if (required == null || required.State == null)
                             throw new SerializationException("Missing required officer commission data.");
                     }
+                if (envelope != null && envelope.Version >= 8)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredRegionalReformEnvelope)new DataContractJsonSerializer(typeof(RequiredRegionalReformEnvelope)).ReadObject(stream);
+                        if (required == null || required.State == null || required.State.ReformRegionId == null || required.State.ReformModeId == null)
+                            throw new SerializationException("Missing required regional reform data.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -172,6 +191,13 @@ namespace PowerAboveAll
                 if (state.DumasOfficerCommission || state.DumasExtraRecruitUsed)
                     throw new ArgumentException("Invalid officer commission data in an older archive.", nameof(json));
                 state.DumasOfficerCommission = state.DumasExtraRecruitUsed = false;
+            }
+            if (envelope.Version < 8)
+            {
+                if (!string.IsNullOrEmpty(state.ReformRegionId) || !string.IsNullOrEmpty(state.ReformModeId) || state.ReformStepsRemaining != 0)
+                    throw new ArgumentException("Invalid regional reform data in an older archive.", nameof(json));
+                state.ReformRegionId = state.ReformModeId = "";
+                state.ReformStepsRemaining = 0;
             }
             if (envelope.Version == 1)
             {

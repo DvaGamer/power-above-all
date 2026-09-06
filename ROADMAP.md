@@ -2,7 +2,7 @@
 
 **6 Eylül 2026 güncel talimat: geliştirme sürüyor.** Kullanıcı on saatlik özerk çalışma istedi. Önceki durdurma ve yalnız polish sınırı sona erdi. Kullanıcının onaylı yönü [VISION.md](VISION.md), ilk rol kesitinin çalışma varsayımları [ROLE_SLICE.md](ROLE_SLICE.md), güncel kanıt [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
-**Güncel durum:** Unity temel aktarımı, ilk sanat paketi ve üç başlangıç rolünün yaşayan sözleri gerçek Windows player ile doğrulandı; oyun Rusça ve Türkçedir. Son rol ve eski rota kapıları 56 Unity testiyle GREEN; aynı yeni build'de altı haftalık ek inceleme de geçti. Ayrıntılar [SESSION_PROGRESS.md](SESSION_PROGRESS.md). Tarayıcı 0.1 referans olarak kalır.
+**Güncel durum, 06:10 UTC:** Unity'de roller, siyasi sözler ve güven, bölgesel anlaşma, ordu hedefi/subay hakkı, Dumas'nın ikmal girişimi ve ilk bölgesel iaşe/ticaret projesi bağlı bir kesit oluşturur. Son Windows kapısı **GREEN496**; reform rotası18PNG/72kontrol/14JSON ile geçti, RU/TR kareler ayrıca incelendi. Kullanıcı son oyunu açıp inceliyor. Kesin kanıt ve kalan işler [STATUS.md](STATUS.md) ve [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir; Tarayıcı0.1 referans olarak kalır.
 
 **Üretim sırası:** görsel temelin korunması → farklı rol ve yükümlülükler → taktik kararların doğruluğu ve gerçek savaş akışı → koşula bağlı siyasi/ekonomik sonuçlar → tekrar oynama ve okunabilirlik. Her kesit test, yeni derleme ve gerçek ekran kanıtıyla kapanır. Aşağıdaki eski polish ayrıntıları bu sıranın tarihsel dayanağıdır; yeni açık talimatın önüne geçmez. Henüz uygulanmayan işler bitmiş özellik gibi anlatılmaz.
 
@@ -45,7 +45,7 @@ Tarayıcı 0.1'deki ikinci hafta `grain-petition` kararı, Unity aktarımının 
 - Harita sürekli bağlam sağlar; ayrıntılar belge benzeri panellerde açılır.
 - Savaş kontrol birimi alaydır. Warcraft III yalnızca emirlerin tepkiselliği için referanstır.
 - Motor Unity; yeni oyunda Rusça ve Türkçe zorunlu.
-- Bir sonraki aşama Visual & Feel Polish Pass; dört bağlantılı sistemin genişletilmesi gelecekteki iş listesinde.
+- İlk Visual & Feel Polish Pass ve küçük bağlantılı sistem kesitleri uygulandı. Sonraki kapsam, açık oyundan kullanıcı geri bildirimi ve [GAME_VISION_DRAFT.md](GAME_VISION_DRAFT.md) ile belirlenecek; geniş hedeflerin tamamı uygulanmış değildir.
 - Önceki “yalnızca siyaset veya savaş veya ekonomi” yol ayrımı, yeni v0.2 hedefiyle geçersiz olmuştur.
 
 Ana gereksinimler [DESIGN_V0.2.md](DESIGN_V0.2.md), görsel kurallar [ART_DIRECTION.md](ART_DIRECTION.md), referans görevleri [REFERENCES.md](REFERENCES.md) içindedir.
