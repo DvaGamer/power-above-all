@@ -6,6 +6,8 @@ Küresel fiziksel GIS katmanı, kaynaklı 1789 Fransa katmanı, ölçeğe bağl�
 
 Hub'a doğru Unity projesi eklendi. [COMMAND_SLICE.md](COMMAND_SLICE.md) çalıştırma ve sınırları açıklar. Referans ağacı, matris, dersler ve kaynak sicili oluşturuldu; **10 kart** hazırdır. İlk kürasyonun 30–50 karta tamamlanması ve ses/video incelemesi bekler. [ART_PRODUCTION_RULES](ART_PRODUCTION_RULES.md) ve [dokuz özgün SVG kaynak varlığı](Art/Canonical/README.md) hazır; tümünün runtime aktarımı henüz yok. Yayın durumu son Git kayıtlarıyla ayrıca doğrulanır.
 
+GitHub: uygulama commit'i `7946a03`, `research/reference-library` dalında ve [taslak PR #2](https://github.com/DvaGamer/power-above-all/pull/2) içinde yayımlandı. Bu commit'in push ve PR CI kontrolleri geçti; CI tarayıcı simülasyonunu, yerel raporlar Unity/Windows doğrulamasını kapsar. Bu kesit henüz `main` ile birleştirilmedi.
+
 Unity 6000.3.23f1 üzerinde **oynanabilir, genişletilmiş bir prototip** vardır. Üç başlangıç rolü, kişisel siyasi bedeller, bölge yönetimi, ekonomi, ordunun hazırlanması ve taktik savaş aynı sefer durumuna bağlıdır. Büyük dünya, tam diplomasi ve rejim yolları henüz tamamlanmış değildir. Kesin kullanıcı tercihleri [VISION.md](VISION.md), bütünsel çalışma önerisi [GAME_VISION_DRAFT.md](GAME_VISION_DRAFT.md), güncel geliştirme raporu [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
 ## Oyunu açmak
