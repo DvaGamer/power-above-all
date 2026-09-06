@@ -7,8 +7,8 @@
     },
     {
       "key": "ui.tagline",
-      "ru": "ФРАНЦИЯ · 1789 · ВЛАСТЬ ПРЕВЫШЕ ВСЕГО",
-      "tr": "FRANSA · 1789 · HER ŞEYDEN ÖNCE İKTİDAR"
+      "ru": "ФРАНЦИЯ · 1789",
+      "tr": "FRANSA · 1789"
     },
     {
       "key": "ui.seal",
@@ -232,8 +232,8 @@
     },
     {
       "key": "ui.order.bread.detail",
-      "ru": "−40 хлеба · волнения −15.\nПоддержка горожан +2.",
-      "tr": "−40 erzak · huzursuzluk −15.\nKentli desteği +2."
+      "ru": "−40 хлеба · волнения −15\nКонтроль +2 · горожане +2",
+      "tr": "−40 erzak · huzursuzluk −15\nDenetim +2 · kentli desteği +2"
     },
     {
       "key": "ui.order.tax",
@@ -252,8 +252,8 @@
     },
     {
       "key": "ui.order.recruit.detail",
-      "ru": "−120 казны, −20 хлеба,\n−15 снаряжения, −200 резерва.",
-      "tr": "−120 hazine, −20 erzak,\n−15 teçhizat, −200 yedek."
+      "ru": "−120 ливров · −20 хлеба\n−15 снаряжения · −200 резерва",
+      "tr": "−120 livre · −20 erzak\n−15 teçhizat · −200 yedek"
     },
     {
       "key": "ui.order.subsidy",
@@ -262,8 +262,8 @@
     },
     {
       "key": "ui.order.subsidy.detail",
-      "ru": "−20 хлеба каждую неделю.\nУспокаивает столицу.",
-      "tr": "Her hafta −20 erzak.\nBaşkenti yatıştırır."
+      "ru": "−20 хлеба в неделю.\nЭффект зависит от запасов.",
+      "tr": "Haftada −20 erzak.\nEtkisi stoklara bağlıdır."
     },
     {
       "key": "ui.order.subsidy.stop",
@@ -272,8 +272,8 @@
     },
     {
       "key": "ui.order.subsidy.stop.detail",
-      "ru": "Хлеб остаётся в казённых запасах.\nПариж и горожане недовольны.",
-      "tr": "Erzak devlet deposunda kalır.\nParis ve kentliler tepki gösterir."
+      "ru": "В Париже: волнения +8\nГорожане −8 · ваша власть −2",
+      "tr": "Paris: huzursuzluk +8\nKentli desteği −8 · iktidar −2"
     },
     {
       "key": "ui.army.dispatch",
@@ -377,8 +377,8 @@
     },
     {
       "key": "ui.economy.intro",
-      "ru": "Прогноз на следующую неделю. Казна, хлеб и армия связаны одной цепью.",
-      "tr": "Gelecek haftanın tahmini. Hazine, tahıl ve ordu aynı zincirin halkalarıdır."
+      "ru": "Сейчас → после недели. Расчёт по текущим приказам и запасам.",
+      "tr": "Şimdi → hafta sonunda. Mevcut emirler ve stoklarla hesaplanır."
     },
     {
       "key": "ui.economy.treasury",
@@ -412,8 +412,8 @@
     },
     {
       "key": "ui.economy.population",
-      "ru": "Население",
-      "tr": "Nüfus"
+      "ru": "Хлеб для населения",
+      "tr": "Halkın tüketimi"
     },
     {
       "key": "ui.economy.rations",
@@ -457,8 +457,8 @@
     },
     {
       "key": "ui.save",
-      "ru": "Запись",
-      "tr": "Kaydet"
+      "ru": "В архив",
+      "tr": "Arşivle"
     },
     {
       "key": "ui.load",
@@ -477,8 +477,8 @@
     },
     {
       "key": "ui.shortcuts",
-      "ru": "Карта: щелчок по области · Колесо: прокрутка депеши · RU / TR: язык",
-      "tr": "Harita: bölgeye tıkla · Fare tekeri: raporu kaydır · RU / TR: dil"
+      "ru": "Щелчок: выбрать область · Колесо: читать депешу · M: звук · F5 / F9: архив",
+      "tr": "Tıkla: bölge seç · Tekerlek: raporu oku · M: ses · F5 / F9: arşiv"
     },
     {
       "key": "ui.next",
@@ -487,8 +487,8 @@
     },
     {
       "key": "ui.week",
-      "ru": "НЕДЕЛЯ {0} · СОВЕТ ПРОДОЛЖАЕТ РАБОТУ",
-      "tr": "HAFTA {0} · KONSEY ÇALIŞMAYA DEVAM EDİYOR"
+      "ru": "НЕДЕЛЯ {0}",
+      "tr": "HAFTA {0}"
     },
     {
       "key": "ui.date",
@@ -567,8 +567,8 @@
     },
     {
       "key": "ui.help.body",
-      "ru": "Вы — член королевского совета в мае 1789 года. Распоряжайтесь хлебом, налогами и армией, сохраняя собственную власть.\n\n1. Выберите область на карте и прочитайте её депешу слева.\n2. Хлеб уменьшает волнения; чрезвычайный налог пополняет казну, но вызывает сопротивление.\n3. Выберите соседнюю с армией область. При высоком недовольстве поход приведёт к бою.\n4. Завершите неделю: изменятся запасы, настроение политических сил и положение армии.\n\nНазвания и эпоха исторические. Границы, персонажи совета и числовые модели упрощены или вымышлены.",
-      "tr": "Mayıs 1789'da kraliyet konseyinin bir üyesisiniz. Kendi iktidarınızı korurken erzağı, vergileri ve orduyu yönetin.\n\n1. Haritada bir bölge seçip soldaki raporunu okuyun.\n2. Ekmek huzursuzluğu azaltır; olağanüstü vergi hazineyi doldurur, ama direnişi artırır.\n3. Orduya komşu bir bölge seçin. Huzursuzluk yüksekse sefer muharebeye dönüşür.\n4. Haftayı bitirin: depolar, siyasi güçlerin tutumu ve ordunun durumu değişir.\n\nDönem ve yer adları tarihseldir. Sınırlar, konsey kişileri ve sayısal modeller sadeleştirilmiş veya kurgusaldır."
+      "ru": "Франция, май 1789 года. Распоряжайтесь хлебом, налогами и армией, сохраняя собственную власть.\n\n1. Особую роль выбирают при новой партии. Во вкладке «Мандат» прочитайте условия помощи: назначение ещё не создаёт обещание.\n2. Выберите область и прочитайте депешу слева. Хлеб уменьшает волнения; чрезвычайный сбор даёт деньги и вызывает сопротивление.\n3. Перед набором войск проверьте содержание. «Счета» показывают доходы, расходы и запасы на следующую неделю.\n4. Выберите область рядом с армией. При высоких волнениях поход приведёт к бою.\n5. Завершайте недели и отвечайте на прошения. К сроку обещания решите, выполнить его или нарушить; покровитель запомнит результат.\n\nВ бою: 1–4 — полки, Shift — несколько полков, ПКМ — движение, Пробел — пауза для приказов. Берегите строй и мораль; пехота без патронов ещё может драться вблизи.",
+      "tr": "Fransa, Mayıs 1789. Kendi iktidarınızı korurken erzağı, vergileri ve orduyu yönetin.\n\n1. Özel rol yeni seferde seçilir. «Görev» sekmesinde yardımın koşullarını okuyun: atamayı kabul etmek henüz söz vermek değildir.\n2. Bir bölge seçip soldaki raporunu okuyun. Ekmek huzursuzluğu azaltır; olağanüstü vergi para ve direniş getirir.\n3. Asker toplamadan önce bakım giderini kontrol edin. «Hesaplar» gelecek haftanın gelir, gider ve stoklarını gösterir.\n4. Orduya komşu bir bölge seçin. Huzursuzluk yüksekse sefer muharebeye dönüşür.\n5. Haftaları ilerletip dilekçelere cevap verin. Vadesinde sözü tutmaya veya bozmaya karar verin; haminiz sonucu hatırlar.\n\nMuharebede: 1–4 alay seçer, Shift çoklu seçim, sağ tık hareket, Boşluk emir vermek için duraklatır. Düzen ve morali koruyun; cephanesiz piyade yakın dövüşebilir."
     },
     {
       "key": "ui.help.close",
@@ -619,6 +619,91 @@
       "key": "ui.journal.latest",
       "ru": "ПОСЛЕДНЕЕ",
       "tr": "SON KAYIT"
+    },
+    {
+      "key": "ui.sound.on",
+      "ru": "Звук включён · M",
+      "tr": "Ses açık · M"
+    },
+    {
+      "key": "ui.sound.off",
+      "ru": "Без звука · M",
+      "tr": "Ses kapalı · M"
+    },
+    {
+      "key": "ui.manpower",
+      "ru": "Резерв",
+      "tr": "Yedek"
+    },
+    {
+      "key": "ui.reason.missing",
+      "ru": "{0}: не хватает {1}.",
+      "tr": "{0}: {1} eksik."
+    },
+    {
+      "key": "ui.march.cost",
+      "ru": "−{0} хлеба · −5 снаряжения\nПотрачено ходов: {1}",
+      "tr": "−{0} erzak · −5 teçhizat\nHarcanan hareket: {1}"
+    },
+    {
+      "key": "ui.march.hungry",
+      "ru": "Нехватка хлеба: снабжение и дух снизятся.",
+      "tr": "Erzak yetmiyor: ikmal ve moral düşecek."
+    },
+    {
+      "key": "ui.economy.projection",
+      "ru": "За неделю {0} · без новых приказов",
+      "tr": "Haftalık {0} · yeni emir verilmezse"
+    },
+    {
+      "key": "ui.economy.shortfall",
+      "ru": "Не покрыто запасами: {0}. Армия понесёт потери от нехватки.",
+      "tr": "Depoların karşılamadığı açık: {0}. Ordu kıtlık nedeniyle kayıp verecek."
+    },
+    {
+      "key": "ui.economy.payroll",
+      "ru": "Жалованье",
+      "tr": "Maaşlar"
+    },
+    {
+      "key": "ui.economy.equipment",
+      "ru": "Пополнение снаряжения",
+      "tr": "Teçhizat alımı"
+    },
+    {
+      "key": "ui.economy.tax.reason",
+      "ru": "Волнения уменьшают сбор. Контроль и поддержка представителей повышают поступления.",
+      "tr": "Huzursuzluk vergi tahsilatını azaltır. Denetim ve temsilcilerin desteği gelirleri artırır."
+    },
+    {
+      "key": "ui.economy.food.reason",
+      "ru": "Здесь урожай уже уменьшен из-за волнений. Население получает 110; армейские пайки зависят от числа солдат.",
+      "tr": "Buradaki üretim huzursuzluk kayıplarını içerir. Halk 110 tüketir; ordu tayını asker sayısına bağlıdır."
+    },
+    {
+      "key": "ui.economy.subsidy.active",
+      "ru": "Помощь Парижу действует: 20 хлеба в неделю. Если хлеба хватает, волнения в столице −4 и поддержка горожан +3; при нехватке — +6 и −8.",
+      "tr": "Paris yardımı açık: haftada 20 erzak. Erzak yeterliyse başkentte huzursuzluk −4, kentli desteği +3; yetmezse +6 ve −8."
+    },
+    {
+      "key": "ui.economy.subsidy.inactive",
+      "ru": "Помощь Парижу не назначена. Её можно открыть в депеше столицы.",
+      "tr": "Paris yardımı kapalı. Başkentin raporundan başlatılabilir."
+    },
+    {
+      "key": "ui.economy.unrest.title",
+      "ru": "Настроение Франции",
+      "tr": "Fransa'nın huzuru"
+    },
+    {
+      "key": "ui.economy.unrest.forecast",
+      "ru": "Сейчас {0} → после недели {1}\nИзменение среднего: {2}",
+      "tr": "Şimdi {0} → hafta sonunda {1}\nOrtalama değişim: {2}"
+    },
+    {
+      "key": "ui.economy.unrest.reason",
+      "ru": "Прогноз учитывает поддержку горожан, нехватку хлеба или жалованья, помощь Парижу и присутствие армии. Приказы до конца недели изменят расчёт.",
+      "tr": "Tahmin kentli desteğini, erzak veya maaş açığını, Paris yardımını ve ordunun varlığını içerir. Hafta bitmeden verilen emirler hesabı değiştirir."
     }
   ]
 }

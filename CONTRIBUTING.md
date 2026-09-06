@@ -4,7 +4,7 @@ Power Above All, arkadaşların da katılabildiği ortak bir projedir. Belgeler,
 
 ## Erişim ve kurulum
 
-Depo özeldir. Depo sahibinin GitHub hesabınıza erişim vermesi ve daveti kabul etmeniz gerekir. Bu rehber erişim izinlerini kendiliğinden değiştirmez.
+Depo herkese açıktır (Public); klonlamak için özel erişim daveti gerekmez. Doğrudan yazma yetkisi olmayan katkıcılar fork üzerinden pull request gönderebilir. Bu rehber erişim izinlerini kendiliğinden değiştirmez.
 
 1. Git ve Node.js 20 veya üzerini hazırlayın; CI ile aynı ortam için Node.js 24 kullanılabilir.
 2. README'deki komutlarla depoyu klonlayın ve `npm start` çalıştırın.

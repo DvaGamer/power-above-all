@@ -1,0 +1,99 @@
+# Yeni vergi uzlaşması: görünen koşullar, gerçek barışçıl yol, dört gelir hesabı ve erken bozma.
+new
+lang ru
+select champagne
+expect Week 0
+expect SelectedUnrest 69
+expect SelectedControl 60.5
+expect HasAccord False
+panel council
+shot 01-council-offer-ru
+panel accord
+shot 02-accord-offer-ru
+scroll document 520
+shot 03-accord-cost-ru
+scroll document 1100
+shot 04-accord-sign-ru
+lang tr
+scroll document 0
+shot 05-accord-offer-tr
+scroll document 1100
+shot 06-accord-sign-tr
+accord grant
+expect HasAccord True
+expect AccordRegionId champagne
+expect AccordUntilWeek 4
+expect SelectedUnrest 59
+expect SelectedControl 63.5
+expect HasObligation False
+state 07-accord-signed
+shot 07-accord-active-tr
+lang ru
+panel economy
+shot 08-tax-forecast-ru
+save
+remember signed-accord
+select normandy
+load
+same signed-accord
+march
+settle 3
+expect BattleActive False
+expect ArmyRegionId champagne
+expect Moves 0
+expect Food 342
+expect Troops 1200
+expect ResolvedBattleCount 0
+state 09-peaceful-passage
+shot 09-peaceful-passage
+week
+expect Week 1
+expect HasAccord True
+week
+expect Week 2
+expect PendingPetition True
+petition negotiate
+expect PendingPetition False
+week
+expect Week 3
+expect HasAccord True
+panel accord
+shot 10-last-accord-week
+state 10-before-fourth-account
+week
+expect Week 4
+expect HasAccord False
+expect AccordUntilWeek 4
+panel journal
+shot 11-accord-completed
+state 11-after-fourth-account
+save
+remember completed-accord
+load
+same completed-accord
+select ile
+accord grant
+expect HasAccord True
+expect AccordRegionId ile
+expect AccordUntilWeek 8
+panel accord
+shot 12-paris-accord-tax-warning
+act tax
+expect HasAccord False
+expect AccordUntilWeek 8
+state 13-broken-accord
+remember after-break
+accord grant
+same after-break
+act tax
+same after-break
+panel journal
+shot 13-broken-accord-ru
+lang tr
+shot 14-broken-accord-tr
+save
+remember broken-archive
+load
+same broken-archive
+state 14-loaded-broken-accord
+quit

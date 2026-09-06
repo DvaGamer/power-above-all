@@ -1,0 +1,9 @@
+{
+  "entries": [
+    { "key": "ui.role_clarity.restart_body", "ru": "Сначала выберите новое назначение. Кампания и её сохранение будут заменены только после принятия назначения. До этого можно вернуться к текущей партии.", "tr": "Önce yeni görevi seçin. Sefer ve kayıt dosyası ancak görevi kabul ettiğinizde değişir. O zamana kadar mevcut sefere dönebilirsiniz." },
+    { "key": "ui.role_clarity.choose_role", "ru": "Выбрать назначение →", "tr": "Görev seç →" },
+    { "key": "ui.role_clarity.unsigned", "ru": "Назначение ещё не обещание. Полномочие применяется отдельным распоряжением.", "tr": "Görevi kabul etmek henüz söz vermek değildir. Yetki ayrı bir emirle kullanılır." },
+    { "key": "ui.role_clarity.proposed_due", "ru": "Если подписать сейчас, срок: {0}", "tr": "Şimdi imzalanırsa vade: {0}" },
+    { "key": "ui.role_clarity.obligation_context", "ru": "{0} · {1}", "tr": "{0} · {1}" }
+  ]
+}

@@ -6,17 +6,23 @@ namespace PowerAboveAll
 {
     public sealed class GameApp : MonoBehaviour
     {
-        [Serializable] private class SaveFile { public int Version = 1; public CampaignState State; }
         public CampaignState State { get; private set; }
         public string Mode { get; private set; } = "control";
         public string Message => L.Text(messageKey, messageArgs);
         public CampaignMap Map { get; private set; }
         public Camera Camera { get; private set; }
         public bool BattleActive => battle != null && battle.Active;
+        public bool Busy => BattleActive || dispatchPending;
+        public bool ChoosingRole { get; private set; }
+        public bool CanCancelRoleSelection => hasCampaign;
+        private bool hasCampaign;
+        private bool CampaignInputBlocked => Busy || ChoosingRole || State.PendingPetition || CampaignCore.MandateDue(State);
         private CabinetHud hud;
         private TacticalBattle battle;
         private CabinetAudio sound;
         private PetitionDocument petition;
+        private RoleSelection roleSelection;
+        private MandateDocument mandateDocument;
         private string messageKey = "app.welcome";
         private object[] messageArgs = new object[0];
         private string pendingTarget, pendingBattleId;
@@ -25,7 +31,19 @@ namespace PowerAboveAll
         private bool dispatchPending;
         private string dispatchKey;
         private GUIStyle dispatchStyle;
-        private string SavePath => Path.Combine(Application.persistentDataPath, "campaign-v1.json");
+        private GUIStyle languageStyle, battleIdentityStyle;
+        private string SavePath
+        {
+            get
+            {
+                string folder = Application.isEditor ? Environment.GetEnvironmentVariable("POWER_ABOVE_ALL_TEST_PROFILE") : null;
+                var arguments = Environment.GetCommandLineArgs();
+                int shots = Array.IndexOf(arguments, "-shots");
+                if (folder == null && shots >= 0 && shots + 1 < arguments.Length)
+                    folder = Path.Combine(Path.GetFullPath(arguments[shots + 1]), ".campaign");
+                return Path.Combine(folder ?? Application.persistentDataPath, "campaign-v1.json");
+            }
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -37,12 +55,15 @@ namespace PowerAboveAll
             L.Initialize();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
+            QualitySettings.antiAliasing = 4;
             State = CampaignCore.Create();
             Camera = new GameObject("Atlas camera", typeof(Camera), typeof(AudioListener)).GetComponent<Camera>();
+            Camera.clearFlags = CameraClearFlags.SolidColor;
             var light = new GameObject("Afternoon light", typeof(Light)).GetComponent<Light>();
             light.type = LightType.Directional; light.intensity = 1.15f;
             light.transform.rotation = Quaternion.Euler(48, -32, 0);
             light.shadows = LightShadows.Soft;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(.66f, .69f, .61f);
             Map = new GameObject("State atlas").AddComponent<CampaignMap>();
             Map.Build(Camera);
@@ -51,27 +72,41 @@ namespace PowerAboveAll
             sound = gameObject.AddComponent<CabinetAudio>();
             sound.SetMuted(PlayerPrefs.GetInt("muted", 0) == 1);
             petition = gameObject.AddComponent<PetitionDocument>();
+            roleSelection = gameObject.AddComponent<RoleSelection>();
+            mandateDocument = gameObject.AddComponent<MandateDocument>();
             battle.Feedback += Feedback;
             RestoreAtlas();
             if (File.Exists(SavePath)) Load();
+            if (!hasCampaign) BeginRoleSelection();
             Refresh();
         }
         private void Update()
         {
+            Camera.rect = ViewLayout.CameraRect(BattleActive ? ViewLayout.BattleViewport
+                : new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
             if (dispatchPending)
             {
+                Map.SetHovered(null);
                 if (Time.unscaledTime >= dispatchUntil)
                 {
                     dispatchPending = false;
-                    var action = afterDispatch; afterDispatch = null; action?.Invoke();
+                    var action = afterDispatch; afterDispatch = null;
+                    try { action?.Invoke(); }
+                    catch (Exception error)
+                    {
+                        Debug.LogException(error); battle.Stop(); pendingTarget = pendingBattleId = null;
+                        RestoreAtlas(); messageKey = "app.battle.failed"; messageArgs = new object[0];
+                    }
                 }
                 return;
             }
             if (Input.GetKeyDown(KeyCode.M))
             {
-                sound.SetMuted(!sound.Muted); PlayerPrefs.SetInt("muted", sound.Muted ? 1 : 0); PlayerPrefs.Save();
+                sound.SetMuted(!sound.Muted);
+                if (!L.IsReviewSession) { PlayerPrefs.SetInt("muted", sound.Muted ? 1 : 0); PlayerPrefs.Save(); }
             }
-            if (BattleActive || hud.BlocksMapInput || State.PendingPetition) return;
+            if (CampaignInputBlocked || hud.BlocksMapInput) { Map.SetHovered(null); return; }
+            Map.SetHovered(Map.Pick(Input.mousePosition));
             if (Input.GetKeyDown(KeyCode.F5)) Save();
             if (Input.GetKeyDown(KeyCode.F9)) Load();
             if (Input.GetMouseButtonDown(0))
@@ -87,40 +122,85 @@ namespace PowerAboveAll
         private void OnGUI()
         {
             var old = GUI.matrix;
-            GUI.matrix = Matrix4x4.Scale(new Vector3(Screen.width / 1440f, Screen.height / 900f, 1));
+            ViewLayout.DrawFrame();
+            GUI.matrix = ViewLayout.GuiMatrix;
+            if (ChoosingRole)
+            {
+                roleSelection.Draw(this);
+                GUI.matrix = old;
+                return;
+            }
             if (BattleActive)
             {
-                GUI.color = new Color(.10f, .17f, .13f);
-                GUI.DrawTexture(new Rect(0, 0, 1440, 96), Texture2D.whiteTexture);
+                GUI.color = new Color(.141f, .231f, .216f);
+                GUI.DrawTexture(new Rect(0, 0, 1440, 36), Texture2D.whiteTexture);
+                // Kameranın altındaki aralığı da boya; önceki atlas karesi görünmemeli.
+                GUI.DrawTexture(new Rect(0, 729, 1440, 9), Texture2D.whiteTexture);
                 GUI.color = Color.white;
                 battle.DrawHud();
-                if (GUI.Button(new Rect(1300, 7, 60, 25), "RU")) SetLanguage("ru");
-                if (GUI.Button(new Rect(1365, 7, 60, 25), "TR")) SetLanguage("tr");
+                DrawBattleLanguageBar();
             }
             else
             {
                 bool enabled = GUI.enabled;
-                GUI.enabled = !dispatchPending && !State.PendingPetition;
+                GUI.enabled = !dispatchPending && !State.PendingPetition && !CampaignCore.MandateDue(State);
                 hud.Draw(this);
                 GUI.enabled = enabled;
                 if (State.PendingPetition)
                 {
                     petition.Draw(this);
-                    if (GUI.Button(new Rect(1015, 116, 55, 26), "RU")) SetLanguage("ru");
-                    if (GUI.Button(new Rect(1080, 116, 55, 26), "TR")) SetLanguage("tr");
+                    petition.DrawLanguageControls(this);
                 }
+                else if (CampaignCore.MandateDue(State)) mandateDocument.Draw(this);
             }
             if (dispatchPending)
             {
-                GUI.color = new Color(.09f, .16f, .12f, .92f);
+                float arrival = Mathf.SmoothStep(0, 1, Mathf.Clamp01((.9f - (dispatchUntil - Time.unscaledTime)) / .28f));
+                GUI.color = new Color(.08f, .14f, .13f, .48f * arrival);
                 GUI.DrawTexture(new Rect(0, 0, 1440, 900), Texture2D.whiteTexture);
+                var document = new Rect(400 + (1 - arrival) * 30, 318, 640, 230);
+                GUI.color = new Color(.04f, .08f, .07f, .22f * arrival);
+                GUI.DrawTexture(new Rect(document.x + 6, document.y + 8, document.width, document.height), Texture2D.whiteTexture);
+                GUI.color = new Color(.953f, .906f, .792f, arrival);
+                GUI.DrawTexture(document, Texture2D.whiteTexture);
+                GUI.color = new Color(.792f, .702f, .435f, arrival);
+                GUI.DrawTexture(new Rect(document.x + 36, document.y + 27, document.width - 72, 2), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(document.x + 36, document.yMax - 28, document.width - 72, 1), Texture2D.whiteTexture);
                 GUI.color = Color.white;
                 if (dispatchStyle == null) dispatchStyle = new GUIStyle(GUI.skin.label) { fontSize = 30, alignment = TextAnchor.MiddleCenter, wordWrap = true };
-                GUI.Label(new Rect(320, 340, 800, 200), L.Text(dispatchKey, "region." + State.SelectedRegionId), dispatchStyle);
+                dispatchStyle.normal.textColor = new Color(.141f, .231f, .216f, arrival);
+                GUI.Label(new Rect(document.x + 36, document.y + 35, document.width - 72, document.height - 70),
+                    L.Text(dispatchKey, "region." + State.SelectedRegionId), dispatchStyle);
             }
             GUI.matrix = old;
         }
         private void Refresh() { Map.Refresh(State, Mode); }
+        private void DrawBattleLanguageBar()
+        {
+            Color paper = new Color(.953f, .906f, .792f), muted = new Color(.69f, .75f, .68f);
+            if (languageStyle == null)
+            {
+                languageStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, alignment = TextAnchor.MiddleCenter };
+                battleIdentityStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, alignment = TextAnchor.MiddleLeft };
+            }
+            battleIdentityStyle.normal.textColor = paper;
+            GUI.Label(new Rect(22, 0, 620, 36), L.Text("app.battle.identity"), battleIdentityStyle);
+            for (int i = 0; i < 2; i++)
+            {
+                string language = i == 0 ? "ru" : "tr";
+                Rect rect = new Rect(1300 + i * 64, 3, 58, 28);
+                bool selected = L.Language == language;
+                languageStyle.normal.textColor = selected ? paper : muted;
+                GUI.Label(rect, i == 0 ? "RU" : "TR", languageStyle);
+                if (selected)
+                {
+                    Color old = GUI.color; GUI.color = new Color(.792f, .702f, .435f);
+                    GUI.DrawTexture(new Rect(rect.x + 10, rect.yMax - 1, rect.width - 20, 2), Texture2D.whiteTexture);
+                    GUI.color = old;
+                }
+                if (GUI.Button(rect, GUIContent.none, GUIStyle.none)) SetLanguage(language);
+            }
+        }
         public void Feedback(string cue)
         {
             if (sound == null) return;
@@ -135,6 +215,7 @@ namespace PowerAboveAll
         }
         public void ChoosePetition(string id)
         {
+            if (Busy || ChoosingRole) return;
             var result = CampaignCore.ChoosePetition(State, id); Report(result); if (result.Ok) Feedback("seal");
         }
         private void Report(ActionResult result)
@@ -145,18 +226,18 @@ namespace PowerAboveAll
         }
         public void SelectRegion(string id)
         {
-            if (BattleActive || dispatchPending || CampaignCore.Region(State, id) == null) return;
+            if (CampaignInputBlocked || CampaignCore.Region(State, id) == null) return;
             State.SelectedRegionId = id; Refresh(); Feedback("paper");
         }
         public void Act(string action)
         {
-            if (BattleActive || dispatchPending) return;
+            if (CampaignInputBlocked) return;
             var result = CampaignCore.Act(State, action, State.SelectedRegionId); Report(result);
-            if (result.Ok) { Feedback(action == "tax" ? "quill" : "seal"); Map.Pulse(State.SelectedRegionId); }
+            if (result.Ok) { Feedback(action); Map.Pulse(State.SelectedRegionId); }
         }
         public void NextWeek()
         {
-            if (BattleActive || dispatchPending) return;
+            if (Busy || ChoosingRole) return;
             var result = CampaignCore.NextWeek(State); Report(result); if (result.Ok) Feedback("week");
         }
         public void SetMode(string mode) { Mode = mode; Refresh(); }
@@ -165,13 +246,122 @@ namespace PowerAboveAll
         {
             if (BattleActive || dispatchPending) return;
             State = CampaignCore.Create(); Mode = "control"; messageKey = "app.welcome"; messageArgs = new object[0];
-            Refresh(); WriteSave(false);
+            ChoosingRole = false; hasCampaign = true;
+            Map.ResetPresentation(); Refresh(); WriteSave(false);
+        }
+        public void BeginRoleSelection()
+        {
+            if (Busy) return;
+            ChoosingRole = true;
+            roleSelection.Open(State.RoleId);
+            Map.SetHovered(null);
+        }
+        public void CancelRoleSelection()
+        {
+            if (hasCampaign) ChoosingRole = false;
+        }
+        public void StartCampaign(string roleId)
+        {
+            if (Busy || !ChoosingRole) return;
+            CampaignState next = CampaignCore.Create(roleId);
+            State = next; ChoosingRole = false; hasCampaign = true; Mode = "control";
+            messageKey = State.Journal[0].Key; messageArgs = State.Journal[0].Args;
+            Map.ResetPresentation(); hud.OpenDocument("mandate"); Refresh(); WriteSave(false); Feedback("seal");
+        }
+        public void IssueMandate()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.IssueMandate(State, State.SelectedRegionId);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("mandate"); Map.Pulse(State.SelectedRegionId); Feedback("seal"); }
+        }
+        public void ResolveMandate(string expectedId, string choice)
+        {
+            if (Busy || ChoosingRole || State.PendingPetition) return;
+            var result = CampaignCore.ResolveMandate(State, expectedId, choice);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("mandate"); Feedback("seal"); }
+        }
+        public void RepairPatronTrust()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RepairPatronTrust(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("mandate"); Feedback("quill"); }
+        }
+        public void GrantRegionalAccord()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.GrantRegionalAccord(State, State.SelectedRegionId);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("accord"); Map.Pulse(State.SelectedRegionId); Feedback("seal"); }
+        }
+        public void ResolveVictory(string expectedBattleId, string choice)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.ResolveVictory(State, expectedBattleId, choice);
+            Report(result);
+            if (result.Ok) { hud.CloseVictoryDecision(); Map.Pulse(State.ArmyRegionId); Feedback("seal"); }
+        }
+        public void VetoDumasInitiative(int expectedDueWeek)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.VetoDumasInitiative(State, expectedDueWeek);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("initiative"); Feedback("quill"); }
+        }
+        public void SetArmyEstablishment(string policyId, int targetTroops)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.SetArmyEstablishment(State, policyId, targetTroops);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("establishment"); Feedback("quill"); }
+        }
+        public void GrantOfficerCommission()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.GrantOfficerCommission(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Feedback("seal"); }
+        }
+        public void BeginRegionalReform(string regionId, string modeId)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.BeginRegionalReform(State, regionId, modeId);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("reform"); Map.Pulse(regionId); Feedback("seal"); }
+        }
+        public void EndRegionalReform()
+        {
+            if (CampaignInputBlocked) return;
+            string regionId = State.ReformRegionId;
+            var result = CampaignCore.EndRegionalReform(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("reform"); Map.Pulse(regionId); Feedback("quill"); }
+        }
+        public void RecruitThroughDumas()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RecruitThroughDumas(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Map.Pulse(State.ArmyRegionId); Feedback("march"); }
+        }
+        public void RevokeOfficerCommission()
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.RevokeOfficerCommission(State);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("officers"); Feedback("quill"); }
         }
         public void March()
         {
-            if (BattleActive || dispatchPending) return;
+            if (CampaignInputBlocked) return;
             var result = CampaignCore.March(State, State.SelectedRegionId);
             if (!result.RequiresBattle) { Report(result); if (result.Ok) Feedback("march"); return; }
+            var arrival = CampaignCore.PreviewMarch(State, State.SelectedRegionId);
+            var resistance = CampaignCore.GetRegionalResistance(State, State.SelectedRegionId);
+            if (resistance == null || !resistance.RequiresBattle || resistance.EnemyTroops <= 0)
+            { Report(new ActionResult { Ok = false, Key = "ui.resistance.unavailable" }); return; }
             pendingTarget = State.SelectedRegionId;
             pendingBattleId = "battle-" + State.Week + "-" + State.Moves + "-" + State.ArmyRegionId + "-" + pendingTarget;
             WriteSave(false);
@@ -179,8 +369,9 @@ namespace PowerAboveAll
             {
                 Map.SetVisible(false);
                 var commander = State.Characters.Find(c => c.Id == "dumas");
-                battle.Begin(new BattleSetup { Troops = State.Troops, Supply = State.Supply, Morale = State.Morale,
-                    Fatigue = State.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
+                battle.Begin(new BattleSetup { Troops = State.Troops, EnemyTroops = resistance.EnemyTroops, Supply = arrival.Supply, Morale = arrival.Morale,
+                    Fatigue = arrival.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
+                    CampaignMoraleAfterBattle = (won, morale) => CampaignCore.BattleReturnMorale(arrival.Morale, morale, won),
                     Seed = 1789 + State.Week * 31 + State.Moves, RegionNameKey = "region." + pendingTarget }, Camera, CompleteBattle);
             });
         }
@@ -189,9 +380,10 @@ namespace PowerAboveAll
             if (pendingBattleId == null) return;
             var result = CampaignCore.ResolveBattle(State, pendingTarget, pendingBattleId, outcome.Won, outcome.Casualties, outcome.EndingMorale);
             pendingBattleId = null; pendingTarget = null;
-            if (result.Ok) State.MilitarySupplies += Mathf.Max(0, outcome.MilitarySuppliesRecovered);
+            if (result.Ok) CampaignCore.RecoverMilitarySupplies(State, outcome.MilitarySuppliesRecovered);
             battle.Stop(); RestoreAtlas(); Report(result);
-            Dispatch(outcome.Won ? "app.return.victory" : "app.return.defeat", () => { });
+            if (result.Ok && CampaignCore.HasPendingVictory(State)) hud.OpenDocument("victory");
+            // The report's single return button restores the atlas immediately.
         }
         private void Dispatch(string key, Action action)
         {
@@ -199,22 +391,22 @@ namespace PowerAboveAll
         }
         private void RestoreAtlas()
         {
-            Camera.orthographic = true; Camera.orthographicSize = 33.5f;
-            Camera.transform.SetPositionAndRotation(new Vector3(0, 65, 0), Quaternion.Euler(90, 0, 0));
-            Camera.rect = new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900);
+            Camera.orthographic = true; Camera.orthographicSize = 28.3f;
+            Camera.transform.SetPositionAndRotation(new Vector3(-5.8f, 65, 2.7f), Quaternion.Euler(90, 0, 0));
+            Camera.rect = ViewLayout.CameraRect(new Rect(245f / 1440, 100f / 900, 895f / 1440, 665f / 900));
             Camera.backgroundColor = new Color(.655f, .729f, .69f);
             Camera.nearClipPlane = .1f; Camera.farClipPlane = 200;
             Map.SetVisible(true); Refresh();
         }
-        public void Save() { if (!BattleActive && !dispatchPending) WriteSave(true); }
+        public void Save() { if (!Busy && !ChoosingRole) WriteSave(true); }
         private void WriteSave(bool notify)
         {
             try
             {
                 CampaignCore.Validate(State);
-                Directory.CreateDirectory(Application.persistentDataPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(SavePath));
                 string temporary = SavePath + ".tmp";
-                File.WriteAllText(temporary, JsonUtility.ToJson(new SaveFile { State = State }, true));
+                File.WriteAllText(temporary, CampaignArchive.Serialize(State));
                 if (File.Exists(SavePath)) File.Replace(temporary, SavePath, SavePath + ".bak");
                 else File.Move(temporary, SavePath);
                 if (notify) { messageKey = "app.saved"; messageArgs = new object[0]; }
@@ -227,10 +419,9 @@ namespace PowerAboveAll
             try
             {
                 if (!File.Exists(SavePath)) { messageKey = "app.save.none"; messageArgs = new object[0]; return; }
-                var save = JsonUtility.FromJson<SaveFile>(File.ReadAllText(SavePath));
-                if (save == null || save.Version != 1 || save.State == null) throw new InvalidDataException("Unsupported save");
-                CampaignCore.Validate(save.State); State = save.State;
-                messageKey = "app.loaded"; messageArgs = new object[0]; Refresh();
+                var restored = CampaignArchive.Deserialize(File.ReadAllText(SavePath));
+                State = restored; hasCampaign = true; ChoosingRole = false;
+                messageKey = "app.loaded"; messageArgs = new object[0]; Map.ResetPresentation(); Refresh();
             }
             catch (Exception error) { Debug.LogException(error); messageKey = "app.load.failed"; messageArgs = new object[0]; }
         }

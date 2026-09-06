@@ -1,0 +1,48 @@
+# Gerçek fare ile taslak seçme, belgeyi kapatıp açma ve ayrı emir verme.
+new
+lang ru
+panel economy
+wait 0.6
+expect ArmyPolicyId campaign
+expect Troops 1200
+remember untouched-draft
+shot 00-start
+
+# Root: Hesaplar girişini aç,800 taslağını seç, Hesaplar'a dön; emir verilmez.
+wait 45
+same untouched-draft
+state 01-draft-uncommitted
+shot 01-draft-uncommitted
+panel establishment
+wait 0.6
+shot 02-reopened-draft
+
+# Root: gerçek kaydırma ile koşulları oku ve tek başlatma düğmesine tıkla.
+wait 65
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 800
+expect ArmyReductionDueWeek 2
+expect Week 0
+expect Troops 1200
+expect Manpower 2400
+state 03-native-order
+shot 03-native-order
+save
+remember native-order
+load
+same native-order
+state 04-loaded-order
+week
+expect Troops 1200
+expect ArmyReductionDueWeek 2
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1000
+expect Manpower 2600
+expect ArmyReductionDueWeek 4
+expect ArmyCost 120
+expect ArmyConsumption 34
+state 05-first-batch
+shot 05-first-batch
+quit

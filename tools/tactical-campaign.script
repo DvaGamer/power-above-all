@@ -1,0 +1,74 @@
+# Ilk gercek kosuda gozlenen taktik: dogal zafer sonraki degisikliklerde korunmali.
+new
+lang ru
+select champagne
+expect ResolvedBattleCount 0
+state 01-before-encounter
+shot 01-champagne-route
+march
+battle wait active 5
+battle pause on
+expect BattleActive True
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 02-deployment
+shot 02-deployment-paused
+
+# Iki piyade normal grup hareketiyle merkezi tutar; suvari yandan yaklasir.
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state 03-issued-orders
+shot 03-issued-orders
+battle pause off
+expect BattlePaused False
+battle wait arrived 45
+expect BattleSelectionArrived True
+battle wait volley-ready 30
+expect BattleCanVolley True
+battle volley
+battle state 04-volley-order
+shot 04-artillery-volley
+battle fire free
+
+# Gercek emirlerle hedefe baski. Can/moral/cephane veya hedef sayaci yazilmaz.
+battle select 1 replace
+battle select 2 add
+battle fire free
+battle move 1 4
+battle select 3 replace
+battle formation line
+battle move 0 6
+battle state 05-committed-forces
+shot 05-contested-crossing
+battle wait ended 120
+expect BattleEnded True
+expect BattleWon True
+expect BattleHasOutcome True
+battle state 06-natural-outcome
+shot 06-natural-report-ru
+lang tr
+shot 07-natural-report-tr
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+state 08-campaign-return
+shot 08-returned-atlas
+save
+remember natural-battle-return
+select normandy
+load
+same natural-battle-return
+state 09-loaded-return
+shot 09-loaded-atlas
+quit

@@ -1,0 +1,287 @@
+# RegionalReformProbe-2026-09-06T06-03-24-264Z-d67c9e3f PASS227 rotalari.
+# Yalniz gercek kampanya emirleri. Production/NetFood ve log.week state JSON'da incelenir.
+# Her dil degisiminden sonra acik document scroll konumu yeniden belirtilir.
+new
+lang ru
+select champagne
+reform begin provisioning
+expect Week 0
+expect Gold 720
+expect Food 360
+expect Power 51
+expect ReformRegionId champagne
+expect ReformModeId provisioning
+expect ReformStatus blocked
+expect ReformStepsRemaining 4
+state 00-champagne-paid-blocked
+
+# Iki basarili ama elverissiz hesap, bir tek hazirlik adimi kazandirmadi.
+week
+expect Week 1
+expect ReformStepsRemaining 4
+week
+expect Week 2
+expect PendingPetition True
+expect ReformStepsRemaining 4
+remember petition-priority
+reform end
+same petition-priority
+petition negotiate
+expect PendingPetition False
+expect SelectedUnrest 73
+expect SelectedControl 54.5
+expect ReformStatus blocked
+expect Gold 859
+expect Food 362
+state 01-both-local-conditions-blocked
+remember blocked-project
+save
+select normandy
+load
+same blocked-project
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 00-blocked-top-ru
+scroll document 5000
+shot 01-blocked-bottom-ru
+lang tr
+scroll document 0
+shot 02-blocked-top-tr
+scroll document 5000
+shot 03-blocked-bottom-tr
+same blocked-project
+
+# Ekmek ilk adimi gercekten acar; ardindan ayni bolgenin dort hesaplik muafiyeti.
+act bread
+expect Food 322
+expect SelectedUnrest 58
+expect SelectedControl 56.5
+week
+expect Week 3
+expect ReformStepsRemaining 3
+expect SelectedUnrest 60
+expect SelectedControl 56.5
+accord grant
+expect HasAccord True
+expect AccordRegionId champagne
+expect AccordUntilWeek 7
+expect SelectedUnrest 50
+expect SelectedControl 59.5
+expect ReformStatus pending
+expect ReformStepsRemaining 3
+state 02-bread-then-accord-restored
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 04-recovered-with-same-region-accord-ru
+week
+expect Week 4
+expect ReformStepsRemaining 2
+week
+expect Week 5
+expect ReformStepsRemaining 1
+week
+expect Week 6
+expect ReformStatus active
+expect ReformStepsRemaining 0
+expect HasAccord True
+expect AccordUntilWeek 7
+expect Gold 1138
+expect Food 313
+expect Power 54
+expect Troops 1200
+expect TaxIncome 196
+state 03-activation-after-fourth-eligible-step
+remember active-project-and-holiday
+save
+load
+same active-project-and-holiday
+panel reform
+lang ru
+scroll document 5000
+wait 0.4
+shot 05-active-project-tax-still-exempt-ru
+
+# Haftanin7 butcesi: tax196/production147/netFood-3; muafiyet hesap SONUNDA biter.
+week
+expect Week 7
+expect HasAccord False
+expect AccordUntilWeek 7
+expect ReformStatus active
+expect ReformRegionId champagne
+expect Gold 1198
+expect Food 310
+expect Power 54.5
+expect Troops 1200
+expect SelectedUnrest 58
+expect TaxIncome 208
+state 04-first-reformed-budget-holiday-completed
+panel reform
+lang tr
+scroll document 5000
+wait 0.4
+shot 06-holiday-ended-tax-tradeoff-tr
+panel journal
+lang ru
+wait 0.4
+shot 07-seventh-settlement-and-accord-journal-ru
+remember champagne-final
+save
+load
+same champagne-final
+state 05-champagne-final-loaded
+
+# Ikinci gercek sefer: daha once olculmus8haftalik kitlik rotasi.
+# Commission acik kalir, ek200 alinmaz. Reform week4'te odenir, week8 sonunda etkin olur.
+new
+lang ru
+select ile
+commission grant
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+expect Week 4
+expect Gold 823
+expect Food 157
+act recruit
+select normandy
+reform begin provisioning
+expect Gold 583
+expect Food 137
+expect Power 53
+expect ReformStepsRemaining 4
+expect HasOfficerCommission True
+state 06-dumas-route-project-paid-week-four
+week
+week
+expect Week 6
+expect ReformStepsRemaining 2
+select ile
+act recruit
+week
+week
+expect Week 8
+expect HasRegionalReform True
+expect ReformStatus active
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+expect ReformStepsRemaining 0
+expect HasDumasInitiative True
+expect DumasForageDueWeek 9
+expect DumasNextForageWeek 12
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed False
+expect Gold 645
+expect Food 0
+expect Troops 1840
+expect Power 49.5
+expect Supply 75
+expect Morale 76
+select orleans
+accord grant
+expect HasAccord True
+expect AccordRegionId orleans
+expect AccordUntilWeek 12
+expect TaxIncome 205
+expect ForageFood 31
+state 07-active-reform-dumas-and-accord-projection
+remember compound-week-eight
+save
+select champagne
+load
+same compound-week-eight
+state 08-compound-loaded
+
+# Gercek ayni-kosul lensi: tax211->205, production157->161, forage35->31, netFood0->0.
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 08-dumas-comparison-top-ru
+scroll document 5000
+shot 09-dumas-comparison-bottom-ru
+lang tr
+scroll document 0
+shot 10-dumas-comparison-top-tr
+scroll document 5000
+shot 11-dumas-comparison-bottom-tr
+same compound-week-eight
+panel initiative
+lang ru
+scroll document 5000
+wait 0.4
+shot 12-actual-thirty-one-forage-terms-ru
+
+# Onceki sekizinci haftanin160 kaybi gercektir; dokuzuncu hesap1840 canli askeri korur.
+week
+expect Week 9
+expect Gold 660
+expect Food 0
+expect Troops 1840
+expect Power 46
+expect Supply 85
+expect Morale 79
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+expect ForageFood 0
+expect HasAccord True
+expect AccordRegionId orleans
+expect AccordUntilWeek 12
+expect HasOfficerCommission True
+expect ReformStatus active
+expect ResolvedBattleCount 0
+state 09-actual-week-nine-gathered-once
+panel journal
+lang ru
+wait 0.4
+shot 13-actual-week-nine-journal-ru
+panel economy
+lang tr
+scroll document 5000
+wait 0.4
+shot 14-economy-after-actual-settlement-tr
+remember compound-settled
+save
+load
+same compound-settled
+
+# Iptal mevcut kazanci geri almaz, ilk ucreti iade etmez, diger sozlesmeleri kapatmaz.
+reform end
+expect Week 9
+expect Gold 660
+expect Food 0
+expect Troops 1840
+expect Power 46
+expect HasRegionalReform False
+expect ReformStatus closed
+expect ReformStepsRemaining 0
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+expect HasAccord True
+expect AccordRegionId orleans
+expect AccordUntilWeek 12
+expect HasOfficerCommission True
+state 10-ended-independent-rights-retained
+remember compound-ended
+reform end
+same compound-ended
+save
+select brittany
+load
+same compound-ended
+state 11-ended-archive-loaded
+panel reform
+lang tr
+scroll document 5000
+wait 0.4
+shot 15-ended-project-archive-tr
+quit

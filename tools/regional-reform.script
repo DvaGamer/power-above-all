@@ -1,0 +1,198 @@
+# Ilk gercek reform rotasi: taslaklar sadece UI; butce toplamlari uydurulmaz.
+# Her dil degisiminden sonra document scroll yeniden verilir.
+new
+select normandy
+lang ru
+panel reform
+reform draft provisioning
+expect Week 0
+expect Gold 840
+expect Food 360
+expect Power 55
+expect Troops 1200
+expect HasRegionalReform False
+expect ReformStatus closed
+remember untouched-drafts
+state 00-before-drafts
+scroll document 0
+wait 0.4
+shot 00-start
+scroll document 5000
+shot 01-provisioning-bottom-ru
+lang tr
+reform draft provisioning
+scroll document 0
+shot 02-provisioning-top-tr
+scroll document 5000
+shot 03-provisioning-bottom-tr
+same untouched-drafts
+lang ru
+reform draft commerce
+scroll document 0
+shot 04-commerce-top-ru
+scroll document 5000
+shot 05-commerce-bottom-ru
+lang tr
+reform draft commerce
+scroll document 0
+shot 06-commerce-top-tr
+scroll document 5000
+shot 07-commerce-bottom-tr
+same untouched-drafts
+expect HasRegionalReform False
+expect ReformStatus closed
+
+# Gercek imza: yalniz120 Gold ve4 Power, anlik uretim veya asker yok.
+reform begin provisioning
+expect Week 0
+expect Gold 720
+expect Food 360
+expect Power 51
+expect Troops 1200
+expect Manpower 2400
+expect HasRegionalReform True
+expect ReformStatus pending
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+expect ReformStepsRemaining 4
+state 01-paid-pending
+remember paid-pending
+save
+select brittany
+expect ReformRegionId normandy
+load
+same paid-pending
+state 02-pending-loaded
+
+# Ilk uc basarili hesap eski butcedir; harita secimi projeyi tasimaz.
+week
+expect Week 1
+expect ReformStepsRemaining 3
+expect ReformStatus pending
+expect Troops 1200
+select brittany
+expect SelectedRegionId brittany
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+remember original-binding
+state 03-week-one-original-region
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 08-original-region-top-ru
+lang tr
+scroll document 5000
+shot 09-original-region-bottom-tr
+same original-binding
+week
+expect Week 2
+expect PendingPetition True
+expect ReformStepsRemaining 2
+expect HasRegionalReform True
+state 04-week-two-petition
+remember blocked-week
+week
+same blocked-week
+save
+load
+same blocked-week
+state 05-petition-loaded
+petition negotiate
+expect PendingPetition False
+week
+expect Week 3
+expect ReformStepsRemaining 1
+expect ReformStatus pending
+state 06-third-old-budget
+
+# Dorduncu haftanin butcesi de eskidir; completion sonra etkin olur.
+week
+expect Week 4
+expect HasRegionalReform True
+expect ReformStatus active
+expect ReformStepsRemaining 0
+expect ReformRegionId normandy
+expect ReformModeId provisioning
+expect Troops 1200
+state 07-fourth-old-budget-now-active
+remember active-reform
+save
+load
+same active-reform
+state 08-active-loaded
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 10-active-top-ru
+scroll document 5000
+shot 11-active-bottom-ru
+lang tr
+scroll document 0
+shot 12-active-top-tr
+scroll document 5000
+shot 13-active-bottom-tr
+same active-reform
+
+# Ilk degismis butcenin gercek stoklari ve log.week kaydi JSON'da incelenir.
+week
+expect Week 5
+expect HasRegionalReform True
+expect ReformStatus active
+expect ReformStepsRemaining 0
+expect ReformRegionId normandy
+expect Troops 1200
+state 09-first-reformed-budget
+panel economy
+lang ru
+scroll document 5000
+wait 0.4
+shot 14-first-reformed-settlement
+
+# Iptal yeni bir hafta ya da ek kaynak bedeli istemez; eski kazanc geri alinmaz.
+reform end
+expect Week 5
+expect HasRegionalReform False
+expect ReformStatus closed
+expect ReformStepsRemaining 0
+expect Troops 1200
+state 10-ended
+remember ended-reform
+save
+load
+same ended-reform
+state 11-ended-loaded
+panel reform
+lang ru
+scroll document 0
+wait 0.4
+shot 15-closed-after-cancellation
+
+# Yeni bolge ve mod ancak yeni ucret ve dort adimlik hazirlikla baslar.
+select brittany
+reform draft commerce
+reform begin commerce
+expect Week 5
+expect HasRegionalReform True
+expect ReformStatus pending
+expect ReformRegionId brittany
+expect ReformModeId commerce
+expect ReformStepsRemaining 4
+expect Troops 1200
+state 12-new-commerce-project
+remember restarted-commerce
+save
+load
+same restarted-commerce
+state 13-commerce-loaded
+panel reform
+lang ru
+scroll document 5000
+wait 0.4
+shot 16-restarted-commerce-bottom-ru
+lang tr
+scroll document 5000
+shot 17-restarted-commerce-bottom-tr
+same restarted-commerce
+quit

@@ -45,6 +45,31 @@ namespace PowerAboveAll
         public List<string> ResolvedBattles = new List<string>();
         public bool SubsidyParis;
         public bool PendingPetition, PetitionResolved;
+        [System.Runtime.Serialization.OptionalField] public string RoleId;
+        [System.Runtime.Serialization.OptionalField] public int NextMandateWeek;
+        // v1/v2 arşivleri bu iki alanı taşımaz; v3 wire sözleşmesi varlıklarını ayrıca doğrular.
+        [System.Runtime.Serialization.OptionalField] public string AccordRegionId = "";
+        [System.Runtime.Serialization.OptionalField] public int AccordUntilWeek;
+        // v4 arşivinde zorunlu; eski zaferler yeni bir tercih üretmez.
+        [System.Runtime.Serialization.OptionalField] public string PendingVictoryId = "";
+        [System.Runtime.Serialization.OptionalField] public int DumasForageDueWeek, DumasNextForageWeek;
+        [System.Runtime.Serialization.OptionalField] public string ArmyPolicyId = "campaign";
+        [System.Runtime.Serialization.OptionalField] public int ArmyTargetTroops, ArmyReductionDueWeek;
+        [System.Runtime.Serialization.OptionalField] public bool DumasOfficerCommission, DumasExtraRecruitUsed;
+        [System.Runtime.Serialization.OptionalField] public string ReformRegionId = "", ReformModeId = "";
+        [System.Runtime.Serialization.OptionalField] public int ReformStepsRemaining;
+        // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
+        [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
+        public MandateObligation Obligation
+        {
+            get { return Mandates != null && Mandates.Count > 0 ? Mandates[0] : null; }
+            set
+            {
+                if (Mandates == null) Mandates = new List<MandateObligation>();
+                Mandates.Clear();
+                if (value != null) Mandates.Add(value);
+            }
+        }
     }
     public sealed class ActionResult
     {
@@ -52,17 +77,26 @@ namespace PowerAboveAll
         public string Key;
         public string[] Args = new string[0];
     }
+    [System.Serializable] public sealed class MarchPreview
+    {
+        public int FoodCost, FoodAfter, MilitarySuppliesAfter, MovesAfter;
+        public float Supply, Fatigue, Morale;
+        public bool Difficult, Hungry;
+    }
     public sealed class EconomyForecast
     {
         public int TaxIncome, ArmyCost, Production, CivilianConsumption;
         public int ArmyConsumption, SubsidyConsumption, NetGold, NetFood;
+        public int ForageFood;
     }
 
     // Fictional balance data. No engine, rendering, clock or localization dependency.
-    public static class CampaignCore
+    public static partial class CampaignCore
     {
         private const int MaximumStock = 100000000;
         private const int MaximumWeek = 1000000;
+        public const int UrbanUnrestPressureThreshold = 40;
+        public const int UrbanUnrestCalmThreshold = 60;
         private static readonly string[] FactionIds = { "crown", "assembly", "urban", "army" };
         private static readonly string[] CharacterIds = { "valcourt", "morel", "lefevre", "dumas" };
         public static readonly RegionDefinition[] Regions = {
@@ -100,7 +134,8 @@ namespace PowerAboveAll
         public static CampaignState Create()
         {
             var s=new CampaignState { Gold=840,Food=360,MilitarySupplies=120,Manpower=2400,Troops=1200,
-                ArmyRegionId="ile",SelectedRegionId="ile",Moves=2,Morale=78,Supply=100,Power=55 };
+                ArmyRegionId="ile",SelectedRegionId="ile",Moves=2,Morale=78,Supply=100,Power=55,
+                RoleId="legacy",Mandates=new List<MandateObligation>() };
             float[] unrest={38,30,42,48,69,47,33,27,41,35,44,52};
             for(int i=0;i<Regions.Length;i++)s.Regions.Add(new RegionState { Id=Regions[i].Id,Unrest=unrest[i],Control=Clamp(95-unrest[i]*.5f),EliteLoyalty=60 });
             float[] influence={72,56,45,58}, approval={65,45,35,60}, radical={12,30,40,15};
@@ -114,17 +149,32 @@ namespace PowerAboveAll
         }
         public static float AverageUnrest(CampaignState s)
         { float total=0;foreach(var r in s.Regions)total+=r.Unrest;return total/s.Regions.Count; }
+        public static int UrbanUnrestDelta(float approval)
+        {
+            if(!Percent(approval))throw new ArgumentOutOfRangeException(nameof(approval));
+            return approval<UrbanUnrestPressureThreshold?2:approval>=UrbanUnrestCalmThreshold?-1:0;
+        }
         // Taxes depend on unrest, actual government control and Assembly approval.
         // Weekly army cost includes 36 gold to replenish 18 military supplies.
         public static EconomyForecast Forecast(CampaignState s)
+        { return BuildWeekProjection(new EconomyView(s, HasRegionalAccord(s) ? s.AccordRegionId : null)).Economy; }
+
+        // Saf yaprak: girişim/önizleme çağırmaz; bütün senaryolar aynı yuvarlamayı kullanır.
+        private static EconomyForecast CalculateEconomy(EconomyView view)
         {
+            var s=view.State;
             double tax=0,food=0;
             foreach(var d in Regions)
-            { var r=Region(s,d.Id);tax+=d.BaseTax*(1-r.Unrest/150f)*(.5f+r.Control/200f);food+=d.BaseFood*(1-r.Unrest/200f); }
+            {
+                var r=Region(s,d.Id);
+                float unrest=view.Unrest(r),control=view.Control(r);
+                if(d.Id!=view.ExemptRegion)tax+=view.TaxBase(d)*(1-unrest/150f)*(.5f+control/200f);
+                food+=view.FoodBase(d)*(1-unrest/200f);
+            }
             var f=new EconomyForecast {
                 TaxIncome=Round(tax*(.75f+Faction(s,"assembly").Approval/200f)),
-                ArmyCost=(int)Math.Ceiling(s.Troops/12d)+(s.Troops>0||s.MilitarySupplies<120?36:0),Production=Round(food),
-                CivilianConsumption=110,ArmyConsumption=(int)Math.Ceiling(s.Troops/30d),SubsidyConsumption=s.SubsidyParis?20:0
+                ArmyCost=ArmyCostFor(s,s.Troops),Production=Round(food),
+                CivilianConsumption=110,ArmyConsumption=ArmyFoodFor(s.Troops),SubsidyConsumption=s.SubsidyParis?20:0
             };
             f.NetGold=f.TaxIncome-f.ArmyCost;
             f.NetFood=f.Production-f.CivilianConsumption-f.ArmyConsumption-f.SubsidyConsumption;return f;
@@ -144,16 +194,13 @@ namespace PowerAboveAll
                 case "tax":
                     if(r.TaxUsed)return Result(false,"error.used");
                     if(s.Gold>MaximumStock-100)return Result(false,"error.capacity");
+                    BreakRegionalAccordForTax(s,id);
                     s.Gold+=100;r.Unrest=Clamp(r.Unrest+12);r.EliteLoyalty=Clamp(r.EliteLoyalty-4);r.TaxUsed=true;
                     urban.Approval=Clamp(urban.Approval-3);Faction(s,"crown").Approval=Clamp(Faction(s,"crown").Approval+1);
                     return Record(s,"log.tax","region."+id);
                 case "recruit":
-                    if(r.RecruitUsed)return Result(false,"error.used");
-                    if(id!=s.ArmyRegionId)return Result(false,"error.recruit.location");
-                    if(s.Gold<120||s.Food<20||s.MilitarySupplies<15||s.Manpower<200)return Result(false,"error.recruit.cost");
-                    if(s.Troops>MaximumStock-200)return Result(false,"error.capacity");
-                    s.Gold-=120;s.Food-=20;s.MilitarySupplies-=15;s.Manpower-=200;s.Troops+=200;r.RecruitUsed=true;
-                    r.Unrest=Clamp(r.Unrest+2);s.Morale=Clamp(s.Morale-2);Faction(s,"army").Approval=Clamp(Faction(s,"army").Approval+2);
+                    var recruitCheck=CheckRecruitment(s,r,false);if(!recruitCheck.Ok)return recruitCheck;
+                    ApplyRecruitment(s,r);
                     return Record(s,"log.recruit","region."+id);
                 case "subsidy":
                     if(id!="ile")return Result(false,"error.subsidy.location");
@@ -171,22 +218,40 @@ namespace PowerAboveAll
             if(s.Troops<=0)return Result(false,"error.army.empty");
             if(s.Moves<=0)return Result(false,"error.moves");
             if(Array.IndexOf(Definition(s.ArmyRegionId).Neighbours,id)<0)return Result(false,"error.adjacent");
-            bool hostile=Region(s,id).Unrest>=65;
+            bool hostile=IsHostileRegion(Region(s,id));
             var result=Result(true,hostile?"march.battle":"march.ready");result.RequiresBattle=hostile;return result;
         }
-        // Applies travel costs once. Battle casualties are supplied by the tactical simulation.
-        private static void Travel(CampaignState s,string id,bool battle)
+        public static MarchPreview PreviewMarch(CampaignState s,string id)
+        {
+            if(!CanMarch(s,id).Ok)return null;
+            return TravelProjection(s,id);
+        }
+        private static MarchPreview TravelProjection(CampaignState s,string id)
         {
             var r=Region(s,id);bool difficult=r.Control<55||r.Unrest>=50;
             int cost=(int)Math.Ceiling(s.Troops/100d)+(difficult?6:0);
             bool hungry=s.Food<cost;
-            s.Food=Stock((long)s.Food-cost);s.MilitarySupplies=Stock((long)s.MilitarySupplies-5);
-            s.Supply=Clamp(s.Supply-(difficult?12:5)-(hungry?15:0));
-            s.Fatigue=Clamp(s.Fatigue+(difficult?20:10));s.Morale=Clamp(s.Morale-(hungry?8:0));
-            s.Moves=Math.Max(0,s.Moves-(difficult?2:1));
-            if(difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
-            if(hungry&&!battle)
+            return new MarchPreview { FoodCost=cost,FoodAfter=Stock((long)s.Food-cost),
+                MilitarySuppliesAfter=Stock((long)s.MilitarySupplies-5),
+                Supply=Clamp(s.Supply-(difficult?12:5)-(hungry?15:0)),
+                Fatigue=Clamp(s.Fatigue+(difficult?20:10)),Morale=Clamp(s.Morale-(hungry?8:0)),
+                MovesAfter=Math.Max(0,s.Moves-(difficult?2:1)),Difficult=difficult,Hungry=hungry };
+        }
+        public static float BattleReturnMorale(float arrivalMorale,float endingMorale,bool won)
+        { return Clamp(Math.Min(arrivalMorale,endingMorale)+(won?3:-8)); }
+        public static void RecoverMilitarySupplies(CampaignState s,int amount)
+        { s.MilitarySupplies=Stock((long)s.MilitarySupplies+Math.Max(0,amount)); }
+        // Preview and commitment share one travel calculation. The campaign is only charged on resolution.
+        private static void Travel(CampaignState s,string id,bool battle)
+        {
+            var r=Region(s,id);var arrival=TravelProjection(s,id);
+            s.PendingVictoryId="";
+            s.Food=arrival.FoodAfter;s.MilitarySupplies=arrival.MilitarySuppliesAfter;
+            s.Supply=arrival.Supply;s.Fatigue=arrival.Fatigue;s.Morale=arrival.Morale;s.Moves=arrival.MovesAfter;
+            if(arrival.Difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
+            if(arrival.Hungry&&!battle)
             {int lost=(int)Math.Ceiling(s.Troops*.02d);s.Troops-=lost;Record(s,"log.march.attrition",N(lost));}
+            if(!battle)RefreshArmyReduction(s);
         }
         public static ActionResult March(CampaignState s,string id)
         {
@@ -202,15 +267,17 @@ namespace PowerAboveAll
             string expected="battle-"+N(s.Week)+"-"+N(s.Moves)+"-"+s.ArmyRegionId+"-"+target;
             if(!check.RequiresBattle||battleId!=expected)return Result(false,"error.battle.stale");
             Travel(s,target,true);s.Troops-=casualties;s.ResolvedBattles.Add(battleId);
-            s.Morale=Clamp(Math.Min(s.Morale,endingMorale)+(won?3:-8));s.Fatigue=Clamp(s.Fatigue+15);
+            s.Morale=BattleReturnMorale(s.Morale,endingMorale,won);s.Fatigue=Clamp(s.Fatigue+15);
             var r=Region(s,target);var army=Faction(s,"army");var general=Character(s,"dumas");
             if(won)
             {
                 s.ArmyRegionId=target;r.Unrest=Clamp(r.Unrest-22);r.Control=Clamp(r.Control+12);
                 Faction(s,"urban").Approval=Clamp(Faction(s,"urban").Approval-3);army.Approval=Clamp(army.Approval+4);
                 general.Ambition=Clamp(general.Ambition+3);general.Relationship=Clamp(general.Relationship+2);s.Power=Clamp(s.Power+4);
+                s.PendingVictoryId=battleId;
             }
             else {r.Unrest=Clamp(r.Unrest+5);army.Approval=Clamp(army.Approval-6);general.Relationship=Clamp(general.Relationship-4);s.Power=Clamp(s.Power-6);}
+            RefreshArmyReduction(s);
             return Record(s,won?"log.battle.victory":"log.battle.defeat","region."+target,N(casualties),N(s.Troops));
         }
         // Port of browser 0.1's single grain-petition event, not a new event system.
@@ -241,12 +308,17 @@ namespace PowerAboveAll
         public static ActionResult NextWeek(CampaignState s)
         {
             if(s.PendingPetition)return Result(false,"error.petition.pending");
+            if(MandateDue(s))return Result(false,"error.mandate.due");
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
-            var f=Forecast(s);bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
+            var plan=BuildWeekProjection(new EconomyView(s,HasRegionalAccord(s)?s.AccordRegionId:null));
+            s.PendingVictoryId="";
+            var f=plan.Economy;bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
+            ApplyDumasInitiative(s,plan.Initiative);
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
             bool unequipped=(long)s.MilitarySupplies+materials<materialUse;
             s.Gold=Stock((long)s.Gold+f.NetGold);s.Food=Stock((long)s.Food+f.NetFood);
             s.MilitarySupplies=Stock((long)s.MilitarySupplies+materials-materialUse);s.Week++;s.Moves=2;
+            RecordDumasInitiative(s,plan.Initiative);
             var urban=Faction(s,"urban");var army=Faction(s,"army");
             bool strained=hunger||unpaid||unequipped;
             int lost=strained?(int)Math.Ceiling(s.Troops*(hunger?.08d:unpaid?.04d:.02d)):0;
@@ -264,18 +336,34 @@ namespace PowerAboveAll
             {
                 bool garrison=r.Id==s.ArmyRegionId&&s.Troops>0;
                 r.BreadUsed=r.TaxUsed=r.RecruitUsed=false;
-                r.Unrest=Clamp(r.Unrest+(urban.Approval<40?2:urban.Approval>=60?-1:0)+(hunger?8:0)+(unpaid?4:0)-(garrison?3:0));
+                r.Unrest=Clamp(r.Unrest+UrbanUnrestDelta(urban.Approval)+(hunger?8:0)+(unpaid?4:0)-(garrison?3:0));
                 r.Control=Clamp(r.Control+(garrison?2:0)+(r.EliteLoyalty<35?-2:0)-(r.Unrest>=65?3:0));
             }
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));
+            s.DumasExtraRecruitUsed=false;
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
+            CompleteRegionalAccordAfterWeek(s);
+            CompleteArmyReductionAfterWeek(s);
+            AnnounceDumasInitiativeAfterWeek(s,hunger);
+            CompleteRegionalReformAfterWeek(s);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
         private static bool Key(string value) { return !string.IsNullOrEmpty(value)&&value.Length<=160; }
         private static void Require(bool condition) { if(!condition)throw new ArgumentException("Invalid campaign state."); }
         public static void Validate(CampaignState s)
+        {
+            ValidateBase(s);
+            ValidateRoleState(s);
+            ValidateRegionalAccordState(s);
+            ValidateVictoryDecisionState(s);
+            ValidateDumasInitiativeState(s);
+            ValidateArmyEstablishmentState(s);
+            ValidateOfficerCommissionState(s);
+            ValidateRegionalReformState(s);
+        }
+        internal static void ValidateBase(CampaignState s)
         {
             Require(s!=null);Require(s.Week>=0&&s.Week<=MaximumWeek&&s.Moves>=0&&s.Moves<=2);
             if(s.Week<2)Require(!s.PendingPetition&&!s.PetitionResolved);

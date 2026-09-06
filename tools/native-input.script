@@ -1,0 +1,14 @@
+# Gerçek Windows girdisine 120 saniye bırakır; yalnız başlangıç kurulumu semantiktir.
+# Son rol fare ve klavye ile seçilmelidir. Sonuç enjeksiyonu yoktur.
+new
+lang ru
+wait 0.5
+shot 00-start
+wait 120
+expect ChoosingRole False
+expect RoleId assembly
+expect HasObligation False
+expect Week 0
+state 01-after-native-input
+shot 01-after-native-input
+quit

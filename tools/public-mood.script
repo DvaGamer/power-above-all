@@ -1,0 +1,212 @@
+# ActiveCivilPolicyProbe'un gerçek0..8 haftaları;39/59 veya kategori state'i enjekte edilmez.
+# İlk emir sırası root'un istediği budget/accord/bread/subsidy; probe'dan yalnız journal sırası farklıdır.
+# Root'un konumlandırdığı Economy alt bölümü için mevcut5000 bottom-scroll kullanılır; oyun clamp eder.
+new
+lang ru
+select normandy
+panel economy
+scroll document 5000
+expect UrbanApproval 35
+expect Week 0
+expect Gold 840
+expect Food 360
+expect Troops 1200
+expect SelectedUnrest 30
+remember mood-baseline
+wait 0.7
+state 00-baseline-35
+shot 00-baseline-35-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-baseline
+shot 01-baseline-35-tr
+
+establishment budget 1000
+select champagne
+accord grant
+act bread
+select ile
+act subsidy
+select normandy
+panel economy
+expect UrbanApproval 37
+expect Gold 840
+expect Food 320
+expect Troops 1200
+expect Manpower 2400
+expect SubsidyParis True
+expect HasAccord True
+expect AccordUntilWeek 4
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 2
+expect TaxIncome 197
+expect ArmyCost 136
+expect ArmyConsumption 40
+expect ForageFood 0
+expect SelectedUnrest 30
+remember mood-before-40
+lang ru
+scroll document 5000
+wait 0.7
+state 02-before-37-to-40
+shot 02-before-37-to-40-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-before-40
+shot 03-before-37-to-40-tr
+
+# Destek gerçekten ödenir:37→40. Bölgesel etki hesap sonrasındaki40'a göre uygulanır.
+week
+expect Week 1
+expect UrbanApproval 40
+expect Gold 901
+expect Food 304
+expect MilitarySupplies 128
+expect Troops 1200
+expect Manpower 2400
+expect Power 55.5
+expect SelectedUnrest 30
+panel economy
+remember mood-after-40
+lang ru
+scroll document 5000
+wait 0.7
+state 04-after-40
+shot 04-after-40-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-after-40
+shot 05-after-40-tr
+
+# İkinci hafta gerçek eski1200 bütçesini öder, sonra200 kişiyi rezerve aktarır ve petition getirir.
+week
+expect Week 2
+expect UrbanApproval 43
+expect Gold 964
+expect Food 288
+expect MilitarySupplies 136
+expect Troops 1000
+expect Manpower 2600
+expect ArmyReductionDueWeek 0
+expect PendingPetition True
+expect SelectedUnrest 30
+remember mood-petition-blocked
+week
+same mood-petition-blocked
+expect Week 2
+expect UrbanApproval 43
+# Gerçek petition modal'i Economy'yi örtebilir; root kareyi inceler, state yazılarak gizlenmez.
+panel economy
+lang ru
+scroll document 5000
+wait 0.7
+state 06-petition-blocked
+shot 06-petition-blocked-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-petition-blocked
+shot 07-petition-blocked-tr
+save
+load
+same mood-petition-blocked
+state 07-petition-loaded
+petition negotiate
+expect PendingPetition False
+expect PetitionResolved True
+expect UrbanApproval 43
+
+# Probe bu haftalarda yeni sivil emir istemez; subsidy ve ilk anlaşma kendi takviminde sürer.
+week
+expect Week 3
+expect UrbanApproval 46
+expect Gold 1060
+expect Food 279
+expect Troops 1000
+week
+expect Week 4
+expect UrbanApproval 49
+expect Gold 1159
+expect Food 270
+expect HasAccord False
+week
+expect Week 5
+expect UrbanApproval 52
+expect Gold 1281
+expect Food 262
+week
+expect Week 6
+expect UrbanApproval 55
+expect Gold 1406
+expect Food 254
+week
+expect Week 7
+expect UrbanApproval 58
+expect Gold 1532
+expect Food 246
+expect MilitarySupplies 181
+expect Troops 1000
+expect Manpower 2600
+expect Power 58.5
+expect SubsidyParis True
+expect SelectedRegionId normandy
+expect SelectedUnrest 30
+expect TaxIncome 247
+expect ArmyCost 120
+expect ArmyConsumption 34
+expect ForageFood 0
+panel economy
+remember mood-before-61
+lang ru
+scroll document 5000
+wait 0.7
+state 08-before-58-to-61
+shot 08-before-58-to-61-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-before-61
+shot 09-before-58-to-61-tr
+
+#58→61 gerçek haftası: Normandy30→29, kaynaklar gerçek127 altın/−8 gıda hesabıyla değişir.
+week
+expect Week 8
+expect UrbanApproval 61
+expect Gold 1659
+expect Food 238
+expect MilitarySupplies 190
+expect Troops 1000
+expect Manpower 2600
+expect Power 59
+expect SelectedUnrest 29
+expect SubsidyParis True
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 0
+expect PendingPetition False
+expect ResolvedBattleCount 0
+expect BattleActive False
+panel economy
+remember mood-after-61
+lang ru
+scroll document 5000
+wait 0.7
+state 10-after-61
+shot 10-after-61-ru
+lang tr
+scroll document 5000
+wait 0.7
+same mood-after-61
+shot 11-after-61-tr
+save
+select champagne
+load
+same mood-after-61
+expect UrbanApproval 61
+expect SelectedRegionId normandy
+state 11-final-loaded
+quit

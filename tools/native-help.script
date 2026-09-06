@@ -1,0 +1,13 @@
+# Yardım gerçek fareyle açılır; iki dil aynı açık belgeyi görüntüler.
+new
+lang ru
+wait 0.5
+shot 00-start
+wait 45
+shot 01-help-ru
+lang tr
+wait 0.5
+shot 02-help-tr
+expect Week 0
+expect ChoosingRole False
+quit

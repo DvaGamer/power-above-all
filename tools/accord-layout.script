@@ -1,0 +1,24 @@
+# Başlangıç Paris'inde bütün emirler açık: kanikül uyarısı ve bakım bilgisi birlikte sığmalı.
+new
+lang ru
+expect ArmyRegionId ile
+expect Food 360
+panel accord
+accord grant
+expect HasAccord True
+expect AccordRegionId ile
+shot 01-paris-all-orders-ru
+lang tr
+shot 02-paris-all-orders-tr
+select champagne
+expect SelectedRegionId champagne
+expect AccordRegionId ile
+shot 03-original-region-tr
+lang ru
+shot 04-original-region-ru
+save
+remember original-region
+load
+same original-region
+state 05-original-region-loaded
+quit

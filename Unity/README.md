@@ -1,33 +1,33 @@
 # Power Above All — Unity projesi
 
-**Editor kuruldu ve lisans etkinleştirildi; ilk Play denemesi kısmen yapıldı.** `Main.unity` açıldı ve sefer haritası çizildi. Bu denemede görülen TacticalBattle yerel nesne başlatma hatası kaynakta düzeltildi. **Düzeltme sonrası yeniden derleme ve açılış doğrulanmadı.** Tam oyun akışı, görseller ve Windows oyun derlemesi tamamlanmış sayılmaz. İlk açılıştaki lisans hatası geçmiş bir engeldir.
+**Unity 0.2 oynanabilir prototipi.** Sefer, siyasi kararlar, ekonomi, bölgesel reform ve alay savaşı birlikte çalışır. Son tam doğrulama 496 Unity testi, yeni Windows build, 18 PNG, 72 durum kontrolü, 14 kampanya JSON'u ve 10 tarayıcı testini geçti. Bu, tamamlanmış kampanya veya bütün görsel/ses işlerinin kabulü anlamına gelmez.
 
-Kullanıcı geliştirmeyi durdurdu. Kalan gereksinimler ve kontroller [POLISH_PLAN.md](../POLISH_PLAN.md) içinde korunur.
+Güncel durum [STATUS.md](../STATUS.md), doğrulama kapsamı ve kalan sınırlar [NIGHT_REPORT.md](../NIGHT_REPORT.md), uzun vadeli tasarım [VISION.md](../VISION.md) içindedir.
 
 - Editor sürümü: **6000.3.23f1**.
-- Bu bilgisayardaki kurulum: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
+- Editor, Unity Hub ile kurulabilir; farklı kurulum yolu için `UNITY_EDITOR` ortam değişkeni kullanılabilir.
 - Başlangıç sahnesi: `Assets/Scenes/Main.unity`.
 - Oyun dilleri: **Rusça ve Türkçe**.
-- Geçerli aşama: **0.2 Visual & Feel Polish Pass**; yeni mekanik veya ekonomi genişletmesi yok.
+- Geçerli aşama: **Unity 0.2 prototipi**, geliştirme altında; tarayıcı 0.1 ayrı referanstır.
 
 ## Açma
 
 1. Deponun kök dizinindeki `OPEN_UNITY.cmd` dosyasını açın. Başlatıcı Node.js kullanır ve bu `Unity/` klasörünü hedefler.
 2. `Assets/Scenes/Main.unity` sahnesini açın.
-3. Geliştirmeye devam edildiğinde son kaynak düzeltmesinden sonra Play denemesini ve testleri çalıştırın; sonuçları doğrulama kaydına ekleyin.
+3. Editor'de Play'e basın. Kaynak değişikliğinden sonra ilgili EditMode testlerini ve oyun akışını doğrulayın.
 
-Başka bir bilgisayarda Hub'a bu alt klasörü proje olarak ekleyin, uygun Editor lisansını etkinleştirin ve aynı Editor sürümünü kullanın. Deponun kökündeki `START.cmd`, ayrı tarayıcı 0.1 referansını açar.
+Başka bir bilgisayarda Hub'a deponun kökü yerine bu **Unity alt klasörünü** proje olarak ekleyin, uygun Editor lisansını etkinleştirin ve aynı Editor sürümünü kullanın. Deponun kökündeki `START.cmd`, ayrı tarayıcı 0.1 referansını açar.
+
+Windows oyunu için Editor menüsündeki **Power Above All → Build Windows** komutunu kullanın. Derlenmiş oyun ve yerel doğrulama çıktıları Git klonuna dahil değildir. `PLAY_GAME.cmd`, önce mevcut sağlam GREEN doğrulama build'ini, bulunamazsa normal yerel Windows derlemesini açar. `node play-game.cjs --check` seçim yolunu ve doğrulama düzeyini oyunu başlatmadan gösterir.
 
 ## Kaynak kapsamı
 
-Kaynaklar; bağımsız C# sefer çekirdeğini, prosedürel kabartma atlası, şehir minyatürlerini, belge panellerini, taktik savaşı, kayıt bağlantısını ve Rusça/Türkçe metin tablolarını içerir. Mevcut ikinci hafta ekmek dilekçesi de belge olarak aktarılmıştır.
+Kaynaklar bağımsız C# sefer çekirdeğini, guaj atlası ve şehir siluetlerini, resimli kişileri, belge panellerini, taktik savaşı ve Rusça/Türkçe metin tablolarını içerir. Üç rolün hami sözleri, bölgesel vergi tatili, Dumas'nın erzak girişimi, ordu bütçe hedefi, subay hakkı, zafer kararları ve bölgesel reform aynı kampanyada saklanır. Arşiv v8, v1–v7 kayıtlarını önceki mekanizmaları koruyarak taşır.
 
-Görsel iyileştirmeler arasında hareket eden ordu sancağı, bölge ve emir vurguları, kaynak sayılarının geçişi, okunabilir emir gerekçeleri ve karar günlüğü vurgusu bulunur. On prosedürel foley sesi taslak niteliğindedir; bitmiş ses üretimi değildir.
+Ekonomi önizlemesi gerçek haftayla aynı hesap yolunu kullanır; engellenmiş hafta gerçekleşmiş gibi sunulmaz. Asıl bölgenin durumu düşman kuvvetini belirler. Hareket, çoklu seçim, düzen, ateş ve salvo emirleri ortak taktik API'yi kullanır. Prosedürel foley sesleri taslak niteliğindedir; dinlenerek son kalite kabulü tamamlanmış sayılmaz.
 
 ## Doğrulama sınırı
 
-Saf C# çekirdeği bağımsız derleyiciyle kontrol edildi. Editor'deki ilk Play denemesi, haritanın çizildiğini ve ayrıca bir TacticalBattle başlatma hatasını gösterdi. Son düzeltme sonrası yeniden derleme ve çalışma henüz kontrol edilmedi. Kaynakta 14 NUnit editör testi bulunur; **Unity Test Runner içinde çalıştırılmadı**.
+**496/496 Unity EditMode testi** geçti. 25 kaynakta 692 RU/TR anahtarı doğrulandı. Yeni Windows build'in 141 dosyalık manifesti bulunur; başlatıcı manifestli doğrulama adaylarının bütünlüğünü denetler. Ayrı oyuncu senaryolarında doğal savaş sonucu, kampanyaya dönüş ve kayıt/yükleme eşitliği incelendi.
 
-Play akışı, Rusça/Türkçe görsel inceleme ve Windows oyun derlemesi ayrıca doğrulanmalıdır. Bağımsız C# derlemesi bunların yerine geçmez. Güncel durum [STATUS.md](../STATUS.md) içinde tutulur.
-
-Editor'deki `Power Above All/Build Windows` komutu derleme aracını çağırır. Henüz başarılı bir oyun derlemesi kaydı yoktur.
+Gerçek Windows girdisiyle seçim, salvo ve çeşitli siyasi belgeler ayrıca incelendi. Reformun native fare senaryosu hazırlanmıştır, henüz yürütülmedi. Yeniden kullanılan build ile yapılan PARTIAL inceleme yeni tam GREEN değildir; otomatik PNG kontrolleri bütün görsellerin kalite kabulü yerine geçmez. Güncel kanıt ayrımı [NIGHT_REPORT.md](../NIGHT_REPORT.md) içindedir.

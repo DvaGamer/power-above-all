@@ -15,9 +15,9 @@ Never implement the first obvious solution. For major features, generate 3 mater
 
 ### Etkin aşama: 0.2 Visual & Feel Polish Pass
 
-5 Eylül 2026: Kullanıcı bütün istekleri plana kaydedip durmamızı istedi. Geliştirme durduruldu; yeni talimat gelmeden devam etmeyin. Güncel tam kontrol listesi ve yeniden başlama noktası `POLISH_PLAN.md`; olay sistemi açıkça polish sonrasına bırakıldı (`EVENT_DIRECTION.md`).
+6 Eylül 2026 güncel talimat: Kullanıcı «Я ухожу на 10 часов поспать. сиди и делай игру все это время» diyerek on saatlik özerk geliştirmeyi başlattı. Önceki durdurma kararı geçersizdir. Çalışma aralığı 5 Eylül 21:22:03 UTC–6 Eylül 07:22:03 UTC (İstanbul 00:22–10:22); kullanıcı yeni yön verirse ona uyulur. Önce mevcut polish temeli güvenli test, derleme ve gerçek görüntülerle doğrulanır; sonra `VISION.md` içindeki kesinleşmiş hedeflere bağlı küçük oynanabilir geliştirmeler ele alınır. Açık vizyon sorularına verilen çalışma varsayımları kullanıcı kararı gibi sunulmaz. Güncel kayıtlar `NOTES.md`, `NIGHT_LOG.md`, `NIGHT_QUEUE.md`; sabah teslimi `NIGHT_REPORT.md`.
 
-Yeni mekanik eklemeyin. Mevcut harita → emir → hafta → olay → yürüyüş → savaş → sonuç döngüsünü iyileştirin. Ekonomi kurallarını koruyun; nedenleri daha açık gösterin. Harita, tipografi, belge panelleri, mevcut birliklerin hareket/ateş/geri çekilme hissi, sakin animasyonlar ve sefer-savaş geçişi önceliklidir. Önceki genişletilmiş sistem hedefleri gelecek iş listesidir. Unity kararı geçerlidir; aktarımı yeni sistem eklemek için gerekçe olarak kullanmayın.
+İlk doğrulama ve polish aşamasında yeni mekanik eklemeyin. Mevcut harita → emir → hafta → olay → yürüyüş → savaş → sonuç döngüsünü iyileştirin. Ekonomi kurallarını koruyun; nedenleri daha açık gösterin. Harita, tipografi, belge panelleri, mevcut birliklerin hareket/ateş/geri çekilme hissi, sakin animasyonlar ve sefer-savaş geçişi önceliklidir. Temel doğrulandıktan sonraki olası sistem işleri yeni kullanıcı vizyonuna göre küçük, bağlantılı ve ayrıca doğrulanabilir kapsamlarla planlanır; geniş hedeflerin tamamı bitmiş sayılmaz.
 
 Yeni bir mekanik en az bir başka ana sistemle etkileşmelidir. Amaç mekanik sayısını artırmak değil, oyuncunun geçmiş kararının bugünkü sonucunu anlayabilmesidir:
 

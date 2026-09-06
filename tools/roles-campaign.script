@@ -1,0 +1,162 @@
+# Uc gercek rol; yeni atama mevcut seferi kabulden once degistirmez.
+new
+lang ru
+remember before-role-menu
+role-menu
+expect ChoosingRole True
+wait 0.4
+shot 01-appointments-ru
+lang tr
+wait 0.2
+shot 02-appointments-tr
+role-cancel
+expect ChoosingRole False
+same before-role-menu
+role-menu
+role-start crown
+expect RoleId crown
+expect ChoosingRole False
+expect HasObligation False
+lang ru
+wait 0.3
+shot 03-crown-privilege-ru
+mandate-terms
+wait 0.2
+shot 03b-crown-terms-ru
+lang tr
+wait 0.2
+mandate-terms
+wait 0.2
+shot 03c-crown-terms-tr
+lang ru
+wait 0.2
+mandate issue
+expect Gold 960
+expect HasObligation True
+expect MandateDue False
+save
+remember crown-promise
+load
+same crown-promise
+wait 0.3
+shot 04-crown-advance-open
+mandate-terms
+wait 0.2
+shot 04b-crown-early-settlement
+week
+week
+expect Week 2
+expect PendingPetition True
+expect MandateDue True
+petition negotiate
+wait 0.3
+shot 05-crown-deadline-ru
+lang tr
+wait 0.2
+shot 06-crown-deadline-tr
+remember crown-deadline
+week
+same crown-deadline
+mandate fulfil
+expect HasObligation False
+save
+remember crown-honoured
+load
+same crown-honoured
+panel journal
+wait 0.3
+shot 07-crown-honoured-journal
+state 07-crown-honoured
+
+# Verilen tahil sozu Champagne yolunu acar; soz bozulunca gerilim geri gelir.
+role-menu
+role-start assembly
+lang ru
+select champagne
+panel mandate
+wait 0.3
+shot 08-assembly-privilege
+mandate-terms
+wait 0.2
+shot 08b-assembly-terms-ru
+lang tr
+wait 0.2
+mandate-terms
+wait 0.2
+shot 08c-assembly-terms-tr
+lang ru
+wait 0.2
+mandate issue
+expect HasObligation True
+march
+settle 5
+expect BattleActive False
+expect ArmyRegionId champagne
+wait 0.3
+shot 09-assembly-open-road
+week
+select ile
+march
+settle 5
+expect ArmyRegionId ile
+week
+petition negotiate
+wait 0.3
+shot 10-assembly-deadline
+mandate break
+expect HasObligation False
+select champagne
+panel journal
+wait 0.3
+shot 11-assembly-broken-road
+state 11-assembly-broken-road
+save
+remember assembly-broken
+load
+same assembly-broken
+
+# Tazminat orduyla tasinmaz: ilk bolgede kalir.
+role-menu
+role-start army
+lang tr
+panel mandate
+wait 0.3
+shot 12-army-privilege
+mandate-terms
+wait 0.2
+shot 12b-army-terms-tr
+lang ru
+wait 0.2
+mandate-terms
+wait 0.2
+shot 12c-army-terms-ru
+lang tr
+wait 0.2
+mandate issue
+expect Food 400
+expect MilitarySupplies 135
+expect HasObligation True
+select normandy
+march
+settle 5
+expect ArmyRegionId normandy
+week
+week
+petition relief
+wait 0.3
+shot 13-army-deadline-tr
+lang ru
+wait 0.2
+shot 14-army-deadline-ru
+mandate fulfil
+expect HasObligation False
+expect ArmyRegionId normandy
+panel journal
+wait 0.3
+shot 15-army-restitution-journal
+state 15-army-restitution
+save
+remember army-restitution
+load
+same army-restitution
+quit

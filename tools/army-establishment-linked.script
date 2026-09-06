@@ -1,0 +1,203 @@
+# ArmyMandateEstablishmentProbe-2026-09-06T02-56-43-265Z PASS119 rotasi.
+# Iki ayri vade: NPC13, asker aktarimi/borc14. Son76 kisi haftalik kayiplardan SONRA ayrilir.
+new
+lang ru
+role-menu
+role-start army
+wait 0.4
+shot 00-start
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+week
+week
+week
+week
+week
+week
+week
+week
+expect Week 12
+expect Gold 1429
+expect Food 0
+expect Troops 1472
+expect Manpower 2000
+expect MilitarySupplies 142
+expect Power 55.5
+expect PatronRelationship 50
+expect ForageFood 20
+expect DumasForageDueWeek 13
+expect DumasNextForageWeek 16
+state 01-existing-hunger-proposal
+mandate issue
+establishment budget 1000
+expect Food 40
+expect MilitarySupplies 157
+expect HasObligation True
+expect MandateDue False
+expect NextMandateWeek 16
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 14
+expect Troops 1472
+expect Manpower 2000
+expect ForageFood 0
+expect DumasForageDueWeek 13
+state 02-both-deadlines-signed
+save
+remember signed-deadlines
+select normandy
+load
+same signed-deadlines
+state 03-both-deadlines-loaded
+panel initiative
+scroll document 450
+wait 0.4
+shot 01-npc-sufficient-ru
+mandate-terms
+wait 0.3
+shot 02-original-debt-eighty-ru
+panel establishment
+scroll document 650
+wait 0.3
+shot 03-army-deadline-ru
+week
+expect Week 13
+expect Gold 1507
+expect Food 20
+expect Troops 1472
+expect Manpower 2000
+expect MilitarySupplies 162
+expect Power 56
+expect HasDumasInitiative False
+expect DumasNextForageWeek 16
+expect HasObligation True
+expect MandateDue False
+expect ArmyReductionDueWeek 14
+expect ArmyCost 159
+expect ArmyConsumption 50
+state 04-npc-cancelled-army-still-old-size
+week
+expect Week 14
+expect Gold 1590
+expect Food 1
+expect Troops 1272
+expect Manpower 2200
+expect MilitarySupplies 167
+expect Power 56.5
+expect PatronRelationship 46
+expect ArmyReductionDueWeek 16
+expect ArmyCost 142
+expect ArmyConsumption 43
+expect HasObligation True
+expect MandateDue True
+expect NextMandateWeek 16
+state 05-batch-earned-debt-now-due
+remember due-debt-barrier
+week
+same due-debt-barrier
+save
+select orleans
+load
+same due-debt-barrier
+state 06-debt-and-batch-loaded
+lang tr
+mandate-terms
+wait 0.4
+shot 04-original-debt-now-due-tr
+panel establishment
+scroll document 650
+wait 0.3
+shot 05-next-batch-with-debt-barrier-tr
+# Ilk bolgenin80altin tazminati, azaltim tarihini veya kalan askerleri degistirmez.
+mandate fulfil
+expect Gold 1510
+expect Food 1
+expect Troops 1272
+expect Manpower 2200
+expect PatronRelationship 50
+expect HasObligation False
+expect ArmyReductionDueWeek 16
+expect NextMandateWeek 16
+expect SelectedUnrest 0
+state 07-original-debt-paid
+save
+remember paid-debt
+load
+same paid-debt
+state 08-original-debt-paid-loaded
+panel journal
+lang ru
+wait 0.6
+shot 06-original-debt-paid-journal-ru
+# Politika bu hesabi onceden ucuzlatmaz: gercek acik102 asker kaybettirir, NPC cooldown16.
+week
+expect Week 15
+expect Gold 1615
+expect Food 0
+expect Troops 1170
+expect Manpower 2200
+expect MilitarySupplies 174
+expect Power 51.5
+expect Supply 70
+expect Morale 76
+expect ArmyReductionDueWeek 16
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 16
+expect ForageFood 0
+state 09-losses-before-last-batch
+panel establishment
+scroll document 650
+wait 0.4
+shot 07-remaining-batch-after-losses-ru
+# 16. hesap94 asker daha kaybettirir;1076 yasayandan yalniz76 kisi rezerve gider.
+week
+expect Week 16
+expect Gold 1713
+expect Food 0
+expect Troops 1000
+expect Manpower 2276
+expect MilitarySupplies 182
+expect Power 46.5
+expect Supply 45
+expect Morale 61
+expect PatronRelationship 46
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 0
+expect HasArmyEstablishment True
+expect HasObligation False
+expect NextMandateWeek 16
+expect ArmyCost 120
+expect ArmyConsumption 34
+# Bu16 gıda HENUZ toplanmadi: yeni1000 kisilik ordu icin17. hafta onerisi.
+expect HasDumasInitiative True
+expect DumasForageDueWeek 17
+expect DumasNextForageWeek 20
+expect ForageFood 16
+state 10-partial-seventy-six-new-npc-proposal
+save
+remember partial-batch
+select normandy
+load
+same partial-batch
+state 11-partial-batch-loaded
+panel journal
+wait 0.6
+shot 08-partial-seventy-six-journal-ru
+lang tr
+wait 0.3
+shot 09-partial-seventy-six-journal-tr
+panel initiative
+scroll document 450
+wait 0.3
+shot 10-next-week-forage-sixteen-tr
+lang ru
+scroll document 450
+wait 0.3
+shot 11-next-week-forage-sixteen-ru
+quit

@@ -1,0 +1,18 @@
+# Sanat varlıklarının kaydı
+
+## Siyasi portre atlası v1
+
+- Dosya: `Unity/Assets/Resources/Art/PoliticalPortraits-v1.png`.
+- 6 Eylül 2026; built-in `imagegen` aracıyla üretildi. CLI/API fallback kullanılmadı.
+- Kaynak çıktı: `C:/Users/USER/.codex/generated_images/01a0736b-f775-7f91-8c8c-68bef2972597/exec-3ac1047a-cfd0-4de0-9502-b658abae62f1.png`. Kaynak korunarak proje içine kopyalandı.
+- Gerçek boyut 1254 × 1254, RGBA PNG, 1.959.380 bayt. Prompttaki 2048 hedefi aracın kesin çıktı boyutu olarak sunulmaz.
+- SHA256: `cf49958d74de3a1d6245dbe396054cea882b30299620840d20fae9642da23d26`.
+- Dört eşit hücre: sol üst Valcourt/taht, sağ üst Morel/temsilciler, sol alt Lefèvre/kent halkı, sağ alt Dumas/ordu. Bunlar oyundaki **kurgusal kişiler**; tarihî portre veya gerçek kişi benzerliği iddiası yoktur.
+- Tam atlas görsel olarak incelendi. Guaj yüzeyler, farklı büst ve giysi siluetleri görüldü. Küçük arayüz boyutundaki son kabul, sonraki Unity kareleriyle yapılacak.
+- İçe aktarma kuralı `ArtImportRules.cs`: sRGB, gerçek saydamlık, mipmap kapalı, sıkıştırılmamış, Clamp/Bilinear. Arayüz hücreyi UV ile gösterir; kaynak bitmap ayrıca kırpılmadı veya yeniden boyutlandırılmadı.
+
+### Kullanılan tam üretim istemi
+
+```text
+Use case: stylized-concept. Asset type: a single production sprite atlas for four political character portraits in the Unity historical strategy game Power Above All. Create ONE square PNG, ideally 2048x2048, composed of an exact even 2 by 2 grid with no grid lines and genuinely transparent background. Each equal quadrant contains one separate centered head-and-shoulders portrait, with 10 percent clear padding from its cell boundaries; no figure crosses a quadrant. All four portraits have equal face scale and a matching matte hand-painted gouache and cut-paper illustration language. Strong intentional angular facial planes, gently exaggerated individual features, refined editorial illustration, warm light and cool dark shadows, pleasant sophisticated color harmony. Not photorealistic, not anime, not glossy 3D. These are fictional adult French political figures in a game set in 1789, not likenesses of real people. TOP LEFT: a dignified older royal adviser, pale curled powdered hair, long narrow face, shrewd slightly raised eyebrow, deep forest-green coat, ivory cravat, tiny matte brass trim. TOP RIGHT: a reform-minded representative in his late thirties, dark brown tied-back hair, open forehead, attentive serious eyes, restrained soft blue coat and simple cream cravat, narrower shoulders and more forward posture. BOTTOM LEFT: a broad-faced townspeople representative in his forties, short slightly untidy brown hair, warm ruddy face, resolute friendly expression, earthy brown jacket, muted coral waistcoat and simple linen neckcloth; no wig. BOTTOM RIGHT: an ambitious army commander in his forties, dark tied-back hair, squared jaw, confident measured gaze, stylized late eighteenth-century blue officer coat with small cream and matte brass accents, no hat or weapons. Each face must be distinctly identifiable at small interface scale. All are three-quarter views with visible eyes, varied subtle gaze direction, busts finish with a deliberate clean painted silhouette. Palette: warm cream #F3E7CA, forest ink #243B37, sage #A9BA88, soft blue #83B0B6, coral #C98270, brass #CAB36F, earth #B79D71 and wine shadows #58464D. Broad economical brush shapes, smooth readable silhouettes, restrained paint texture. No decorative frames, no oval backplates, no labels, no text, no letters, no heraldic symbols, no watermark, no scenic backgrounds, no hands, no halos, no random ornament. Preserve real alpha transparency around all four busts, not a checkerboard painted into the image.
+```

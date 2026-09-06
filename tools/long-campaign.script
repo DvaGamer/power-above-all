@@ -1,0 +1,131 @@
+# Alti haftalik gercek oyuncu seferi. Iki savas da BILEREK GERI CEKILME ile biter.
+# Bu akis zafer/taktik beceri kaniti degildir; savas-sefer islemleri ve kayit surekliligi denetimidir.
+new
+lang ru
+wait 0.8
+expect Week 0
+expect ResolvedBattleCount 0
+shot 01-opening-ru
+select champagne
+march
+wait 1.6
+expect BattleActive True
+retreat
+wait 0.3
+shot 02-champagne-retreat-report
+accept
+settle 5
+expect BattleActive False
+expect ArmyRegionId ile
+expect Moves 0
+expect ResolvedBattleCount 1
+expect Food 342
+state 03-first-return
+shot 03-first-return-atlas
+save
+remember first-return-save
+select normandy
+load
+same first-return-save
+week
+expect Week 1
+select burgundy
+act tax
+week
+expect Week 2
+expect PendingPetition True
+expect ResolvedBattleCount 1
+remember petition-wait
+week
+same petition-wait
+lang tr
+wait 0.3
+shot 04-petition-waits-tr
+save
+load
+same petition-wait
+petition refuse
+expect PendingPetition False
+expect PetitionResolved True
+select burgundy
+act tax
+wait 0.3
+shot 05-tax-pressure-before-battle
+march
+wait 1.6
+expect BattleActive True
+retreat
+wait 0.3
+shot 06-burgundy-retreat-report-tr
+accept
+settle 5
+expect BattleActive False
+expect ArmyRegionId ile
+expect Moves 0
+expect ResolvedBattleCount 2
+state 07-second-return
+shot 07-second-return-atlas
+save
+remember second-return-save
+select normandy
+load
+same second-return-save
+week
+expect Week 3
+select ile
+act bread
+select normandy
+march
+settle 5
+expect ArmyRegionId normandy
+expect Moves 1
+act recruit
+panel economy
+wait 0.3
+shot 08-week-three-recruit-economy
+week
+expect Week 4
+panel council
+select brittany
+march
+settle 5
+expect ArmyRegionId brittany
+expect Moves 0
+shot 09-week-four-brittany
+save
+remember fourth-week-save
+select orleans
+load
+same fourth-week-save
+week
+expect Week 5
+select brittany
+act bread
+select orleans
+march
+settle 5
+expect ArmyRegionId orleans
+expect ResolvedBattleCount 2
+shot 10-week-five-orleans
+week
+expect Week 6
+expect BattleActive False
+expect PendingPetition False
+expect PetitionResolved True
+expect ResolvedBattleCount 2
+expect ArmyRegionId orleans
+panel journal
+lang ru
+wait 0.3
+shot 11-week-six-journal-ru
+state 11-six-weeks
+save
+remember six-week-save
+select ile
+load
+same six-week-save
+lang tr
+wait 0.3
+shot 12-week-six-journal-tr
+state 12-six-weeks-loaded
+quit

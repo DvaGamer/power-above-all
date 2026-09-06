@@ -1,0 +1,27 @@
+{
+  "entries": [
+    {"key":"ui.victory.entry","ru":"Победа в провинции {0}: кому достанутся заслуги?","tr":"{0} zaferi: başarı kimin adına yazılacak?"},
+    {"key":"ui.victory.open","ru":"Распорядиться после победы →","tr":"Zafer sonrası karar →"},
+    {"key":"ui.victory.header","ru":"ПОЛЕВОЕ ДОНЕСЕНИЕ · ЛИЧНО ПРАВИТЕЛЮ","tr":"SAHA RAPORU · YÖNETİCİYE ÖZEL"},
+    {"key":"ui.victory.title","ru":"Кому принадлежит победа","tr":"Zafer kimin adına?"},
+    {"key":"ui.victory.place","ru":"{0} · Люсьен Дюма ждёт распоряжения","tr":"{0} · Lucien Dumas emrinizi bekliyor"},
+    {"key":"ui.victory.loyalty","ru":"Лояльность Дюма","tr":"Dumas'nın sadakati"},
+    {"key":"ui.victory.ambition","ru":"Амбиции Дюма","tr":"Dumas'nın hırsı"},
+    {"key":"ui.victory.commander_cost","ru":"Амбиции выше лояльности: признание заслуг Дюма после победы стоит 4 личной власти.","tr":"Hırsı sadakatinden yüksek: zaferde Dumas'nın payını tanımak 4 kişisel güç gerektirir."},
+    {"key":"ui.victory.commander_free","ru":"Лояльность не ниже амбиций: сейчас признание заслуг Дюма не требует личной власти.","tr":"Sadakati hırsından düşük değil: şu anda Dumas'nın payını tanımak kişisel güç gerektirmez."},
+    {"key":"ui.victory.comparison","ru":"Дюма: лояльность {0} · амбиции {1}. Амбиции выше лояльности: уступка заслуг обойдётся в {2} личной власти.","tr":"Dumas: sadakat {0} · hırs {1}. Hırsı sadakatinden yüksek: başarının payını ona vermek {2} kişisel güç gerektirir."},
+    {"key":"ui.victory.comparison_free","ru":"Дюма: лояльность {0} · амбиции {1}. Лояльность сдерживает его амбиции: сейчас признание инициативы не уменьшит вашу власть.","tr":"Dumas: sadakat {0} · hırs {1}. Sadakati hırsını dengeliyor: şu anda inisiyatifini tanımak gücünüzü azaltmaz."},
+    {"key":"ui.victory.recognize_title","ru":"Признать инициативу Дюма","tr":"Dumas'nın inisiyatifini tanı"},
+    {"key":"ui.victory.bonus_title","ru":"Премия от правительства","tr":"Hükümet adına alaylara prim"},
+    {"key":"ui.victory.recognize_note","ru":"Генерал сам организует отдых и перегруппировку. Вместе с благодарностью растут его амбиции.","tr":"General dinlenmeyi ve yeniden tertiplenmeyi üstlenir. Minnetiyle birlikte hırsı da büyür."},
+    {"key":"ui.victory.bonus_note","ru":"Разовая премия равна недельному жалованью оставшихся солдат. Обычное содержание сохраняется.","tr":"Tek seferlik prim, kalan askerlerin bir haftalık maaşıdır. Olağan bakım giderleri sürer."},
+    {"key":"ui.victory.recognize_effects","ru":"Усталость армии: {0} → {1}\nОтношения Дюма {2} · амбиции {3}\nЛичная власть: {4} → {5}","tr":"Ordu yorgunluğu: {0} → {1}\nDumas ile ilişki {2} · hırs {3}\nKişisel güç: {4} → {5}"},
+    {"key":"ui.victory.recognize_unaffordable","ru":"Усталость армии: {0} → {1}\nОтношения Дюма {2} · амбиции {3}\nНужно власти: {4} · сейчас {5}","tr":"Ordu yorgunluğu: {0} → {1}\nDumas ile ilişki {2} · hırs {3}\nGereken güç: {4} · mevcut {5}"},
+    {"key":"ui.victory.bonus_effects","ru":"Из казны сейчас: −{0} ливров\nЛояльность Дюма: {1} → {2}\nКонтроль этой провинции {3}","tr":"Hazineden şimdi: −{0} livre\nDumas'nın sadakati: {1} → {2}\nBu ilin denetimi {3}"},
+    {"key":"ui.victory.recognize","ru":"Дать Дюма полномочия","tr":"Dumas'ya yetki ver"},
+    {"key":"ui.victory.bonus","ru":"Выплатить премию","tr":"Primi öde"},
+    {"key":"ui.victory.expiry","ru":"Обычные итоги боя уже учтены. Решение добровольное: новый поход или следующая неделя закроют предложение без дополнительных последствий.","tr":"Muharebenin olağan sonuçları zaten işlendi. Karar isteğe bağlıdır: yeni yürüyüş veya sonraki hafta teklifi ek sonuç olmadan kapatır."},
+    {"key":"ui.victory.decline","ru":"Оставить обычный результат · без новых трат","tr":"Olağan sonuçla devam et · ek harcama yok"},
+    {"key":"ui.victory.close","ru":"Вернуться к карте · Esc","tr":"Haritaya dön · Esc"}
+  ]
+}

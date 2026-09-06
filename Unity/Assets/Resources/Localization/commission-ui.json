@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {"key":"ui.commission.open","ru":"Офицеры Дюма →","tr":"Dumas'nın subayları →"},
+    {"key":"ui.commission.title","ru":"Офицеры Дюма","tr":"Dumas'nın subayları"},
+    {"key":"ui.commission.character","ru":"Лояльность {0}\nАмбиции {1}","tr":"Sadakat {0}\nHırs {1}"},
+    {"key":"ui.commission.offer","ru":"Передайте Дюма назначения офицеров — он сможет быстрее пополнять армию в одном лагере. Передача бесплатна; каждую группу оплачиваете отдельно.","tr":"Subay tayinlerini Dumas'ya verin; tek konakta orduyu daha hızlı büyütebilsin. Yetkiyi vermek ücretsiz, her grubun bedeli ayrı."},
+    {"key":"ui.commission.active","ru":"Назначения переданы Дюма. Он организует дополнительный набор по вашему оплаченному приказу.","tr":"Tayinler Dumas'ya verildi. Bedelini ödediğiniz emirle ek asker toplar."},
+    {"key":"ui.commission.camp","ru":"Нынешняя стоянка: {0}","tr":"Mevcut konak: {0}"},
+    {"key":"ui.commission.recruit_title","ru":"Ещё {0} солдат","tr":"{0} ek asker"},
+    {"key":"ui.commission.recruit_rule","ru":"Один дополнительный набор за неделю, после обычного набора в нынешней стоянке. Переезд не даёт второго дополнительного набора.","tr":"Mevcut konaktaki olağan alımdan sonra haftada bir ek grup. Konak değiştirmek ikinci ek grup vermez."},
+    {"key":"ui.commission.recruit_cost","ru":"Цена группы: {0} ливров, {1} пищи, {2} снаряжения и {3} резерва.","tr":"Grup bedeli: {0} livre, {1} gıda, {2} teçhizat ve {3} yedek."},
+    {"key":"ui.commission.recruit_effects","ru":"При наборе: местные волнения {0}, мораль армии {1}, поддержка военных {2}, лояльность Дюма {3}.","tr":"Alımda: yerel huzursuzluk {0}, ordu morali {1}, ordu desteği {2}, Dumas'nın sadakati {3}."},
+    {"key":"ui.commission.upkeep","ru":"Недельное содержание после набора, при нынешних запасах: {0} → {1} ливров; {2} → {3} пищи.","tr":"Alımdan sonra, bugünkü stoklarla haftalık bakım: {0} → {1} livre; {2} → {3} gıda."},
+    {"key":"ui.commission.recruit_unaffordable","ru":"Сейчас не хватает ресурсов или места в армии для этой группы. Передача права сама по себе солдат не создаёт.","tr":"Şimdi bu grup için kaynak veya orduda yer yetmiyor. Yetkiyi vermek tek başına asker oluşturmaz."},
+    {"key":"ui.commission.authority","ru":"Право и его отзыв","tr":"Yetki ve geri alınması"},
+    {"key":"ui.commission.authority_cost","ru":"Пока право у Дюма, плановое сокращение недоступно. Отзыв сейчас — {0} ливров за {1} солдат в строю.","tr":"Yetki Dumas'dayken planlı azaltma yapılamaz. Şimdi geri alma bedeli: ordudaki {1} asker için {0} livre."},
+    {"key":"ui.commission.authority_rule","ru":"Цена — недельное жалованье живой армии, меняется с её численностью. Отзыв сохраняет солдат и лояльность; при нулевой армии он бесплатен.","tr":"Bedel, yaşayan ordunun bir haftalık maaşıdır; mevcutla değişir. Geri almak askerleri ve sadakati korur; ordu sıfırken ücretsizdir."},
+    {"key":"ui.commission.grant","ru":"Передать право бесплатно","tr":"Yetkiyi ücretsiz ver"},
+    {"key":"ui.commission.recruit","ru":"Набрать ещё {0} через Дюма","tr":"Dumas ile {0} ek asker topla"},
+    {"key":"ui.commission.revoke","ru":"Выкупить право · {0} ливров","tr":"Yetkiyi geri al · {0} livre"}
+  ]
+}

@@ -1,0 +1,36 @@
+# Champagne kurulumu semantik; secim/hareket/duraklama/duzen emirleri gercek Windows girdisidir.
+# 00-start sonrasinda 60 saniye: Space ile duraklat, Digit1-4 ve sag fare/HUD ile emir ver.
+# 01-orders-paused gorununce 5 saniye icinde Space ile devam et; 30 saniyelik ikinci pencere.
+# Son retreat/accept yalniz temiz kapanis ve sefer aktarimi kontroludur; zafer kaniti degildir.
+new
+lang ru
+select champagne
+expect ResolvedBattleCount 0
+state 00-campaign-before
+march
+battle wait active 5
+battle state 00-before-native-orders
+shot 00-start
+wait 60
+battle state 01-orders-paused
+expect BattleActive True
+expect BattlePaused True
+expect BattleSelectionArrived False
+expect BattleHasOutcome False
+shot 01-orders-paused
+wait 30
+battle state 02-orders-running
+expect BattleActive True
+expect BattlePaused False
+expect BattleSelectionArrived True
+expect BattleHasOutcome False
+shot 02-orders-running
+retreat
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+state 03-after-return
+shot 03-after-return
+quit

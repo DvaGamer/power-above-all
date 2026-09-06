@@ -1,0 +1,90 @@
+# Eski/yeni bahçe tacı için aynı gerçek rota; dört tam PNG, yapay sonuç/zaman yok.
+# Ayrı realtime koşuların byte-eşitliği varsayılmaz; her koşunun kendi pause çiftleri karşılaştırılır.
+new
+lang ru
+select champagne
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect Troops 1200
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+expect BattleActive True
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1200
+expect BattleEnemyTroops 1114
+battle state 00-deployment-ru
+shot 00-deployment-ru
+lang tr
+wait 0.6
+expect BattlePaused True
+battle state 01-deployment-tr
+shot 01-deployment-tr
+
+# tactical-campaign'in aynı ortak oyuncu emirleri; konum/can/düşman alanlarına doğrudan yazılmaz.
+lang ru
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle pause off
+expect BattlePaused False
+battle wait arrived 45
+expect BattleSelectionArrived True
+battle wait volley-ready 30
+expect BattleCanVolley True
+battle volley
+battle fire free
+battle select 1 replace
+battle select 2 add
+battle fire free
+battle move 1 4
+battle select 3 replace
+battle formation line
+battle move 0 6
+
+# 05-committed-forces aşamasındaki gerçek temas normal pause emriyle tutulur.
+# Bahçede ne kadar örtüşme görüldüğünü root gerçek PNG'den değerlendirecek.
+battle pause on
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1200
+expect BattleEnemyTroops 1114
+battle state 02-orchard-contact-ru
+shot 02-orchard-contact-ru
+lang tr
+wait 0.6
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 03-orchard-contact-tr
+shot 03-orchard-contact-tr
+wait 0.75
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 04-orchard-pause-held
+
+# Pause içindeki02/03/04 snapshot'ları aynı olmalı; sonra gerçek retreat ve tek accept.
+retreat
+expect BattleEnded True
+expect BattleWon False
+expect BattleHasOutcome True
+battle state 05-orchard-retreat-report
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory False
+expect ArmyRegionId ile
+expect Week 0
+state 06-orchard-campaign-return
+quit

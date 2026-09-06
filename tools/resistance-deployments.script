@@ -1,0 +1,143 @@
+# Dört ayrı gerçek konuşlanma; her biri normal retreat ile biter, zafer iddiası yoktur.
+# Battle state, march öncesi campaign klonunu da içerir; sonuç/kayıp/cephane yazılmaz.
+new
+lang ru
+select champagne
+expect Troops 1200
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1200
+expect BattleEnemyTroops 1114
+battle state 00-initial-deployment
+shot 00-initial-deployment
+retreat
+expect BattleEnded True
+expect BattleWon False
+expect BattleHasOutcome True
+battle state 01-initial-retreat-report
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory False
+expect ArmyRegionId ile
+expect Week 0
+state 02-initial-return
+
+# Aynı bölge değişmeden, Île'de normal grup ve ücretli subay grubu hazırlanır.
+new
+lang ru
+select ile
+act recruit
+commission grant
+commission recruit
+select champagne
+expect Troops 1600
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1600
+expect BattleEnemyTroops 1114
+battle state 03-reinforced-deployment
+shot 03-reinforced-deployment
+retreat
+expect BattleEnded True
+expect BattleWon False
+expect BattleHasOutcome True
+battle state 04-reinforced-retreat-report
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory False
+expect ArmyRegionId ile
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect Week 0
+state 05-reinforced-return
+
+# Ayrı başlangıçta gerçek tax, yerel U69→81 ve seçkin sadakati60→56.
+new
+lang ru
+select champagne
+act tax
+expect Troops 1200
+expect SelectedUnrest 81
+expect ResistanceActive True
+expect ResistanceTroops 1234
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1200
+expect BattleEnemyTroops 1234
+battle state 06-taxed-deployment
+shot 06-taxed-deployment
+retreat
+expect BattleEnded True
+expect BattleWon False
+expect BattleHasOutcome True
+battle state 07-taxed-retreat-report
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory False
+expect ArmyRegionId ile
+expect Week 0
+state 08-taxed-return
+
+# Dördüncü başlangıçta tax ve bread ikisi de gerçek bedellerini öder.
+new
+lang ru
+select champagne
+act tax
+act bread
+expect Troops 1200
+expect SelectedUnrest 66
+expect SelectedControl 62.5
+expect ResistanceActive True
+expect ResistanceTroops 1106
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+expect BattlePaused True
+expect BattleHasOutcome False
+expect BattleOurTroops 1200
+expect BattleEnemyTroops 1106
+battle state 09-bread-deployment
+shot 09-bread-deployment
+retreat
+expect BattleEnded True
+expect BattleWon False
+expect BattleHasOutcome True
+battle state 10-bread-retreat-report
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory False
+expect ArmyRegionId ile
+expect Week 0
+state 11-bread-return
+quit

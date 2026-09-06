@@ -1,5 +1,7 @@
 {"entries":[
 {"key":"app.welcome","ru":"Версаль, 5 мая 1789. Франция ждёт ваших распоряжений.","tr":"Versay, 5 Mayıs 1789. Fransa emirlerinizi bekliyor."},
+{"key":"app.battle.identity","ru":"POWER ABOVE ALL · ПОЛЕВОЙ ШТАБ","tr":"POWER ABOVE ALL · SAHRA KARARGÂHI"},
+{"key":"app.battle.failed","ru":"Не удалось открыть поле боя. Армия остаётся на прежней позиции; поход не списан.","tr":"Savaş alanı açılamadı. Ordu önceki konumunda; yürüyüş bedeli düşülmedi."},
 {"key":"app.dispatch","ru":"Военная депеша\n{0}","tr":"Askerî sevk emri\n{0}"},
 {"key":"app.return.victory","ru":"Поле удержано. Рапорт доставлен в Версаль.","tr":"Meydan tutuldu. Rapor Versay'a ulaştı."},
 {"key":"app.return.defeat","ru":"Армия отступила. Версаль ждёт объяснений.","tr":"Ordu çekildi. Versay açıklama bekliyor."},

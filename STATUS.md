@@ -1,84 +1,49 @@
-# Power Above All — Proje durumu
+# Power Above All — proje durumu
 
-Son güncelleme: **5 Eylül 2026**. Kullanıcı geliştirmeyi durdurup gereksinimlerin plana kaydedilmesini istedi. Devam işleri [POLISH_PLAN.md](POLISH_PLAN.md) içinde korunur.
+Son güncelleme: **6 Eylül 2026, 06:10 UTC**. Kullanıcı yaklaşık dokuz saatlik geliştirmeden sonra döndü; son doğrulanmış Windows oyunu isteği üzerine açıldı. On saatlik çalışma aralığı 07:22:03 UTC / 10:22 İstanbul'a kadar sürer; sonraki kullanıcı yönü önceliklidir.
 
-**Güncel durum:** Unity 6000.3.23f1 kuruldu, kullanıcı lisansı etkinleştirdi, Editor'de `Main.unity` açıldı ve Play modunda sefer haritası çizildi. Bu denemede TacticalBattle yerel nesne başlatma hatası görüldü; kaynakta düzeltildi. **Düzeltme sonrası yeniden derleme ve açılış henüz doğrulanmadı.** Tam oyun akışı, Rusça/Türkçe görsel inceleme, ses ve Windows oyun derlemesi tamamlanmış sayılmaz.
+Unity 6000.3.23f1 üzerinde **oynanabilir, genişletilmiş bir prototip** vardır. Üç başlangıç rolü, kişisel siyasi bedeller, bölge yönetimi, ekonomi, ordunun hazırlanması ve taktik savaş aynı sefer durumuna bağlıdır. Büyük dünya, tam diplomasi ve rejim yolları henüz tamamlanmış değildir. Kesin kullanıcı tercihleri [VISION.md](VISION.md), bütünsel çalışma önerisi [GAME_VISION_DRAFT.md](GAME_VISION_DRAFT.md), güncel geliştirme raporu [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
-Geçerli aşama **0.2 Visual & Feel Polish Pass**: mevcut döngünün sunumu, okunurluğu ve oyun hissi. Yeni mekanik veya ekonomi genişletmesi yok. Unity oyununun dilleri **Rusça ve Türkçe**; belgeler Türkçedir.
+## Oyunu açmak
 
-## Tamamlanan tarayıcı 0.1 işleri
+[PLAY_GAME.cmd](PLAY_GAME.cmd) en yeni uygun Windows oyuncusunu seçer. Doğrulanmış adayın çalışma zamanı ve bütün dağıtım dosyaları denetlenir; `node play-game.cjs --check` seçimi oyunu açmadan gösterir. 06:08 kontrolünde seçilen aday `regional-reform-final-20260906-060546-199-b6af33b0` ve bütünlük sonucu `complete-build` idi. Oyunda **«Новая» / «Yeni»** başlangıç rollerini açar.
 
-- [x] Oyun adı Power Above All, ortam Fransa, 1789 olarak belirlendi.
-- [x] 12 şematik bölge ve iki harita katmanı oluşturuldu.
-- [x] Ekonomi, ordu hareketi, emirler, siyasi destek, olaylar ve kayıt sistemi uygulandı.
-- [x] Tüfekli birliklerle taktik çatışma ve sonuçların sefer haritasına aktarılması eklendi.
-- [x] Masaüstü ve dar ekranlara uyum sağlayan arayüz tamamlandı.
-- [x] START.cmd ile yerel sunucu ve tarayıcı başlatma doğrulandı.
-- [x] [GitHub deposu](https://github.com/DvaGamer/power-above-all) oluşturuldu; kullanıcının açık onayıyla şimdi **Public** olarak kalıyor.
-- [x] İlk uygulama komiti `7e4723d`, main dalına yüklendi.
-- [x] Dört oyun referansı kalıcı tasarım rehberi olarak kaydedildi.
+Unity projesi `Unity/`, başlangıç sahnesi `Assets/Scenes/Main.unity`; [OPEN_UNITY.cmd](OPEN_UNITY.cmd) editörü açar. Windows oyuncusu DX11 kullanır. Daha eski DX12 çıkış hatasının bütünüyle çözüldüğü iddia edilmez. Tarayıcı 0.1 ayrı bir referans prototiptir; [START.cmd](START.cmd) ile açılır ve Unity kaydıyla ortak değildir.
 
-## Tarayıcı 0.1 doğrulama kaydı
+## Uygulanan oynanabilir kapsam
 
-- [x] Uzun ve tekrar edilebilir seferler dahil tarayıcı çekirdeği testleri geçti.
-- [x] Tarayıcıda harita, emirler, elle/otomatik kayıt, ekonomi, siyaset ve konsey olayı doğrulandı.
-- [x] Geri çekilme ve tamamlanan savaşın kayıpları doğru şekilde uygulandı.
-- [x] 1440×960 ve 390×844 ekranlar denendi; yatay taşma görülmedi.
-- [x] İlk sürümün [GitHub Actions denetimi başarılı](https://github.com/DvaGamer/power-above-all/actions/runs/33987434163).
+| Alan | Mevcut davranış |
+| --- | --- |
+| Roller ve siyasi güven | Üç atama, farklı yardım ve iki haftalık borç; ödememe, sonraki yardımın reddi ve kişisel iktidar harcayarak güveni onarma. |
+| Bölgesel anlaşma | Dört vergi hesabı boyunca yerel muafiyet; hemen sakinleşme ve denetim; tamamlanma veya erken vergiyle ihlal siyasi sonuç doğurur. |
+| Ordu mevcudu | Hedef ve sefer/bütçe politikası; iki başarılı haftada en fazla 200 yaşayan fazla asker rezerve geçer. Sıfır ordu ve normal yeniden kurma desteklenir. |
+| Subay atama hakkı | Dumas'ya hak verme, normal alımdan sonra haftalık ücretli ek 200 asker, yaşayan orduya göre bedelli geri alma; bütçe politikasıyla çatışma görünür. |
+| Dumas'nın girişimi | Gerçek açlık sonrası ileri tarihli erzak toplama girişimi; önceki normal ikmal, veto ve gerçek yerel/siyasi bedeller ortak haftalık hesapta çözülür. |
+| Ekonomi ve halk desteği | Gelir, maaş, üretim, sivil/asker tüketimi ve sonraki stoklar; mevcut halk desteği ve 40/60 eşiklerinin bölgesel etkileri gösterilir. |
+| Bölgesel proje | Tek bölgede iaşe veya ticaret; 120 livre ve 4 iktidar peşin; dört uygun haftadan sonra vergi/erzak tabanı değişir. Hazırlık huzursuzluk veya düşük denetimde bekler. Tamamlama ve iptal farklı hamilere ilişki sonucu taşır. |
+| Bölgesel direniş | Düşman kuvveti özgün yerel taban, huzursuzluk, denetim ve elit muhalefetinden hesaplanır. Oyuncu ordusunun büyümesi düşmanı otomatik büyütmez. |
+| Taktik savaş ve dönüş | Alay emirleri, moral, mevzi ve ikmal; eşzamanlı atış, cephanesiz yakın temas, geri çekilme ve doğal zafer. Gerçek kayıplar/teçhizat/siyasi sonuçlar aynı sefere döner. |
+| Zafer kararı | Gerçek zafer sonrası ödül veya tanıma seçimi; yaşayan mevcuda göre bedel, general ve bölge sonuçları; bekleyen karar kayıt/yüklemede korunur. |
 
-Ekran görüntüleri test bilgisayarındaki `output/playwright/` klasöründedir; Git'e dahil edilmez.
+## Görünüm ve kullanım
 
-## Ekip hazırlığı
+Kabul edilen çalışma dili güneşli guaj atlas ve tarihî minyatürlerdir: sıcak kâğıt, adaçayı, yumuşak mavi, mercan ve koyu orman mürekkebi. Deniz derinliği, 12 yerleşimin farklı siluetleri, seçili sınır, savaş arazisi ve bahçe taçları gerçek karelerde incelendi. Varlık kökenleri [ART_ASSETS.md](ART_ASSETS.md), görsel kurallar [ART_DIRECTION.md](ART_DIRECTION.md) içindedir.
 
-- [x] Arkadaşların da geliştirmeye katılacağı kararı kaydedildi.
-- [x] Türkçe belgeler, katkı rehberi, Issue/PR şablonları ve yerel belge bağlantıları kontrol edildi.
-- [x] Beş görsel referans ART_DIRECTION.md içine işlendi; bağlantılı v0.2 planı ROADMAP.md içinde taslak olarak kaydedildi.
-- [x] `cb200f1` çalışma anlık görüntüsü GitHub'a yüklendi.
-- [ ] Son yerel değişikliklerin ikinci anlık görüntüsü; yükleme tamamlanmadan yapılmış sayılmaz.
+Rusça ve Türkçe oyun metni vardır. Bölge raporunun bütün gövdesi tek kaydırılan yapraktır; yoğun Paris uyarılarında emirlere ve nedenlere ulaşılır. Ekonomi ve siyasi belgeler fiyatı, ilgili kişiyi, mevcut sonucu ve koşullu gelecek hesabını gösterir. Ortak 1440×900 tasarım farklı pencere oranlarında eşit ölçeklenir. Sesli geri bildirimler ve kalıcı sessize alma vardır; son ses kalitesi dinleme kabulü hâlâ açıktır.
 
-## Unity kaydı — kısmen denenmiş kaynaklar
+## Son doğrulama
 
-- [x] Motor seçimi: Unity.
-- [x] Dil gereksinimi: yeni oyunda Rusça ve Türkçe.
-- [x] Saf C# sefer çekirdeği Windows .NET derleyicisiyle derlendi.
-- [x] Bağımsız C# kontrolleri: başlangıç, atomik kaynak işlemi, düşmanca yürüyüş, savaş sonucu, tekrar sonucu reddetme, ikmal etkileri, 200 hafta ve bozuk durum reddi.
-- [x] 14 Unity/NUnit editör testi kaynak olarak eklendi.
-- [x] Unity 6000.3.23f1 kuruldu: `C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Unity.exe`.
-- [x] `OPEN_UNITY.cmd` başlatıcısı `Unity/` projesini hedefliyor; başlangıç sahnesi `Assets/Scenes/Main.unity`.
-- [x] İlk lisans hatasından sonra kullanıcı lisansı etkinleştirdi; Editor yeniden açıldı.
-- [x] `Main.unity` açıldı; Play modunda sefer haritası çizildi.
-- [x] Bu denemede görülen TacticalBattle yerel nesne başlatma hatası kaynakta düzeltildi.
-- [ ] Düzeltme sonrası yeniden derleme, yeniden açılış ve Play denemesi.
-- [ ] Bu testlerin Unity Test Runner içinde çalıştırılması.
-- [ ] Unity editöründe tam oyun akışının çalışma zamanı doğrulaması.
-- [ ] Rusça/Türkçe arayüz ve kayıtlı günlüklerin dil değişiminde görsel doğrulanması.
-- [ ] Oyunun Unity'den derlenip açılması.
+[Son tam kapı](output/verify/regional-reform-final-20260906-060546-199-b6af33b0/REPORT.md): **GREEN**, 496/496 Unity EditMode testi, yeni Windows build, 18 PNG, 72 oyuncu kontrolü, 14 kampanya JSON'u ve 10 tarayıcı referans testi. Dağıtım 141 dosyalık manifestle doğrulandı; dış süreç çıkışı 0 idi. Ayrıca 692 RU/TR anahtarın 25 Unity varlığında metin/biçim/import yapısı ve 93 araç güvenlik kontrolü geçti.
 
-## Bir sonraki aşama — 0.2 Visual & Feel Polish Pass
+Reformun beş gerçek bütçesi bağımsız denetimde önceki durumdan yeniden hesaplandı; pending, active, iptal ve yeniden ödeme kayıt çiftleri eşit çıktı. İlk dört bütçede eski ekonomi, beşincide yeni taban kullanıldı. İptal eski stokları geri almadı. RU/TR üst ve alt belge kareleri ayrıca gözle kabul edildi. Bu sonuçlar bütün olası kampanyaların dengeli olduğunu göstermez.
 
-Kaynakta bulunan sunum: 12 bölgeli kabartma atlas ve bilgi katmanları; şehir minyatürleri ve ordu sancağı; belge panelleri, siyasi güçler ve hesap defteri; taktik savaş ve sefer bağlantısı; Rusça/Türkçe metinler. Yumuşak ordu hareketi, seçili bölgenin yükselmesi, emir sonrası bölge vurgusu, kaynak sayılarının geçişi, son günlük kaydı vurgusu ve devre dışı emir gerekçeleri eklendi. Bunların tamamı görsel olarak onaylanmış değildir.
+Önceki kesitlerde normal Windows fare/klavye girdisi, doğal savaş zaferi, tam savaş dönüşü ve arşiv doğrulandı. **Yeni reformun ayrı native fare senaryosu ve hazırlanan iki bağlı player rotası henüz çalıştırılmadı.** Şampanya'nın engellenmiş hazırlıktan çıkışı ve Dumas ile birleşimi şu an 227 kontrollü saf Core probe içinde doğrulanmıştır; bunlar yeni player kanıtı diye sunulmaz.
 
-Tarayıcıdaki mevcut ikinci hafta ekmek dilekçesi Unity'ye belge olarak aktarıldı. Kâğıt, kalem, mühür, emir, yürüyüş, hafta, salvo, isabet, zafer ve yenilgi için on prosedürel foley taslağı bulunur; tamamlanmış profesyonel ses varlıkları değildir.
+## Açık sınırlar ve sonraki iş
 
-- [ ] Mevcut haritanın ve belge panellerinin hiyerarşisini iyileştirmek.
-- [ ] Mevcut savaşın seçimini, emir geri bildirimini ve okunurluğunu iyileştirmek.
-- [ ] Rusça ve Türkçede taşma, eksik anahtar ve tutarsız terimleri gidermek.
-- [ ] Unity çalışma zamanı ve görsel kontrollerini tamamlayıp kanıtlarını kaydetmek.
-
-**Kapsam sınırı:** yeni mekanik ve ekonomi genişletmesi yok. Kullanıcının durdurma isteği doğrultusunda uygulama devam ettirilmiyor; kalan görsel gereksinimler ve kontroller planda saklanıyor.
-
-## Bilinen sınırlamalar
-
-- Tarayıcı 0.1 öğretici senaryosu kolaydır: konsey olayında stok dağıtmak savaşmadan zafer getirebilir.
-- Tarayıcı 0.1 savaş arazisi dekoratiftir; tek asker türü ve ortak grup kontrolü vardır. Unity savaş kaynakları ayrı bir aktarım ve sunum çalışmasıdır.
-- Harita tarihî sınırları birebir yansıtmaz.
-- Tarayıcı 0.1 kayıtları kullanılan tarayıcıya ve adrese bağlıdır; Unity kayıtlarıyla ortak değildir. Tamamlanmamış savaş kaydedilmez.
-- Tarayıcı 0.1 arayüzü Rusçadır. Yeni Unity oyununun Rusça/Türkçe desteği zorunludur; kaynakların bulunması tam arayüz doğrulaması sayılmaz.
-- Baştan sona doğrulanmış referans tarayıcı 0.1'dir. Unity'nin ilk Play denemesi kısmi kanıttır; son düzeltmenin yeniden denenmesi ve tam akış kontrolü bekler. Tam hanedan, diplomasi, inşaat ve çok oyunculu sistemler henüz yoktur.
-
-## İlerleme nasıl izlenir?
-
-1. Yalnızca doğrulanan işleri bu dosyada tamamlandı olarak işaretleyin.
-2. Tarayıcı referansını START.cmd veya npm start ile, Unity projesini OPEN_UNITY.cmd ile açın.
-3. [Issues](https://github.com/DvaGamer/power-above-all/issues), [pull request'ler](https://github.com/DvaGamer/power-above-all/pulls) ve Git geçmişinden değişiklikleri takip edin.
-4. [Actions](https://github.com/DvaGamer/power-above-all/actions) sekmesinde otomatik kontrol sonuçlarını inceleyin.
+- Geniş dünya haritası, diplomasi, makam/kariyer sistemi, tam rejim yolları, kapsamlı olay kataloğu ve çok oyunculu oyun gelecekteki kapsamdır. Parti sonu ve zaman ölçeğine ilişkin açık vizyon soruları kullanıcı kararı sayılmaz.
+- Mevcut 1789 Fransa haritası, sayısal ekonomi ve dört danışman oyun kurgusudur; birebir tarihî rekonstrüksiyon değildir.
+- Sefer arşivi v8 eski v1–v7 verilerini destekler; devam eden taktik savaş ayrı bir kaydedilebilir savaş arşivi değildir.
+- Güçlü aktif sivil politika ve pasif kriz yolları ölçüldü; uzun dönem rekabet dengesi, bütün taktikler ve ses kalitesi için daha fazla gerçek oynama gerekir.
+- Kullanıcı açık oyunu incelerken otomatik fare girdisi veya oyunu kapatma yapılmaz. Sonraki reform fare/bağlı rota kontrolü uygun ayrı test oturumunda yapılabilir.
+- Gece değişiklikleri yerel kontrol noktalarıyla korunur; GitHub'a gönderildiği iddia edilmez. Ayrıntılı kalıcı bulgular [NOTES.md](NOTES.md) ve `Unity/WorkNotes/` altında, başarısız eski denemeler değişmeden `output/` altında kalır.

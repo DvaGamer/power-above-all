@@ -1,0 +1,113 @@
+# Gercek dogal zafer -> temel sonuc -> siyasi prim; sonuc/state enjeksiyonu yok.
+new
+lang ru
+select champagne
+expect HasPendingVictory False
+expect ResolvedBattleCount 0
+state 01-before-encounter
+shot 01-champagne-route
+march
+battle wait active 5
+battle pause on
+expect BattleActive True
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 02-deployment
+shot 02-deployment-paused
+
+# Daha once gercek oyuncuda kazanmis ortak oyuncu emirleri.
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state 03-issued-orders
+shot 03-issued-orders
+battle pause off
+expect BattlePaused False
+battle wait arrived 45
+expect BattleSelectionArrived True
+battle wait volley-ready 30
+expect BattleCanVolley True
+battle volley
+battle state 04-volley-order
+shot 04-artillery-volley
+battle fire free
+battle select 1 replace
+battle select 2 add
+battle fire free
+battle move 1 4
+battle select 3 replace
+battle formation line
+battle move 0 6
+battle state 05-committed-forces
+shot 05-contested-crossing
+battle wait ended 120
+expect BattleEnded True
+expect BattleWon True
+expect BattleHasOutcome True
+battle state 06-natural-outcome
+shot 06-natural-report-ru
+lang tr
+shot 07-natural-report-tr
+accept
+battle verify-return
+expect BattleActive False
+expect Busy False
+expect ResolvedBattleCount 1
+expect HasPendingVictory True
+state 07-base-victory
+save
+remember pending-victory
+
+# Pencereyi kapatmak odulu reddetmez; pending kayit gercek Load ile geri gelir.
+victory-close
+expect HasPendingVictory True
+select normandy
+load
+same pending-victory
+expect HasPendingVictory True
+state 08-loaded-pending
+lang ru
+panel victory
+shot 08-pending-choice-ru
+lang tr
+shot 09-pending-choice-tr
+
+# Secili harita bolgesi degisse de prim gercek Champagne zaferine bagli kalir.
+victory-close
+select normandy
+panel victory
+state 09-before-bonus
+shot 10-original-region-terms
+victory bonus
+expect HasPendingVictory False
+expect ResolvedBattleCount 1
+state 10-after-bonus
+wait 0.6
+lang ru
+shot 11-bonus-result-ru
+lang tr
+shot 12-bonus-result-tr
+
+# Basarili secim otomatik kaydeder. Load onceki teklifi tekrar acmamalidir.
+remember paid-victory
+select brittany
+load
+same paid-victory
+expect HasPendingVictory False
+state 11-loaded-autosave
+save
+select picardy
+load
+same paid-victory
+expect HasPendingVictory False
+state 12-loaded-explicit-save
+shot 13-loaded-final-atlas
+quit

@@ -1,0 +1,156 @@
+# ArmyEstablishmentProbe-2026-09-06T02-51-25-163Z: ilk gercek public rota.
+# UI taslagi varsayilan1000; uygulanana kadar kampanyanin hicbir alani degismez.
+new
+lang ru
+remember unopened-campaign
+panel establishment
+wait 0.5
+shot 00-start
+scroll document 650
+wait 0.2
+shot 01-draft-lower-ru
+lang tr
+wait 0.2
+shot 02-draft-upper-tr
+scroll document 650
+wait 0.2
+shot 03-draft-lower-tr
+same unopened-campaign
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 0
+expect Troops 1200
+expect Manpower 2400
+expect ArmyCost 136
+expect ArmyConsumption 40
+establishment budget 1000
+expect ArmyPolicyId budget
+expect HasArmyEstablishment True
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 2
+expect Troops 1200
+expect Manpower 2400
+expect Gold 840
+expect Food 360
+expect ArmyCost 136
+expect ArmyConsumption 40
+state 01-budget-scheduled
+save
+remember scheduled
+select normandy
+load
+same scheduled
+state 02-budget-loaded
+panel establishment
+lang ru
+wait 0.4
+shot 04-scheduled-ru
+week
+expect Week 1
+expect Troops 1200
+expect Manpower 2400
+expect Gold 911
+expect Food 362
+expect ArmyReductionDueWeek 2
+expect ArmyCost 136
+expect ArmyConsumption 40
+state 03-first-old-army-settlement
+panel economy
+wait 0.4
+shot 05-week-one-old-costs
+# Ikinci hesap eski1200 kisilik orduyla odenir; sonra200 kisi gercek rezerve doner.
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1000
+expect Manpower 2600
+expect Gold 979
+expect Food 362
+expect ArmyReductionDueWeek 0
+expect ArmyTargetTroops 1000
+expect HasArmyEstablishment True
+expect ArmyCost 120
+expect ArmyConsumption 34
+state 04-earned-batch-with-petition
+wait 0.4
+shot 06-week-two-petition-after-transfer
+remember petition-barrier
+week
+same petition-barrier
+save
+load
+same petition-barrier
+state 05-earned-batch-loaded
+petition negotiate
+expect PendingPetition False
+panel establishment
+scroll document 650
+wait 1.2
+shot 07-target-reached-ru
+# Manpower'a donenler ucretsiz orduya donmez: ayni recruit maliyeti ve yeniikihafta.
+act recruit
+expect Troops 1200
+expect Manpower 2400
+expect Gold 859
+expect Food 342
+expect ArmyReductionDueWeek 4
+expect ArmyCost 136
+expect ArmyConsumption 40
+state 06-recruited-new-deadline
+panel establishment
+lang tr
+wait 0.3
+shot 08-recruit-new-deadline-tr
+establishment budget 900
+expect ArmyTargetTroops 900
+expect ArmyReductionDueWeek 4
+expect Troops 1200
+expect Manpower 2400
+state 07-retarget-preserves-deadline
+scroll document 650
+wait 0.3
+shot 09-retarget-same-deadline-tr
+save
+remember retargeted
+select orleans
+load
+same retargeted
+state 08-retarget-loaded
+establishment campaign 0
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 0
+expect Troops 1200
+expect Manpower 2400
+state 09-stopped-without-new-soldiers
+remember stopped
+establishment campaign 0
+same stopped
+save
+load
+same stopped
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot 10-stopped-policy-ru
+week
+expect Week 3
+expect Troops 1200
+expect Manpower 2400
+expect Gold 939
+expect Food 341
+expect ArmyPolicyId campaign
+expect ArmyReductionDueWeek 0
+expect ArmyCost 136
+expect ArmyConsumption 40
+state 10-after-stop-week-three
+panel journal
+wait 0.6
+shot 11-final-journal-ru
+lang tr
+wait 0.3
+shot 12-final-journal-tr
+quit

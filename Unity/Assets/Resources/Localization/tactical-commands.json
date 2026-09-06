@@ -1,0 +1,6 @@
+{
+  "entries": [
+    {"key":"battle.order_unavailable","ru":"Сейчас этот приказ недоступен. Выберите действующий полк и проверьте его состояние.","tr":"Bu emir şu anda kullanılamıyor. Muharebede kalan bir alay seçip durumunu kontrol edin."},
+    {"key":"battle.order_invalid","ru":"Этот приказ нельзя передать выбранным полкам.","tr":"Bu emir seçili alaylara iletilemiyor."}
+  ]
+}

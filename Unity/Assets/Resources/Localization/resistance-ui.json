@@ -1,0 +1,14 @@
+{
+  "entries": [
+    {"key":"ui.resistance.march","ru":"Сопротивление: {0} чел. →","tr":"Direniş: {0} kişi →"},
+    {"key":"ui.resistance.peace_link","ru":"Мирный проход →","tr":"Çatışmasız geçiş →"},
+    {"key":"ui.resistance.ours","ru":"Ваши солдаты: {0}","tr":"Sizin askerleriniz: {0}"},
+    {"key":"ui.resistance.title","ru":"Силы области","tr":"Bölgenin kuvveti"},
+    {"key":"ui.resistance.forces","ru":"Сопротивление: {0} человек.","tr":"Direniş: {0} kişi."},
+    {"key":"ui.resistance.peace","ru":"Сейчас область пропустит армию без боя.","tr":"Bölge şu anda orduyu çatışmadan geçirir."},
+    {"key":"ui.resistance.origin","ru":"База области: {0}. Силы — база × сумма долей ниже.","tr":"Bölge tabanı: {0}. Kuvvet = taban × aşağıdaki payların toplamı."},
+    {"key":"ui.resistance.factors","ru":"Волнения: {0}/100\nНедостаток контроля: {1}/100\nОппозиция элит: {2}/100","tr":"Huzursuzluk: {0}/100\nDenetim açığı: {1}/100\nSeçkin muhalefeti: {2}/100"},
+    {"key":"ui.resistance.threshold","ru":"Поход при недовольстве от 65 — бой. Уступки могут открыть мирный проход, но расходы на дорогу останутся.","tr":"Huzursuzluk 65 ve üzeriyse yürüyüş savaşa dönüşür. Tavizler çatışmasız geçiş açabilir; yürüyüş bedeli kalır."},
+    {"key":"ui.resistance.unavailable","ru":"Не удалось оценить силы области.","tr":"Bölgenin kuvveti değerlendirilemedi."}
+  ]
+}

@@ -1,0 +1,34 @@
+# A/B: aynı tam atlas kadrajı; Atlantik, Manş ve Akdeniz birlikte görünür.
+# Provence seçimi güney kıyısını vurgular; kamera, hafta ve kaynaklar değişmez.
+# Her before/after koşusunda bu dört PNG/JSON adı aynen korunur.
+new
+lang ru
+mode control
+panel journal
+select provence
+expect Week 0
+expect Troops 1200
+expect Gold 840
+expect SelectedRegionId provence
+remember sea-campaign
+wait 1.2
+same sea-campaign
+state 00-provence-control-ru
+shot 00-provence-control-ru
+lang tr
+wait 1.2
+same sea-campaign
+state 01-provence-control-tr
+shot 01-provence-control-tr
+lang ru
+mode unrest
+wait 1.2
+same sea-campaign
+state 02-provence-unrest-ru
+shot 02-provence-unrest-ru
+mode army
+wait 1.2
+same sea-campaign
+state 03-provence-army-ru
+shot 03-provence-army-ru
+quit

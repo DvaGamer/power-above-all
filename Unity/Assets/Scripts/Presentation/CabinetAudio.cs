@@ -18,11 +18,14 @@ namespace PowerAboveAll
             "paper", "quill", "seal", "order", "march", "week", "volley", "hit", "victory", "defeat"
         };
         private static readonly float[] Durations = { .30f, .22f, .18f, .16f, .42f, .48f, .44f, .12f, .38f, .48f };
+        private static readonly float[] Gains = { .30f, .28f, .36f, .32f, .36f, .38f, .42f, .25f, .40f, .38f };
         private readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>(StringComparer.Ordinal);
         private readonly Dictionary<string, float> lastCue = new Dictionary<string, float>(StringComparer.Ordinal);
         private readonly AudioSource[] voices = new AudioSource[VoiceCount];
         private readonly GameObject[] voiceObjects = new GameObject[VoiceCount];
         private float lastAny = -100f;
+        private string pendingResult;
+        private float pendingResultUntil;
         private bool ready;
         public bool Muted { get; private set; }
 
@@ -49,34 +52,72 @@ namespace PowerAboveAll
             ready = true;
         }
 
-        /// <summary>Unknown or throttled cues are ignored. Maximum three simultaneous voices.</summary>
+        /// <summary>En çok üç ses. Tek sonuç sesi, boşalan ilk sesi kısa süre bekleyebilir.</summary>
         public void Play(string cue)
         {
             if (Muted || !isActiveAndEnabled || string.IsNullOrEmpty(cue)) return;
             Prepare();
             cue = cue.Trim().ToLowerInvariant();
+            // Mevcut taslaklardan ayrı ağırlıklar; yeni bir ses sistemi değildir.
+            switch(cue)
+            {
+                case "bread": cue="paper";break;
+                case "tax": cue="quill";break;
+                case "recruit": cue="order";break;
+                case "subsidy": cue="seal";break;
+            }
             AudioClip clip;
             if (!clips.TryGetValue(cue, out clip)) return;
             float now = Time.unscaledTime;
-            if (now - lastAny < .045f) return;
             float previous;
             float cooldown = cue == "volley" ? .20f : cue == "hit" ? .12f :
                 cue == "victory" || cue == "defeat" ? 1f : .09f;
             if (lastCue.TryGetValue(cue, out previous) && now - previous < cooldown) return;
+            if (cue == "victory" || cue == "defeat")
+            {
+                if (pendingResult == cue) return;
+                pendingResult = cue;
+                // En uzun mevcut ses .48s; bu tek yuva gecikmiş bir ses yığını oluşturmaz.
+                pendingResultUntil = now + .75f;
+                TryPendingResult(now);
+                return;
+            }
+            if (pendingResult != null || now - lastAny < .045f) return;
+            StartCue(cue, clip, now);
+        }
+
+        private void Update()
+        {
+            if (pendingResult != null) TryPendingResult(Time.unscaledTime);
+        }
+
+        private void TryPendingResult(float now)
+        {
+            if (pendingResult == null) return;
+            if (Muted || !isActiveAndEnabled || now > pendingResultUntil) { pendingResult = null; return; }
+            if (now - lastAny < .045f) return;
+            if (StartCue(pendingResult, clips[pendingResult], now)) pendingResult = null;
+        }
+
+        private bool StartCue(string cue, AudioClip clip, float now)
+        {
             AudioSource voice = null;
             for (int i = 0; i < voices.Length; i++)
                 if (voices[i] != null && !voices[i].isPlaying) { voice = voices[i]; break; }
             // A busy pool drops the sound rather than stacking or truncating clips.
-            if (voice == null) return;
+            if (voice == null) return false;
             voice.clip = clip;
+            voice.volume=Gains[Array.IndexOf(CueNames,cue)];
             voice.Play();
             lastAny = now;
             lastCue[cue] = now;
+            return true;
         }
 
         public void SetMuted(bool muted)
         {
             Muted = muted;
+            if (muted) pendingResult = null;
             foreach (var voice in voices)
             {
                 if (voice == null) continue;
@@ -90,6 +131,7 @@ namespace PowerAboveAll
             foreach (var voice in voices) if (voice != null) voice.Stop();
             lastAny = -100f;
             lastCue.Clear();
+            pendingResult = null;
         }
 
         private void OnDestroy()
@@ -98,6 +140,7 @@ namespace PowerAboveAll
             foreach (var clip in clips.Values) Release(clip);
             clips.Clear();
             foreach (var child in voiceObjects) Release(child);
+            pendingResult = null;
             ready = false;
         }
 

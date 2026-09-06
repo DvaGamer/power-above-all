@@ -1,0 +1,31 @@
+{
+  "entries": [
+    {"key":"ui.accord.entry_offer","ru":"{0}: Морель предлагает договориться о налогах.","tr":"{0}: Morel vergi konusunda uzlaşmayı öneriyor."},
+    {"key":"ui.accord.entry_active","ru":"{0}: действуют налоговые каникулы.","tr":"{0}: vergi tatili sürüyor."},
+    {"key":"ui.accord.entry_button","ru":"Предложение Мореля →","tr":"Morel'in teklifi →"},
+    {"key":"ui.accord.back","ru":"← К силам совета","tr":"← Konsey güçleri"},
+    {"key":"ui.accord.title","ru":"Налоговые каникулы","tr":"Vergi tatili"},
+    {"key":"ui.accord.intermediary","ru":"Посредник от представителей сословий","tr":"Zümre temsilcilerinin aracısı"},
+    {"key":"ui.accord.offer","ru":"«Оставьте провинции её доход на четыре недели. Люди увидят, что с вами можно договориться». — Морель","tr":"«İlin gelirini dört hafta boyunca ilde bırakın. Halk sizinle uzlaşılabileceğini görsün.» — Morel"},
+    {"key":"ui.accord.active","ru":"Обычный налог с этой провинции временно не поступает в казну. Спокойствие всё ещё зависит от ваших приказов и запасов хлеба.","tr":"Bu ilin olağan vergisi geçici olarak hazineye gelmiyor. Huzur hâlâ emirlerinize ve tahıl stoklarına bağlı."},
+    {"key":"ui.accord.remaining","ru":"Осталось недельных расчётов: {0}. Последний — {1}.","tr":"Kalan haftalık hesap: {0}. Son hesap: {1}."},
+    {"key":"ui.accord.show_region","ru":"Показать эту провинцию","tr":"Bu ili göster"},
+    {"key":"ui.accord.immediate","ru":"Сразу после подписи:\nВолнения: {0} → {1}\nКонтроль: {2} → {3}","tr":"İmzadan hemen sonra:\nHuzursuzluk: {0} → {1}\nDenetim: {2} → {3}"},
+    {"key":"ui.accord.proposed_end","ru":"Следующие четыре недельных расчёта пройдут без налога этой провинции. Последний — {0}.","tr":"Sonraki dört haftalık hesapta bu ilin vergisi alınmaz. Son hesap: {0}."},
+    {"key":"ui.accord.cost_title","ru":"Цена для казны","tr":"Hazinenin bedeli"},
+    {"key":"ui.accord.income_change","ru":"Ближайший налоговый доход всей страны: {0} → {1} ливров.","tr":"Ülkenin sıradaki vergi geliri: {0} → {1} livre."},
+    {"key":"ui.accord.forgone","ru":"При нынешнем положении провинции каникулы убирают {0} ливров из недельного дохода.","tr":"İlin mevcut koşullarında tatil, haftalık gelirden {0} livre düşürüyor."},
+    {"key":"ui.accord.proposed_forgone","ru":"После уступки провинция могла бы приносить {0} ливров в неделю. На время каникул этот доход остаётся у неё.","tr":"Ödünden sonra il haftada {0} livre getirebilirdi. Tatil boyunca bu gelir ilde kalır."},
+    {"key":"ui.accord.no_debt","ru":"Пропущенный налог потом не взыскивается. Сумма меняется вместе с положением страны.","tr":"Alınmayan vergi sonradan tahsil edilmez. Tutar, ülkenin koşullarıyla değişir."},
+    {"key":"ui.accord.route","ru":"Меньше волнений — больше шансов провести армию мирно. Гарантии прохода нет: набор солдат и нехватка хлеба могут вновь вызвать сопротивление.","tr":"Daha az huzursuzluk, ordunun barışçıl geçişini kolaylaştırır. Geçiş garantisi yok: asker toplamak ve tahıl kıtlığı direnişi yeniden doğurabilir."},
+    {"key":"ui.accord.kept_title","ru":"Если сдержать слово","tr":"Söz tutulursa"},
+    {"key":"ui.accord.kept","ru":"После четвёртого расчёта обычный налог вернётся автоматически. Отношение Мореля {0}; поддержка представителей сословий {1}.","tr":"Dördüncü hesaptan sonra olağan vergi kendiliğinden geri döner. Morel'in ilişkisi {0}; zümre temsilcilerinin desteği {1}."},
+    {"key":"ui.accord.broken_title","ru":"Если потребовать сбор","tr":"Vergi istenirse"},
+    {"key":"ui.accord.broken","ru":"Чрезвычайный сбор в этой провинции нарушит договор. Сверх обычных последствий сбора: волнения {0}, контроль {1}, отношение Мореля {2}, поддержка представителей {3}, личная власть {4}.","tr":"Bu ilde olağanüstü vergi anlaşmayı bozar. Verginin olağan etkilerine ek olarak: huzursuzluk {0}, denetim {1}, Morel ilişkisi {2}, temsilci desteği {3}, kişisel iktidar {4}."},
+    {"key":"ui.accord.separate","ru":"Одновременно действует один такой договор. Даже после нарушения новый возможен лишь по окончании исходных четырёх недель. Обещание по мандату остаётся отдельным обязательством.","tr":"Aynı anda yalnız bir anlaşma geçerlidir. Bozulsa bile yenisi ancak ilk dört hafta bitince yapılabilir. Görev kapsamındaki söz ayrı bir yükümlülük olarak kalır."},
+    {"key":"ui.accord.sign","ru":"Подписать налоговые каникулы","tr":"Vergi tatilini imzala"},
+    {"key":"ui.accord.tax_button","ru":"Сбор · нарушить договор","tr":"Vergi · anlaşmayı boz"},
+    {"key":"ui.accord.tax_warning","ru":"Вдобавок: волнения {0}\nКонтроль {1} · Морель {2}\nСословия {3} · власть {4}","tr":"Ek: huzursuzluk {0}\nDenetim {1} · Morel {2}\nTemsilciler {3} · iktidar {4}"},
+    {"key":"ui.accord.economy","ru":"Учтены каникулы: {0}, −{1} ливров при нынешних условиях. Осталось расчётов: {2}.","tr":"Tatil hesaba katıldı: {0}, mevcut koşullarda −{1} livre. Kalan hesap: {2}."}
+  ]
+}

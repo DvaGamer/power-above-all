@@ -5,8 +5,11 @@
 {"key":"petition.choice.relief","ru":"Открыть запасы","tr":"Ambarları açın"},
 {"key":"petition.choice.negotiate","ru":"Договориться с представителями","tr":"Temsilcilerle anlaşın"},
 {"key":"petition.choice.refuse","ru":"Сохранить резервы","tr":"Stokları koruyun"},
-{"key":"petition.effects.relief","ru":"Еда −60 · Горожане +15 · Представители +5 · Волнения во всех областях −8","tr":"Gıda −60 · Kent halkı +15 · Temsilciler +5 · Tüm bölgelerde huzursuzluk −8"},
+{"key":"petition.effects.relief","ru":"Хлеб −60 · Поддержка: горожане +15, представители +5 · Волнения во всех областях −8","tr":"Erzak −60 · Destek: kentliler +15, temsilciler +5 · Tüm bölgelerde huzursuzluk −8"},
 {"key":"petition.effects.negotiate","ru":"Представители +12 · Корона −8 · Волнения в Иль-де-Франс −10","tr":"Temsilciler +12 · Taht −8 · Île-de-France huzursuzluğu −10"},
 {"key":"petition.effects.refuse","ru":"Корона +8 · Горожане −10 · Волнения во всех областях +5","tr":"Taht +8 · Kent halkı −10 · Tüm bölgelerde huzursuzluk +5"},
-{"key":"petition.insufficient","ru":"Нужно 60 еды. В запасах недостаточно хлеба.","tr":"60 gıda gerekli. Ambarlarda yeterli tahıl yok."}
+{"key":"petition.insufficient","ru":"Приказ недоступен: не хватает {0} хлеба.","tr":"Emir verilemiyor: {0} erzak eksik."},
+{"key":"petition.margin","ru":"ПРОШЕНИЕ\nНА РЕШЕНИЕ СОВЕТА","tr":"DİLEKÇE\nKONSEYİN KARARINA"},
+{"key":"petition.sender","ru":"{0} · от имени парижских горожан","tr":"{0} · Paris halkı adına"},
+{"key":"petition.stock","ru":"В казённых запасах: {0} хлеба. Выберите ответ; последствия указаны под каждым приказом.","tr":"Devlet ambarı: {0} erzak. Cevabınızı seçin; sonuçlar her emrin altında yazılı."}
 ]}

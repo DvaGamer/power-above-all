@@ -1,0 +1,179 @@
+# Ayni148check pure probe'un ayri sifir hedef rotasi. Taslak secimi native kanit degildir.
+# Iki haftada bir transfer,12. hesapta son200 kisi; garnizon etkisi13. hesapta kalkar.
+new
+lang ru
+wait 0.4
+shot 00-start
+establishment budget 0
+expect HasArmyEstablishment True
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 2
+expect Troops 1200
+expect Manpower 2400
+state 01-zero-policy-signed
+panel establishment
+wait 0.4
+shot 01-zero-target-applied-ru
+scroll document 800
+wait 0.3
+shot 02-zero-garrison-warning-ru
+lang tr
+scroll document 800
+wait 0.3
+shot 03-zero-garrison-warning-tr
+save
+remember zero-scheduled
+load
+same zero-scheduled
+week
+expect Week 1
+expect Troops 1200
+expect Manpower 2400
+expect Gold 911
+expect Food 362
+expect ArmyReductionDueWeek 2
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1000
+expect Manpower 2600
+expect Gold 979
+expect Food 362
+expect ArmyReductionDueWeek 4
+state 02-first-zero-target-batch
+petition negotiate
+week
+expect Week 3
+expect Troops 1000
+expect Manpower 2600
+expect Gold 1076
+expect Food 367
+expect ArmyReductionDueWeek 4
+week
+expect Week 4
+expect Troops 800
+expect Manpower 2800
+expect Gold 1170
+expect Food 370
+expect ArmyReductionDueWeek 6
+state 03-second-batch
+week
+week
+expect Week 6
+expect Troops 600
+expect Manpower 3000
+expect Gold 1383
+expect Food 385
+expect ArmyReductionDueWeek 8
+state 04-third-batch
+panel establishment
+scroll document 650
+wait 0.4
+shot 04-half-size-policy-tr
+save
+remember halfway
+select normandy
+load
+same halfway
+week
+week
+expect Week 8
+expect Troops 400
+expect Manpower 3200
+expect Gold 1617
+expect Food 407
+expect ArmyReductionDueWeek 10
+state 05-fourth-batch
+week
+week
+expect Week 10
+expect Troops 200
+expect Manpower 3400
+expect Gold 1870
+expect Food 433
+expect ArmyReductionDueWeek 12
+state 06-last-garrison-awaits
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot 05-last-garrison-warning-ru
+week
+expect Week 11
+expect Troops 200
+expect Gold 2009
+expect Food 451
+expect ArmyReductionDueWeek 12
+expect ArmyCost 53
+expect ArmyConsumption 7
+state 07-last-old-army-budget
+week
+expect Week 12
+expect Troops 0
+expect Manpower 3600
+expect Gold 2144
+expect Food 467
+expect ArmyReductionDueWeek 0
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 0
+expect HasArmyEstablishment True
+expect HasDumasInitiative False
+expect ArmyCost 0
+expect ArmyConsumption 0
+state 08-zero-after-old-garrison-settlement
+save
+remember zero-completed
+select normandy
+load
+same zero-completed
+state 09-zero-completed-loaded
+panel establishment
+scroll document 650
+wait 0.4
+shot 06-zero-reached-ru
+# Bu hesap ilk kez ordusuz/garnizonsuzdur; state08 ile bolgesel fark ayrica okunur.
+week
+expect Week 13
+expect Troops 0
+expect Manpower 3600
+expect Gold 2328
+expect Food 488
+expect ArmyReductionDueWeek 0
+expect HasDumasInitiative False
+expect ArmyCost 0
+expect ArmyConsumption 0
+state 10-first-week-without-garrison
+panel economy
+wait 0.4
+shot 07-first-week-without-garrison-ru
+mode army
+wait 1.2
+shot 10-no-army-overlay
+# Sefer serbestisi politikasi, sonra ayni200 kisilik olağan recruit; oyun sonu yok.
+establishment campaign 0
+act recruit
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyReductionDueWeek 0
+expect Troops 200
+expect Manpower 3400
+expect Gold 2208
+expect Food 468
+expect ArmyCost 53
+expect ArmyConsumption 7
+state 11-recruited-after-zero
+save
+remember recovered
+load
+same recovered
+state 12-recruited-after-zero-loaded
+panel journal
+lang tr
+wait 0.6
+shot 08-recovery-journal-tr
+lang ru
+wait 0.3
+shot 09-recovery-journal-ru
+wait 1.2
+shot 11-restored-army-overlay
+quit

@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {"key":"error.trust.closed","ru":"{0} больше не даёт вам действовать от своего имени: отношения разрушены. Сначала признайте политическую ответственность перед покровителем.","tr":"{0}, ilişkiler koptuğu için artık kendi adına hareket etmenize izin vermiyor. Önce haminize karşı siyasi sorumluluğu üstlenin."},
+    {"key":"error.trust.open","ru":"Сначала решите судьбу действующего обязательства. Его условия остаются прежними; исполнение также улучшит отношения.","tr":"Önce açık taahhüdün sonucunu kararlaştırın. Koşulları değişmedi; yerine getirmek de ilişkinizi iyileştirir."},
+    {"key":"error.trust.not_broken","ru":"Покровитель ещё готов обсуждать помощь. Отдельное признание ответственности сейчас не требуется.","tr":"Haminiz yardımı görüşmeye hâlâ hazır. Şu anda ayrıca sorumluluk üstlenmeniz gerekmiyor."},
+    {"key":"log.trust.ready","ru":"Вы можете признать ответственность перед покровителем.","tr":"Haminize karşı sorumluluğu üstlenebilirsiniz."},
+    {"key":"log.trust.repaired","ru":"Вы публично признали ответственность. {0} вновь готов обсуждать помощь; прежние потери в областях и поддержке сохраняются.","tr":"Sorumluluğu açıkça üstlendiniz. {0} yardımı yeniden görüşmeye hazır; bölgelerdeki ve siyasi destekteki önceki kayıplar sürüyor."}
+  ]
+}

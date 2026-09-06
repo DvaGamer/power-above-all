@@ -1,0 +1,69 @@
+# Root gerçek fareyle hakkı verir, ek grubu alır ve hakkı geri alır.
+# Bu üç kararı veren semantic commission komutu bu rotada yoktur.
+new
+lang ru
+act recruit
+panel council
+expect Troops 1400
+expect Gold 720
+expect Food 340
+expect DumasLoyalty 60
+expect DumasOfficerCommission False
+wait 0.8
+state 00-before-right
+shot 00-start
+wait 55
+expect DumasOfficerCommission True
+expect DumasExtraRecruitUsed False
+expect Troops 1400
+expect Gold 720
+expect Food 340
+expect DumasLoyalty 60
+expect CommissionRevokeGold 117
+state 01-native-granted
+shot 01-native-granted
+wait 55
+expect DumasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect Troops 1600
+expect Manpower 2000
+expect Gold 600
+expect Food 320
+expect MilitarySupplies 90
+expect DumasLoyalty 61
+expect CommissionRevokeGold 134
+state 02-native-extra
+shot 02-native-extra
+wait 55
+expect DumasOfficerCommission False
+expect DumasExtraRecruitUsed True
+expect Troops 1600
+expect Manpower 2000
+expect Gold 466
+expect Food 320
+expect MilitarySupplies 90
+expect DumasLoyalty 61
+state 03-native-revoked
+shot 03-native-revoked
+save
+remember native-right-revoked
+load
+same native-right-revoked
+state 04-native-revoked-loaded
+# Girdi incelemesinden sonra aynı public hedef emriyle eski iki haftalık devam.
+establishment budget 1400
+expect ArmyReductionDueWeek 2
+week
+expect Troops 1600
+expect DumasExtraRecruitUsed False
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1400
+expect Manpower 2200
+expect ArmyReductionDueWeek 0
+expect ArmyCost 153
+expect ArmyConsumption 47
+state 05-first-reduction
+shot 04-first-reduction
+quit

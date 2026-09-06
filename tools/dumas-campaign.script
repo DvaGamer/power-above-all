@@ -1,0 +1,162 @@
+# API-only DumasInitiativeProbe-2026-09-06T02-13-33-458Z olcumunun gercek player karsiligi.
+# Iki ayri yeni legacy seferi: ayni sekiz hafta, sonra izin veya veto. State enjeksiyonu yok.
+new
+lang ru
+wait 0.6
+shot 00-start
+select ile
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+act recruit
+week
+week
+act recruit
+week
+week
+expect Week 8
+expect HasDumasInitiative True
+expect DumasForageDueWeek 9
+expect DumasNextForageWeek 12
+expect Gold 765
+expect Food 0
+expect Troops 1840
+expect Power 53.5
+expect Supply 75
+expect Morale 76
+expect ForageFood 36
+state 01-allow-warning
+save
+remember allow-warning
+select normandy
+load
+same allow-warning
+state 02-allow-warning-loaded
+panel initiative
+wait 0.4
+shot 01-warning-ru
+scroll document 700
+wait 0.2
+shot 02-warning-terms-ru
+scroll document 1300
+wait 0.2
+shot 03-warning-veto-ru
+lang tr
+wait 0.3
+shot 04-warning-tr
+scroll document 700
+wait 0.2
+shot 05-warning-terms-tr
+scroll document 1300
+wait 0.2
+shot 06-warning-veto-tr
+panel economy
+scroll document 650
+wait 0.3
+shot 07-forage-economy-tr
+# Cevap verilmez: gercek dokuzuncu hesap ortak plani bir kez uygular.
+week
+expect Week 9
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+expect Gold 804
+expect Food 0
+expect Troops 1840
+expect Power 50
+expect Supply 85
+expect Morale 79
+expect ForageFood 0
+state 03-allowed-week-nine
+save
+remember allowed-nine
+select orleans
+load
+same allowed-nine
+state 04-allowed-week-nine-loaded
+panel journal
+lang ru
+wait 0.6
+shot 08-allowed-journal-ru
+lang tr
+wait 0.3
+shot 09-allowed-journal-tr
+# Otomatik kayit onceki izni degistirir; veto karsilastirmasi ikinci gercek yeni seferdir.
+new
+lang ru
+select ile
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+act recruit
+week
+week
+act recruit
+week
+week
+expect Week 8
+expect HasDumasInitiative True
+expect DumasForageDueWeek 9
+expect DumasNextForageWeek 12
+expect Gold 765
+expect Food 0
+expect Troops 1840
+expect Power 53.5
+expect ForageFood 36
+state 05-veto-warning
+panel initiative
+scroll document 1300
+wait 0.4
+shot 10-before-veto-ru
+forage veto
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+expect ForageFood 0
+state 06-vetoed-before-week
+remember vetoed
+forage veto
+same vetoed
+save
+load
+same vetoed
+state 07-vetoed-loaded
+panel initiative
+wait 0.4
+shot 11-vetoed-notice-ru
+week
+expect Week 9
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+expect Gold 806
+expect Food 0
+expect Troops 1692
+expect Power 48.5
+expect Supply 50
+expect Morale 61
+expect ForageFood 0
+state 08-vetoed-week-nine
+save
+remember vetoed-nine
+select normandy
+load
+same vetoed-nine
+state 09-vetoed-week-nine-loaded
+panel journal
+wait 0.6
+shot 12-vetoed-journal-ru
+lang tr
+wait 0.3
+shot 13-vetoed-journal-tr
+quit

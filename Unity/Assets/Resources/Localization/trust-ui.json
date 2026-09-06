@@ -1,0 +1,14 @@
+{
+  "entries": [
+    { "key": "ui.trust.identity.crown", "ru": "Валькур готов обсудить новый аванс. Доступ к королевской кассе зависит от условий распоряжения.", "tr": "Valcourt yeni bir avansı görüşmeye hazır. Kraliyet kasasına erişim, emrin koşullarına bağlıdır." },
+    { "key": "ui.trust.identity.assembly", "ru": "Морель готов обсудить примирение с областью. Его поручительство обязывает вас доставить обещанный хлеб.", "tr": "Morel, bölgeyle uzlaşmayı görüşmeye hazır. Kefaleti, söz verdiğiniz tahılı teslim etmenizi gerektirir." },
+    { "key": "ui.trust.identity.army", "ru": "Дюма готов обсудить снабжение армии из местных запасов. Людям потребуется возмещение.", "tr": "Dumas, ordunun yerel stoklardan ikmalini görüşmeye hazır. Halka karşılığının ödenmesi gerekecek." },
+    { "key": "ui.trust.refusal.crown", "ru": "Валькур больше не выдаёт вам аванс: доверие исчерпано.", "tr": "Valcourt artık size avans vermiyor: güveni tükendi." },
+    { "key": "ui.trust.refusal.assembly", "ru": "Морель не поручится за новое обещание: доверие исчерпано.", "tr": "Morel yeni bir söze kefil olmuyor: güveni tükendi." },
+    { "key": "ui.trust.refusal.army", "ru": "Дюма не поддержит новую реквизицию: доверие исчерпано.", "tr": "Dumas yeni bir zor alımı desteklemiyor: güveni tükendi." },
+    { "key": "ui.trust.repair.title", "ru": "Политическая ответственность", "tr": "Siyasi sorumluluk" },
+    { "key": "ui.trust.repair.effects", "ru": "Личная власть {0}\nОтношение {1}", "tr": "Kişisel iktidar {0}\nİlişki {1}" },
+    { "key": "ui.trust.repair.consequence", "ru": "Это шаг к новому разговору. Прежний ущерб области и потерянная поддержка сохранятся. Ресурсов вы не получите.", "tr": "Bu, yeniden görüşmek için bir adım. Bölgenin önceki zararı ve kaybedilen destek kalır. Kaynak kazanmazsınız." },
+    { "key": "ui.trust.repair.action", "ru": "Признать ответственность", "tr": "Sorumluluğu üstlen" }
+  ]
+}

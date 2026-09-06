@@ -2,7 +2,7 @@
 
 ## Çalışma durumu
 
-**5 Eylül 2026: Kullanıcı bütün isteklerin plana kaydedilmesini ve ardından çalışmanın durdurulmasını istedi. Geliştirme durduruldu.** Aşağıdaki maddeler yapılacak işler ve kabul ölçütleridir; hepsinin tamamlandığı anlamına gelmez. Devam etmek için kullanıcının yeni talimatı beklenir.
+**6 Eylül 2026: Kullanıcı on saatlik özerk geliştirmeyi başlattı.** Ana kaynak baseline-visible güvenli kapısından geçti: 23 Unity testi, taze player, 20 gerçek kare ve 26 durum kontrolü. Önceki shader düzeltmesi taşındı. Yeni aydınlık/koyu, hoş ve stilize görsel yön `ART_DIRECTION.md` başındadır. Polish'in bütünü henüz tamamlanmış sayılmaz; canlı sıra `NIGHT_QUEUE.md`, kanıt `NIGHT_LOG.md` ve `NOTES.md` içindedir.
 
 Unity 6000.3.23f1 seçildi ve kuruldu. Proje `Unity/`, başlangıç sahnesi `Assets/Scenes/Main.unity`; açıcı `OPEN_UNITY.cmd`. Yeni oyun Rusça ve Türkçe, ekip belgeleri Türkçedir. GitHub deposunun **Public kalması** son kullanıcı kararıdır. Tarayıcı 0.1 karşılaştırma kaynağı olarak korunur.
 

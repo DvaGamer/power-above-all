@@ -1,0 +1,66 @@
+# Gerçek oyuncuda askerî söz ile bölgesel vergi tatili aynı seferde yaşar.
+new
+role-menu
+role-start army
+lang ru
+mandate issue
+act recruit
+expect RoleId army
+expect HasObligation True
+expect Troops 1400
+select champagne
+accord grant
+expect HasAccord True
+expect AccordRegionId champagne
+panel accord
+shot 01-two-promises
+save
+remember two-promises
+load
+same two-promises
+march
+settle 3
+expect ArmyRegionId champagne
+expect Troops 1400
+expect Food 360
+expect BattleActive False
+expect ResolvedBattleCount 0
+week
+week
+expect Week 2
+expect PendingPetition True
+expect MandateDue True
+expect HasAccord True
+shot 02-petition-before-due-promise
+remember blocked-week
+week
+same blocked-week
+petition relief
+expect PendingPetition False
+expect MandateDue True
+shot 03-military-promise-due
+mandate fulfil
+expect HasObligation False
+expect HasAccord True
+expect AccordRegionId champagne
+select ile
+expect SelectedUnrest 49
+expect ArmyRegionId champagne
+shot 04-original-military-region
+state 04-military-promise-kept
+week
+week
+expect Week 4
+expect HasAccord False
+expect HasObligation False
+expect RoleId army
+panel journal
+shot 05-both-promises-kept-ru
+lang tr
+shot 06-both-promises-kept-tr
+save
+remember both-kept
+load
+same both-kept
+state 07-both-kept-loaded
+quit

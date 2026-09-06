@@ -1,0 +1,78 @@
+# İlk kurulumdan sonra neden/dil/vergi/ekmek yalnız gerçek Windows girdisidir.
+# Root her yeni checkpoint'i gördükten sonra sonraki75 saniyelik pencereye geçer.
+new
+lang ru
+select champagne
+panel journal
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect Troops 1200
+expect Gold 840
+expect Food 360
+expect SelectedUnrest 69
+expect SelectedControl 60.5
+expect SelectedRegionId champagne
+expect BattleActive False
+expect ResolvedBattleCount 0
+remember untouched-resistance
+wait 0.8
+state 00-start
+shot 00-start
+
+# Pencere1: root gerçek ok tıklamasıyla neden açıklamasını açar.
+wait 75
+same untouched-resistance
+expect Language ru
+expect ResistanceTroops 1114
+state 01-native-why-ru
+shot 01-native-why-ru
+
+# Pencere2: gerçek RU/TR, açıklama oku ve gerekli gerçek scroll.
+# Script dil değiştirmez; neden metninin gerçekten görünmesini root PNG'de inceler.
+wait 75
+same untouched-resistance
+expect Language tr
+expect ResistanceTroops 1114
+state 02-native-why-tr
+shot 02-native-why-tr
+
+# Pencere3: gerçek Tax, root'un1234 inputPNG'si, sonra gerçek Bread.
+# Bu aralıkta act/commission/accord veya durum yazan bir hazırlık komutu yoktur.
+wait 75
+expect Language tr
+expect SelectedRegionId champagne
+expect ResistanceActive True
+expect ResistanceTroops 1106
+expect SelectedUnrest 66
+expect SelectedControl 62.5
+expect Gold 940
+expect Food 320
+expect Troops 1200
+expect Manpower 2400
+expect MilitarySupplies 120
+expect Morale 78
+expect Supply 100
+expect Power 55
+expect Moves 2
+expect Fatigue 0
+expect ArmyRegionId ile
+expect HasOfficerCommission False
+expect DumasExtraRecruitUsed False
+expect HasAccord False
+expect BattleActive False
+expect ResolvedBattleCount 0
+expect HasPendingVictory False
+expect Week 0
+state 03-native-tax-bread
+shot 03-native-tax-bread
+save
+remember native-tax-bread
+select normandy
+load
+same native-tax-bread
+expect SelectedRegionId champagne
+expect ResistanceTroops 1106
+expect BattleActive False
+state 04-native-tax-bread-loaded
+shot 04-native-tax-bread-loaded
+quit
