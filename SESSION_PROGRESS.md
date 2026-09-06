@@ -1,10 +1,14 @@
 # Aktif geliştirme — hızlı devam kaydı
 
+**03:10 UTC son doğrulama:** `army-establishment-final-20260906-030602-688-f7c2fdcb` GREEN304 /37 PNG /259 kontrol /33 JSON /10 tarayıcı /141 dosya. Runtime `1a31f88bc9ad3dbb72e39227e73766c624fe7bb7ec0daf2319191bef21ac1f3c`; launcher complete-build, insan kaydı SHA aynı. ArmyEstablishment/Archivev6, zero flag/overlay/button, koşullu draft tarihi uygulandı. Gerçek native800 draft/commit önceki aynı mekanik build'de PASS19, süreçler kapalı. Tüm koşular bitti. Ayrıntı ve sonraki yalnız tasarım sahiplikleri NOTES üstünde; aşağıdaki kayıtlar tarihseldir. Görev07:22:03 UTC'ye kadar aktif.
+
+**02:53 UTC yeni kaynak:** ArmyEstablishment API/sağ belge/Archive v6 statik Runtime25 / Editor3 PASS; saf `ArmyEstablishmentProbe-2026-09-06T02-51-25-163Z-ad948d18` 148 kontrol PASS; RU/TR594 ve59 araç kontrolü PASS. Yeni feature henüz Unity/player kanıtı değil. Gameplay testleri tamamlıyor; verification actual script hazırlıyor; visual source review. Root tüm koşuların sahibi, şu anda Unity/player/native yok. Ayrıntı NOTES üstündedir; aşağıdaki GREEN önceki commit'e aittir.
+
 Güncel: **02:30 UTC, 6 Eylül 2026**. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar sürer. Erken final veya goal complete yok. Kullanıcı farklı başlangıç rolleri; kişisel iktidar, ülke yönetimi ve savaş; sonuçlu alternatif tarih; hoş, yarı stilize ve özenle tasarlanmış görseller istedi. Kesin rol kadrosu ve kampanya sonu hâlâ çalışma varsayımıdır.
 
 ## Son doğrulanmış paket
 
-**02:30 güncel ek:** `dumas-labels-first-20260906-021758-659-0da55b25` GREEN **230 Unity /24PNG /66 kontrol /21JSON /10 tarayıcı /141 build dosyası**. Runtime `72628a77ed862d41e2c9538e4637d32a0a7bd33c36cd3e537b71c1fb4f917fe3`; launcher bunu complete-build olarak seçer. Native/Unity/player süreçleri tamamlandı. Root yeni doğrulanmış paketi yerel commit'e hazırlıyor; son commit hâlâ ab378c0.
+**02:34 güncel ek:** `dumas-labels-first-20260906-021758-659-0da55b25` GREEN **230 Unity /24PNG /66 kontrol /21JSON /10 tarayıcı /141 build dosyası**. Runtime `72628a77ed862d41e2c9538e4637d32a0a7bd33c36cd3e537b71c1fb4f917fe3`; launcher bunu complete-build olarak seçer. Native/Unity/player süreçleri tamamlandı. Doğrulanmış paket **c329851** commit'inde (45 dosya).
 
 Dumas gerçek açlıktan sonra due=Week+1, next=Week+4 erzak emri ilan eder; takvim son4haftasında yeni emir yok. Ortak `BuildWeekProjection → CalculateEconomy(EconomyView)` normal/hypotheticalaccord tahminini ve NextWeek'i birleştirir. Son yerel zarar sonrası açık1–40 ise tam miktar, Unrest+8/Elite−6/Ambition+3/Power−min(current,4) uygulanır; hırs sadakatten büyük değilse Power0. Diğer durumlar sufficient/too_large/no_army, toplama etkileri sıfır. Veto ilişki−4, due temizlenir, next kalır. Food ayrı tekrar eklenmez: EconomyForecast.ForageFood ve NetFood tek hesapta. Journal uygulama vadesinin haftasında yazılır. Arşiv v5 yeni iki int alanı zorunlu tutar; v3accord/v4victory geçiş eşikleri ayrı kalır.
 
@@ -38,7 +42,7 @@ Arşiv v4 PendingVictoryId varlığını/non-null değerini zorunlu tutar. v1–
 
 ## Sıradaki iş
 
-Root doğrulanmış NPC/etiket paketini commit'e hazırlıyor. Gameplay ajanı `Unity/WorkNotes/next-country-decision.md` içinde ülke yönetimi için3 yeni konsept hazırlıyor; **bu sonraki özellik henüz onaylı veya uygulanmış değildir**. Visual ve verification ajanları son incelemelerini bitirdi. Yeni bounded iş için followup_task gerekir. Eski `next-opponent-choice.md` artık uygulanmış Dumas sözleşmesi ve kanıtını içerir.
+Root c329851 sonrasında `next-country-decision.md` A konseptini onayladı: ArmyEstablishment üst hedefi, iki haftada en fazla200 yaşayan asker Troops→Manpower; eski hesap sonrası uygulanır, tasarruf sonraki hafta. Gameplay Core/Archivev6/test/probe, root UI/GameApp/AutoShots/localization/tools, visual UI planı, verification sıra ve kapasite audit sahibi. Yeni kaynaklar henüz yeni build kanıtı değildir. Fields ArmyPolicyId(campaign/budget),ArmyTargetTroops,ArmyReductionDueWeek; API GetArmyEstablishmentTerms overloadları /CanSet/Set/Has. Tam sözleşme NOTES üstündedir. Hiçbir ajan compile/probe/Unity/player başlatmaz.
 
 02:01 UTC yeni işler: gameplay ajanı Dumas'nın tam açığı kapatan girişimini Core/Archive/test dosyalarında uyguluyor; root GameApp/UI/AutoShots/localization sahibi. Visual ajanı yalnız TacticalBattle.cs etiket düzenini uyguluyor. Verification ajanı ShiftClick ve iki40s fazlı native-volley hazırlığını bitirdi; root51 saf kontrol PASS. Canlı `native-input-20260906-015859-f35ec6e1` fc1e build kullanıyor, Start exit0; root gerçek Shift grubu ve tek topçu salvosu/pause karelerini gördü, son JSON/owner raporu bekleniyor. Owner/helper koşu boyunca değişmez. Root bütün compile/probe/Unity/player/native başlatmalarının tek sahibidir.
 

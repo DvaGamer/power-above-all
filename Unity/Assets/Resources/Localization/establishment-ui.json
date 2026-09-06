@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {"key":"ui.establishment.open","ru":"Военный штат →","tr":"Ordu mevcudu →"},
+    {"key":"ui.establishment.back","ru":"← К счетам","tr":"← Hesaplara"},
+    {"key":"ui.establishment.title","ru":"Военный штат","tr":"Ordu mevcudu"},
+    {"key":"ui.establishment.rule","ru":"До {0} солдат возвращаются в резерв каждые {1} недели, пока армия превышает предел.","tr":"Ordu hedefi aşarken her {1} haftada en çok {0} asker yedeğe döner."},
+    {"key":"ui.establishment.target_active","ru":"ДЕЙСТВУЮЩИЙ ПРЕДЕЛ","tr":"YÜRÜRLÜKTEKİ HEDEF"},
+    {"key":"ui.establishment.target_draft","ru":"НОВЫЙ ПРЕДЕЛ · ЧЕРНОВИК","tr":"YENİ HEDEF · TASLAK"},
+    {"key":"ui.establishment.entry_due","ru":"Предел {0} · ближайший выход {1}","tr":"Hedef {0} · sıradaki ayrılış {1}"},
+    {"key":"ui.establishment.entry_idle","ru":"Действующий предел: {0}","tr":"Yürürlükteki hedef: {0}"},
+    {"key":"ui.establishment.now","ru":"Сейчас в строю — {0}","tr":"Şimdi orduda — {0}"},
+    {"key":"ui.establishment.cost","ru":"За неделю: {0} ливров · {1} пищи","tr":"Haftalık: {0} livre · {1} gıda"},
+    {"key":"ui.establishment.first","ru":"Ближайший выход — {0}","tr":"Sıradaki ayrılış — {0}"},
+    {"key":"ui.establishment.draft_first","ru":"По черновику — выход {0}","tr":"Taslak yürürlüğe girerse — {0}"},
+    {"key":"ui.establishment.transfer","ru":"В строю {0}; в резерв +{1}","tr":"Orduda {0}; yedeğe +{1}"},
+    {"key":"ui.establishment.delayed","ru":"В день выхода расчёт ещё по старому штату. Меньшие расходы — с {0}.","tr":"Ayrılış günü hesap hâlâ eski mevcutla. Daha düşük giderler {0} hesabından."},
+    {"key":"ui.establishment.final_calculation","ru":"Последний расчёт календаря ещё по старому штату. Следующей недели в этом сценарии нет.","tr":"Takvimin son hesabı hâlâ eski mevcutla. Bu senaryoda sonraki hafta yok."},
+    {"key":"ui.establishment.target","ru":"Цель — не более {0}\nСверх предела сейчас: {1}","tr":"Hedef — en çok {0}\nŞimdi hedefin üstünde: {1}"},
+    {"key":"ui.establishment.conditions","ru":"Расчёт при нынешнем составе и запасах. Потери могут изменить группу; после её ухода армия станет меньше.","tr":"Hesap bugünkü mevcut ve stoklarla. Kayıplar grubu değiştirebilir; ayrılıştan sonra ordu küçülür."},
+    {"key":"ui.establishment.dumas","ru":"Отношения с Дюма падают на 4 за каждый выход, пока не достигнут нуля. За ближайший: {0}.","tr":"Ayrılan her grup: Dumas ile ilişkide en çok 4 kayıp. Sıradaki grup için: {0}."},
+    {"key":"ui.establishment.no_garrison","ru":"После ухода последних солдат гарнизона не будет. Со следующего расчёта провинция стоянки потеряет армейские −3 к волнениям и +2 к контролю. Сейчас стоянка: {0}.","tr":"Son askerler ayrılınca garnizon kalmaz. Sonraki hesapta konaklama ili ordunun −3 huzursuzluk ve +2 denetim katkısını kaybeder. Şimdiki konak: {0}."},
+    {"key":"ui.establishment.no_garrison_now","ru":"Гарнизона уже нет. В следующем расчёте провинция {0} не получит армейские −3 к волнениям и +2 к контролю.","tr":"Garnizon artık yok. Sonraki hesapta {0}, ordunun −3 huzursuzluk ve +2 denetim katkısını alamaz."},
+    {"key":"ui.establishment.empty_army","ru":"В строю нет солдат","tr":"Orduda asker yok"},
+    {"key":"ui.establishment.empty_legend","ru":"Постоянной армии нет. Для похода нужно набрать солдат.","tr":"Sürekli ordu yok. Yürüyüş için asker toplamak gerekiyor."},
+    {"key":"ui.establishment.start","ru":"Ввести предел","tr":"Hedefi yürürlüğe koy"},
+    {"key":"ui.establishment.update","ru":"Изменить предел","tr":"Hedefi değiştir"},
+    {"key":"ui.establishment.stop","ru":"Остановить сокращение","tr":"Azaltmayı durdur"},
+    {"key":"ui.establishment.stop_note","ru":"Остановка прекратит будущий уход. Вернуть солдат можно обычным наймом, с его ценой и содержанием.","tr":"Durdurmak gelecekteki ayrılışları keser. Askerleri geri almak olağan toplama bedeli ve bakım gideri gerektirir."}
+  ]
+}

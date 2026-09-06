@@ -1,12 +1,12 @@
 # Gece geliştirme raporu — çalışma sürüyor
 
-Güncelleme: 6 Eylül 2026, 02:25 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
+Güncelleme: 6 Eylül 2026, 03:10 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
 
 ## Çalışan sürüm
 
 [PLAY_GAME.cmd](PLAY_GAME.cmd) son doğrulanmış Windows oyununu açar. `node play-game.cjs --check` oyunu başlatmadan seçilen yolu ve dosya bütünlüğünü gösterir.
 
-Son tam kapı: [Dumas ve alay etiketleri raporu](output/verify/dumas-labels-first-20260906-021758-659-0da55b25/REPORT.md), **GREEN**. 230 Unity testi, yeni Direct3D11 build, 24 gerçek PNG, 66 durum kontrolü, 21 JSON kaydı ve 10 tarayıcı testi geçti. Başlatıcı bu 141 dosyalık build'i `complete-build` olarak seçti. Runtime SHA256: `72628a77ed862d41e2c9538e4637d32a0a7bd33c36cd3e537b71c1fb4f917fe3`.
+Son tam kapı: [Ordu mevcudu raporu](output/verify/army-establishment-final-20260906-030602-688-f7c2fdcb/REPORT.md), **GREEN**. 304 Unity testi, yeni Direct3D11 build, 37 gerçek PNG, 259 durum kontrolü, 33 JSON kaydı ve 10 tarayıcı testi geçti. Başlatıcı bu 141 dosyalık build'i `complete-build` olarak seçti. Runtime SHA256: `1a31f88bc9ad3dbb72e39227e73766c624fe7bb7ec0daf2319191bef21ac1f3c`.
 
 ## Oynanabilir değişiklikler
 
@@ -16,7 +16,9 @@ Son tam kapı: [Dumas ve alay etiketleri raporu](output/verify/dumas-labels-firs
 - Zafer belgesi iki seçeneği, bedelleri ve sonuçları yan yana gösterir. Esc yalnız pencereyi kapatır; teklif konseyden yeniden açılır. Ayrı ret düğmesi teklifi kapatır. Yeni hafta ek bir cevap kilidi getirmez.
 - Dumas gerçek gıda açlığından sonra, bir sonraki hesap için kendi erzak toplama emrini ilan eder. Oyuncu cevap vermese de emrini değerlendirir. Yerel etkilerden sonraki açık en fazla40 ise tüm ihtiyacı kapatır; yetersiz toplama için ek zarar üretmez. Oyuncu ilişki bedeliyle yasaklayabilir veya normal ikmali düzeltebilir. Toplama kampı izler; yerel huzursuzluk, elit bağlılığı ve generalin hırsı etkilenir.
 - Konseyde ve alt bildirimde erzak emri okunabilir. Tarih, yer, gerçek bedeller ve veto açıkça görünür. Ekonomi defterindeki toplama satırı, haftanın uyguladığı aynı hesabı kullanır. Yeni bir zorunlu cevap kilidi yoktur.
-- Arşiv v5 girişimin vadesini ve dört haftalık aralığını saklar. v1–v4 kayıtları taşınır; eski rol sözleri, v3 bölgesel anlaşmaları ve v4 zafer kararları korunur.
+- Sürekli ordunun üst sınırı belirlenebilir. İki başarılı haftada en çok200 yaşayan fazla asker rezerve döner; ayrılış hesabı eski mevcudu öder, daha düşük gider sonraki hesapta başlar. Dumas her gerçek gruba tepki verir. Politika durdurulabilir; yeniden asker almak normal fiyatını ister. Hedef0 mümkündür; flama ve askerî harita alanı kaybolur, sonraki hafta garnizon katkısı da biter.
+- Hesaplar içindeki açık kâğıt belge, uygulanan hedefi ve taslağı ayırır. Ücret, gıda, ayrılış tarihi ve Dumas'nın gerçek bedeli imzadan önce okunur. Gerçek fareyle800 taslağı seçilip kapatıldığında kampanya aynı kaldı; ayrı onay tıklaması emri bir kez uyguladı. Kayıt/yükleme ve iki haftalık çıkış doğrulandı.
+- Arşiv v6 ordu hedefini ve ayrılış tarihini saklar. v1–v5 kayıtları taşınır; eski rol sözleri, v3 bölgesel anlaşmaları, v4 zafer kararları ve v5 Dumas emirleri korunur.
 
 ## Görsel dil ve savaş
 
@@ -29,6 +31,8 @@ Aynı taktik adımda verilen atışlar birlikte çözülür. Cephanesiz piyade v
 Alay etiketleri figürlerin ve sabit namlu alanının yanına taşınır; ince bağlantı çizgisi hangi birliğe ait olduklarını gösterir. Seçili topçu ve iki piyade gerçek RU/TR karelerinde açıktır. Üç duraklatılmış PNG/JSON çifti birebir eşittir. Yoğun sahnenin bir bölümünde iki panelin köşesi yaklaşık6×3 piksel temas eder; metin kapanmaz. Tamamen çakışmasız yerleşim iddiası yoktur.
 
 ## Kanıtlanan siyasi sonuçlar
+
+Ordu mevcudu rotasında1200→1000 için ilk iki hesap136 livre/40 gıda ile tamamlandı; sonra200 kişi rezerve döndü. Sıfır hedefi12 haftada3600 rezerv bıraktı,13. hafta asker olmadan ilerledi; normal200 kişilik işe alımla tekrar ordu kuruldu. Bağlı askerî rol rotasında14. haftanın200 kişilik çıkışı, aynı tarihteki80 livre borcu silmedi. Sonraki açlık kayıpları nedeniyle16. hafta rezerve yalnız76 kişi döndü; kişi sayısı oluşturulmadı. Bunlar son tam kapıdaki gerçek komut sonuçlarıdır.
 
 Sekiz gerçek haftalık hazırlıkta ilk açlık Dumas'nın dokuzuncu hafta emrini doğurdu.36 gıda toplandığında1840 asker kaldı; veto edildiğinde eski açlık sonucu148 asker kaybedildi ve1692 kaldı. Toplama hırsı3 artırdı, kişisel gücü4 azalttı; normal haftalık etkiler ayrıca uygulandı. Açık emir, toplama sonucu ve veto kayıtları yüklemelerde birebir korundu; toplama günlüğü ilan edilmiş dokuzuncu haftaya yazıldı.
 

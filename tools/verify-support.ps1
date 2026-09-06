@@ -142,7 +142,13 @@ function Get-ReviewPlan([string]$Path) {
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
     if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
     if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
-    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^establishment(?:\s|$)') {
+      if ($line -cnotmatch '^establishment (campaign 0|budget [0-9]+)$') { throw "Unsupported army establishment order: $line" }
+      [int]$armyTarget = 0
+      if (-not [int]::TryParse(($line -split ' ')[2], [ref]$armyTarget) -or $armyTarget -gt 100000000) { throw "Army establishment target is outside the supported range: $line" }
+    }
+    if ($line -match '^expect\s+HasArmyEstablishment(?:\s|$)' -and $line -cnotmatch '^expect HasArmyEstablishment (True|False)$') { throw "Army establishment assertion requires True or False: $line" }
     if ($line -match '^forage(?:\s|$)' -and $line -cne 'forage veto') { throw "Unsupported Dumas response: $line" }
     if ($line -match '^expect\s+HasDumasInitiative(?:\s|$)' -and $line -cnotmatch '^expect HasDumasInitiative (True|False)$') { throw "Dumas initiative assertion requires True or False: $line" }
     if ($line -match '^expect\s+HasPendingVictory(?:\s|$)' -and $line -cnotmatch '^expect HasPendingVictory (True|False)$') { throw "Pending victory assertion requires True or False: $line" }

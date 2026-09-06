@@ -73,7 +73,7 @@ namespace PowerAboveAll
         private Material borderMat, goldMat, roadMat, hoverMat, cityInkMat;
         private Texture2D paperGrain;
         private string selectedId, hoveredId, armyId;
-        private int lastWeek = -1, lastMoves = -1;
+        private int lastWeek = -1, lastMoves = -1, lastTroops = -1;
         private Vector3 armyFrom, armyControl, armyTarget;
         private float armyMoveStarted;
         private bool armyPositioned;
@@ -161,7 +161,7 @@ namespace PowerAboveAll
                     case "unrest": value = 1f - region.Unrest / 100f; break;
                     case "control": value = region.Control / 100f; break;
                     case "influence": value = region.EliteLoyalty / 100f; break;
-                    case "army": value = seed.Id == state.ArmyRegionId ? 1f : .12f; break;
+                    case "army": value = state.Troops > 0 && seed.Id == state.ArmyRegionId ? 1f : .12f; break;
                     case "food": value = BaseFood(seed.Id) * (1f - region.Unrest / 200f) / 22f; break;
                     case "tax": value = BaseTax(seed.Id) * (1f - region.Unrest / 150f) * (.5f + region.Control / 200f) * (.75f + state.Factions.Find(f => f.Id == "assembly").Approval / 200f) / 48f; break;
                     default: provinceColors[seed.Id] = seed.Ink; continue;
@@ -170,10 +170,11 @@ namespace PowerAboveAll
             }
             bool selectionChanged = selectedId != state.SelectedRegionId;
             bool armyChanged = armyId != state.ArmyRegionId;
-            if (selectionChanged || armyChanged || lastWeek != state.Week || lastMoves != state.Moves)
+            if (selectionChanged || armyChanged || lastWeek != state.Week || lastMoves != state.Moves || lastTroops != state.Troops)
             {
                 selectedId = state.SelectedRegionId; armyId = state.ArmyRegionId;
-                lastWeek = state.Week; lastMoves = state.Moves;
+                lastWeek = state.Week; lastMoves = state.Moves; lastTroops = state.Troops;
+                armyRoot.gameObject.SetActive(state.Troops > 0);
                 ClearChildren(routeRoot);
                 if (selectionChanged)
                 {

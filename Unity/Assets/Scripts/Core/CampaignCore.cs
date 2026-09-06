@@ -53,6 +53,8 @@ namespace PowerAboveAll
         // v4 arşivinde zorunlu; eski zaferler yeni bir tercih üretmez.
         [System.Runtime.Serialization.OptionalField] public string PendingVictoryId = "";
         [System.Runtime.Serialization.OptionalField] public int DumasForageDueWeek, DumasNextForageWeek;
+        [System.Runtime.Serialization.OptionalField] public string ArmyPolicyId = "campaign";
+        [System.Runtime.Serialization.OptionalField] public int ArmyTargetTroops, ArmyReductionDueWeek;
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -161,8 +163,8 @@ namespace PowerAboveAll
             }
             var f=new EconomyForecast {
                 TaxIncome=Round(tax*(.75f+Faction(s,"assembly").Approval/200f)),
-                ArmyCost=(int)Math.Ceiling(s.Troops/12d)+(s.Troops>0||s.MilitarySupplies<120?36:0),Production=Round(food),
-                CivilianConsumption=110,ArmyConsumption=(int)Math.Ceiling(s.Troops/30d),SubsidyConsumption=s.SubsidyParis?20:0
+                ArmyCost=ArmyCostFor(s,s.Troops),Production=Round(food),
+                CivilianConsumption=110,ArmyConsumption=ArmyFoodFor(s.Troops),SubsidyConsumption=s.SubsidyParis?20:0
             };
             f.NetGold=f.TaxIncome-f.ArmyCost;
             f.NetFood=f.Production-f.CivilianConsumption-f.ArmyConsumption-f.SubsidyConsumption;return f;
@@ -193,6 +195,7 @@ namespace PowerAboveAll
                     if(s.Troops>MaximumStock-200)return Result(false,"error.capacity");
                     s.Gold-=120;s.Food-=20;s.MilitarySupplies-=15;s.Manpower-=200;s.Troops+=200;r.RecruitUsed=true;
                     r.Unrest=Clamp(r.Unrest+2);s.Morale=Clamp(s.Morale-2);Faction(s,"army").Approval=Clamp(Faction(s,"army").Approval+2);
+                    RefreshArmyReduction(s);
                     return Record(s,"log.recruit","region."+id);
                 case "subsidy":
                     if(id!="ile")return Result(false,"error.subsidy.location");
@@ -243,6 +246,7 @@ namespace PowerAboveAll
             if(arrival.Difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
             if(arrival.Hungry&&!battle)
             {int lost=(int)Math.Ceiling(s.Troops*.02d);s.Troops-=lost;Record(s,"log.march.attrition",N(lost));}
+            if(!battle)RefreshArmyReduction(s);
         }
         public static ActionResult March(CampaignState s,string id)
         {
@@ -268,6 +272,7 @@ namespace PowerAboveAll
                 s.PendingVictoryId=battleId;
             }
             else {r.Unrest=Clamp(r.Unrest+5);army.Approval=Clamp(army.Approval-6);general.Relationship=Clamp(general.Relationship-4);s.Power=Clamp(s.Power-6);}
+            RefreshArmyReduction(s);
             return Record(s,won?"log.battle.victory":"log.battle.defeat","region."+target,N(casualties),N(s.Troops));
         }
         // Port of browser 0.1's single grain-petition event, not a new event system.
@@ -333,6 +338,7 @@ namespace PowerAboveAll
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
             CompleteRegionalAccordAfterWeek(s);
+            CompleteArmyReductionAfterWeek(s);
             AnnounceDumasInitiativeAfterWeek(s,hunger);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
@@ -346,6 +352,7 @@ namespace PowerAboveAll
             ValidateRegionalAccordState(s);
             ValidateVictoryDecisionState(s);
             ValidateDumasInitiativeState(s);
+            ValidateArmyEstablishmentState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

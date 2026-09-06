@@ -310,6 +310,13 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("initiative"); Feedback("quill"); }
         }
+        public void SetArmyEstablishment(string policyId, int targetTroops)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.SetArmyEstablishment(State, policyId, targetTroops);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("establishment"); Feedback("quill"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;

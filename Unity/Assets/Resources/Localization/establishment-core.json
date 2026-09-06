@@ -1,0 +1,19 @@
+{
+  "entries": [
+    {"key":"establishment.reason.campaign","ru":"Сокращение не проводится. Численность меняется при найме и потерях.","tr":"Azaltma emri yok. Mevcut, asker toplama ve kayıplarla değişir."},
+    {"key":"establishment.reason.scheduled","ru":"Первая группа готовится к уходу в резерв.","tr":"İlk grup yedeğe dönmek için hazırlanıyor."},
+    {"key":"establishment.reason.at_target","ru":"Армия уже в пределах цели. Сейчас никто не уходит; новый найм сверх предела запустит подготовку следующей группы.","tr":"Ordu hedefin içinde. Şimdi kimse ayrılmıyor; hedefin üstüne çıkan yeni asker alımı sonraki grubu hazırlatır."},
+    {"key":"establishment.reason.calendar","ru":"Предел сохраняется, но в календаре не осталось двух недель для подготовки новой группы.","tr":"Hedef sürüyor, fakat takvimde yeni bir grubu hazırlamak için iki hafta kalmadı."},
+    {"key":"error.establishment.state","ru":"Не удалось прочитать приказ о численности армии.","tr":"Ordu mevcudu emri okunamadı."},
+    {"key":"error.establishment.policy","ru":"Неизвестный порядок содержания армии.","tr":"Ordu mevcudu düzeni tanınmıyor."},
+    {"key":"error.establishment.target","ru":"Этот предел численности недоступен.","tr":"Bu mevcut hedefi kullanılamıyor."},
+    {"key":"error.establishment.capacity","ru":"В резерве недостаточно места для всех солдат сверх выбранного предела. Увеличьте предел.","tr":"Seçilen hedefi aşan askerlerin tamamı için yedekte yer yok. Hedefi yükseltin."},
+    {"key":"error.establishment.calendar","ru":"Для нового сокращения нужны ещё две недели в календаре.","tr":"Yeni bir azaltma için takvimde iki hafta daha gerekir."},
+    {"key":"error.establishment.unchanged","ru":"Этот предел уже действует.","tr":"Bu hedef zaten yürürlükte."},
+    {"key":"log.establishment.ready","ru":"Условия изменения военного штата выполнены.","tr":"Ordu mevcudunu değiştirme koşulları karşılandı."},
+    {"key":"log.establishment.campaign","ru":"Плановое сокращение остановлено. Ушедшие в резерв солдаты не возвращаются автоматически.","tr":"Planlı azaltma durduruldu. Yedeğe dönen askerler otomatik olarak geri gelmez."},
+    {"key":"log.establishment.budget_scheduled","ru":"Предел армии — {0}. Ближайшая группа уйдёт в резерв после расчёта недели {1}.","tr":"Ordu hedefi {0}. Sıradaki grup, {1}. haftanın hesabından sonra yedeğe dönecek."},
+    {"key":"log.establishment.budget_idle","ru":"Предел армии — {0}. Текущая численность укладывается в него; ухода солдат пока нет.","tr":"Ordu hedefi {0}. Mevcut bu sınırın içinde; şimdilik ayrılan asker yok."},
+    {"key":"log.establishment.reduced","ru":"В резерв вернулось {0} солдат; в строю {1}, предел {3}. Отношения с Дюма −{2}. Этот расчёт оплачен по прежнему штату.","tr":"{0} asker yedeğe döndü; orduda {1}, hedef {3}. Dumas ile ilişki −{2}. Bu hesap eski mevcut üzerinden ödendi."}
+  ]
+}

@@ -1,0 +1,542 @@
+# Üç gerçek rota; yalnız kanıt adları çakışmayı önlemek için öneklendi.
+# Kaynak: tools/army-establishment.script
+# ArmyEstablishmentProbe-2026-09-06T02-51-25-163Z: ilk gercek public rota.
+# UI taslagi varsayilan1000; uygulanana kadar kampanyanin hicbir alani degismez.
+new
+lang ru
+remember first-unopened-campaign
+panel establishment
+wait 0.5
+shot first-00-start
+scroll document 650
+wait 0.2
+shot first-01-draft-lower-ru
+lang tr
+wait 0.2
+shot first-02-draft-upper-tr
+scroll document 650
+wait 0.2
+shot first-03-draft-lower-tr
+same first-unopened-campaign
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 0
+expect Troops 1200
+expect Manpower 2400
+expect ArmyCost 136
+expect ArmyConsumption 40
+establishment budget 1000
+expect ArmyPolicyId budget
+expect HasArmyEstablishment True
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 2
+expect Troops 1200
+expect Manpower 2400
+expect Gold 840
+expect Food 360
+expect ArmyCost 136
+expect ArmyConsumption 40
+state first-01-budget-scheduled
+save
+remember first-scheduled
+select normandy
+load
+same first-scheduled
+state first-02-budget-loaded
+panel establishment
+lang ru
+wait 0.4
+shot first-04-scheduled-ru
+week
+expect Week 1
+expect Troops 1200
+expect Manpower 2400
+expect Gold 911
+expect Food 362
+expect ArmyReductionDueWeek 2
+expect ArmyCost 136
+expect ArmyConsumption 40
+state first-03-first-old-army-settlement
+panel economy
+wait 0.4
+shot first-05-week-one-old-costs
+# Ikinci hesap eski1200 kisilik orduyla odenir; sonra200 kisi gercek rezerve doner.
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1000
+expect Manpower 2600
+expect Gold 979
+expect Food 362
+expect ArmyReductionDueWeek 0
+expect ArmyTargetTroops 1000
+expect HasArmyEstablishment True
+expect ArmyCost 120
+expect ArmyConsumption 34
+state first-04-earned-batch-with-petition
+wait 0.4
+shot first-06-week-two-petition-after-transfer
+remember first-petition-barrier
+week
+same first-petition-barrier
+save
+load
+same first-petition-barrier
+state first-05-earned-batch-loaded
+petition negotiate
+expect PendingPetition False
+panel establishment
+scroll document 650
+wait 1.2
+shot first-07-target-reached-ru
+# Manpower'a donenler ucretsiz orduya donmez: ayni recruit maliyeti ve yeniikihafta.
+act recruit
+expect Troops 1200
+expect Manpower 2400
+expect Gold 859
+expect Food 342
+expect ArmyReductionDueWeek 4
+expect ArmyCost 136
+expect ArmyConsumption 40
+state first-06-recruited-new-deadline
+panel establishment
+lang tr
+wait 0.3
+shot first-08-recruit-new-deadline-tr
+establishment budget 900
+expect ArmyTargetTroops 900
+expect ArmyReductionDueWeek 4
+expect Troops 1200
+expect Manpower 2400
+state first-07-retarget-preserves-deadline
+scroll document 650
+wait 0.3
+shot first-09-retarget-same-deadline-tr
+save
+remember first-retargeted
+select orleans
+load
+same first-retargeted
+state first-08-retarget-loaded
+establishment campaign 0
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 0
+expect Troops 1200
+expect Manpower 2400
+state first-09-stopped-without-new-soldiers
+remember first-stopped
+establishment campaign 0
+same first-stopped
+save
+load
+same first-stopped
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot first-10-stopped-policy-ru
+week
+expect Week 3
+expect Troops 1200
+expect Manpower 2400
+expect Gold 939
+expect Food 341
+expect ArmyPolicyId campaign
+expect ArmyReductionDueWeek 0
+expect ArmyCost 136
+expect ArmyConsumption 40
+state first-10-after-stop-week-three
+panel journal
+wait 0.6
+shot first-11-final-journal-ru
+lang tr
+wait 0.3
+shot first-12-final-journal-tr
+
+# Kaynak: tools/army-establishment-zero.script
+# Ayni148check pure probe'un ayri sifir hedef rotasi. Taslak secimi native kanit degildir.
+# Iki haftada bir transfer,12. hesapta son200 kisi; garnizon etkisi13. hesapta kalkar.
+new
+lang ru
+wait 0.4
+shot zero-00-start
+establishment budget 0
+expect HasArmyEstablishment True
+expect ArmyTargetTroops 0
+expect ArmyReductionDueWeek 2
+expect Troops 1200
+expect Manpower 2400
+state zero-01-zero-policy-signed
+panel establishment
+wait 0.4
+shot zero-01-zero-target-applied-ru
+scroll document 800
+wait 0.3
+shot zero-02-zero-garrison-warning-ru
+lang tr
+scroll document 800
+wait 0.3
+shot zero-03-zero-garrison-warning-tr
+save
+remember zero-zero-scheduled
+load
+same zero-zero-scheduled
+week
+expect Week 1
+expect Troops 1200
+expect Manpower 2400
+expect Gold 911
+expect Food 362
+expect ArmyReductionDueWeek 2
+week
+expect Week 2
+expect PendingPetition True
+expect Troops 1000
+expect Manpower 2600
+expect Gold 979
+expect Food 362
+expect ArmyReductionDueWeek 4
+state zero-02-first-zero-target-batch
+petition negotiate
+week
+expect Week 3
+expect Troops 1000
+expect Manpower 2600
+expect Gold 1076
+expect Food 367
+expect ArmyReductionDueWeek 4
+week
+expect Week 4
+expect Troops 800
+expect Manpower 2800
+expect Gold 1170
+expect Food 370
+expect ArmyReductionDueWeek 6
+state zero-03-second-batch
+week
+week
+expect Week 6
+expect Troops 600
+expect Manpower 3000
+expect Gold 1383
+expect Food 385
+expect ArmyReductionDueWeek 8
+state zero-04-third-batch
+panel establishment
+scroll document 650
+wait 0.4
+shot zero-04-half-size-policy-tr
+save
+remember zero-halfway
+select normandy
+load
+same zero-halfway
+week
+week
+expect Week 8
+expect Troops 400
+expect Manpower 3200
+expect Gold 1617
+expect Food 407
+expect ArmyReductionDueWeek 10
+state zero-05-fourth-batch
+week
+week
+expect Week 10
+expect Troops 200
+expect Manpower 3400
+expect Gold 1870
+expect Food 433
+expect ArmyReductionDueWeek 12
+state zero-06-last-garrison-awaits
+panel establishment
+lang ru
+scroll document 650
+wait 0.4
+shot zero-05-last-garrison-warning-ru
+week
+expect Week 11
+expect Troops 200
+expect Gold 2009
+expect Food 451
+expect ArmyReductionDueWeek 12
+expect ArmyCost 53
+expect ArmyConsumption 7
+state zero-07-last-old-army-budget
+week
+expect Week 12
+expect Troops 0
+expect Manpower 3600
+expect Gold 2144
+expect Food 467
+expect ArmyReductionDueWeek 0
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 0
+expect HasArmyEstablishment True
+expect HasDumasInitiative False
+expect ArmyCost 0
+expect ArmyConsumption 0
+state zero-08-zero-after-old-garrison-settlement
+save
+remember zero-zero-completed
+select normandy
+load
+same zero-zero-completed
+state zero-09-zero-completed-loaded
+panel establishment
+scroll document 650
+wait 0.4
+shot zero-06-zero-reached-ru
+# Bu hesap ilk kez ordusuz/garnizonsuzdur; state08 ile bolgesel fark ayrica okunur.
+week
+expect Week 13
+expect Troops 0
+expect Manpower 3600
+expect Gold 2328
+expect Food 488
+expect ArmyReductionDueWeek 0
+expect HasDumasInitiative False
+expect ArmyCost 0
+expect ArmyConsumption 0
+state zero-10-first-week-without-garrison
+panel economy
+wait 0.4
+shot zero-07-first-week-without-garrison-ru
+mode army
+wait 1.2
+shot zero-10-no-army-overlay
+# Sefer serbestisi politikasi, sonra ayni200 kisilik olağan recruit; oyun sonu yok.
+establishment campaign 0
+act recruit
+expect ArmyPolicyId campaign
+expect HasArmyEstablishment False
+expect ArmyReductionDueWeek 0
+expect Troops 200
+expect Manpower 3400
+expect Gold 2208
+expect Food 468
+expect ArmyCost 53
+expect ArmyConsumption 7
+state zero-11-recruited-after-zero
+save
+remember zero-recovered
+load
+same zero-recovered
+state zero-12-recruited-after-zero-loaded
+panel journal
+lang tr
+wait 0.6
+shot zero-08-recovery-journal-tr
+lang ru
+wait 0.3
+shot zero-09-recovery-journal-ru
+wait 1.2
+shot zero-11-restored-army-overlay
+
+# Kaynak: tools/army-establishment-linked.script
+# ArmyMandateEstablishmentProbe-2026-09-06T02-56-43-265Z PASS119 rotasi.
+# Iki ayri vade: NPC13, asker aktarimi/borc14. Son76 kisi haftalik kayiplardan SONRA ayrilir.
+new
+lang ru
+role-menu
+role-start army
+wait 0.4
+shot linked-00-start
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+week
+week
+week
+week
+week
+week
+week
+week
+expect Week 12
+expect Gold 1429
+expect Food 0
+expect Troops 1472
+expect Manpower 2000
+expect MilitarySupplies 142
+expect Power 55.5
+expect PatronRelationship 50
+expect ForageFood 20
+expect DumasForageDueWeek 13
+expect DumasNextForageWeek 16
+state linked-01-existing-hunger-proposal
+mandate issue
+establishment budget 1000
+expect Food 40
+expect MilitarySupplies 157
+expect HasObligation True
+expect MandateDue False
+expect NextMandateWeek 16
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 14
+expect Troops 1472
+expect Manpower 2000
+expect ForageFood 0
+expect DumasForageDueWeek 13
+state linked-02-both-deadlines-signed
+save
+remember linked-signed-deadlines
+select normandy
+load
+same linked-signed-deadlines
+state linked-03-both-deadlines-loaded
+panel initiative
+scroll document 450
+wait 0.4
+shot linked-01-npc-sufficient-ru
+mandate-terms
+wait 0.3
+shot linked-02-original-debt-eighty-ru
+panel establishment
+scroll document 650
+wait 0.3
+shot linked-03-army-deadline-ru
+week
+expect Week 13
+expect Gold 1507
+expect Food 20
+expect Troops 1472
+expect Manpower 2000
+expect MilitarySupplies 162
+expect Power 56
+expect HasDumasInitiative False
+expect DumasNextForageWeek 16
+expect HasObligation True
+expect MandateDue False
+expect ArmyReductionDueWeek 14
+expect ArmyCost 159
+expect ArmyConsumption 50
+state linked-04-npc-cancelled-army-still-old-size
+week
+expect Week 14
+expect Gold 1590
+expect Food 1
+expect Troops 1272
+expect Manpower 2200
+expect MilitarySupplies 167
+expect Power 56.5
+expect PatronRelationship 46
+expect ArmyReductionDueWeek 16
+expect ArmyCost 142
+expect ArmyConsumption 43
+expect HasObligation True
+expect MandateDue True
+expect NextMandateWeek 16
+state linked-05-batch-earned-debt-now-due
+remember linked-due-debt-barrier
+week
+same linked-due-debt-barrier
+save
+select orleans
+load
+same linked-due-debt-barrier
+state linked-06-debt-and-batch-loaded
+lang tr
+mandate-terms
+wait 0.4
+shot linked-04-original-debt-now-due-tr
+panel establishment
+scroll document 650
+wait 0.3
+shot linked-05-next-batch-with-debt-barrier-tr
+# Ilk bolgenin80altin tazminati, azaltim tarihini veya kalan askerleri degistirmez.
+mandate fulfil
+expect Gold 1510
+expect Food 1
+expect Troops 1272
+expect Manpower 2200
+expect PatronRelationship 50
+expect HasObligation False
+expect ArmyReductionDueWeek 16
+expect NextMandateWeek 16
+expect SelectedUnrest 0
+state linked-07-original-debt-paid
+save
+remember linked-paid-debt
+load
+same linked-paid-debt
+state linked-08-original-debt-paid-loaded
+panel journal
+lang ru
+wait 0.6
+shot linked-06-original-debt-paid-journal-ru
+# Politika bu hesabi onceden ucuzlatmaz: gercek acik102 asker kaybettirir, NPC cooldown16.
+week
+expect Week 15
+expect Gold 1615
+expect Food 0
+expect Troops 1170
+expect Manpower 2200
+expect MilitarySupplies 174
+expect Power 51.5
+expect Supply 70
+expect Morale 76
+expect ArmyReductionDueWeek 16
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 16
+expect ForageFood 0
+state linked-09-losses-before-last-batch
+panel establishment
+scroll document 650
+wait 0.4
+shot linked-07-remaining-batch-after-losses-ru
+# 16. hesap94 asker daha kaybettirir;1076 yasayandan yalniz76 kisi rezerve gider.
+week
+expect Week 16
+expect Gold 1713
+expect Food 0
+expect Troops 1000
+expect Manpower 2276
+expect MilitarySupplies 182
+expect Power 46.5
+expect Supply 45
+expect Morale 61
+expect PatronRelationship 46
+expect ArmyPolicyId budget
+expect ArmyTargetTroops 1000
+expect ArmyReductionDueWeek 0
+expect HasArmyEstablishment True
+expect HasObligation False
+expect NextMandateWeek 16
+expect ArmyCost 120
+expect ArmyConsumption 34
+# Bu16 gıda HENUZ toplanmadi: yeni1000 kisilik ordu icin17. hafta onerisi.
+expect HasDumasInitiative True
+expect DumasForageDueWeek 17
+expect DumasNextForageWeek 20
+expect ForageFood 16
+state linked-10-partial-seventy-six-new-npc-proposal
+save
+remember linked-partial-batch
+select normandy
+load
+same linked-partial-batch
+state linked-11-partial-batch-loaded
+panel journal
+wait 0.6
+shot linked-08-partial-seventy-six-journal-ru
+lang tr
+wait 0.3
+shot linked-09-partial-seventy-six-journal-tr
+panel initiative
+scroll document 450
+wait 0.3
+shot linked-10-next-week-forage-sixteen-tr
+lang ru
+scroll document 450
+wait 0.3
+shot linked-11-next-week-forage-sixteen-ru
+quit

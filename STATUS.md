@@ -1,5 +1,7 @@
 # Power Above All — Proje durumu
 
+**03:10 UTC güncel:** Ordu hedefi ve iki haftalık planlı azaltma uygulanıp doğrulandı. `army-establishment-final-20260906-030602-688-f7c2fdcb` GREEN304 Unity /37 PNG /259 kontrol /33 JSON /10 tarayıcı testi. v6 kayıt,0 asker ve normal yeniden kurma, gerçek borç80 ile aynı tarih, açlık sonrası kısmi76 kişilik çıkış geçti. Son gerçek fare incelemesi800 taslağın imzadan önce kampanyayı değiştirmediğini gösterdi. Başlatıcı bu son build'i seçer. İş07:22:03 UTC'ye kadar sürer; aşağıdaki saatli kayıtlar önceki kontrol noktalarıdır.
+
 Son güncelleme: **6 Eylül 2026**. Kullanıcının on saatlik özerk geliştirme talimatıyla çalışma yeniden başladı. Onaylı yeni yön [VISION.md](VISION.md), görsel hedef [ART_DIRECTION.md](ART_DIRECTION.md), gece işleri [NIGHT_QUEUE.md](NIGHT_QUEUE.md) içindedir.
 
 **02:25 UTC güncel:** `dumas-labels-first-20260906-021758-659-0da55b25` GREEN: 230 Unity testi, yeni DX11 build, 24 PNG / 66 kontrol / 21 JSON / 10 tarayıcı testi. Dumas'nın gerçek açlık sonrası erzak girişimi önceden görünür; normal ikmal, veto ve yerel/siyasi bedeller aynı haftalık hesapta birleşir. v5 arşiv eski sözleri korur. Alay etiketleri asker ve namluların yanına taşındı; RU/TR ve duraklatılmış kareler incelendi. Gerçek Shift, elle topçu salvosu ve NPC belge/veto girdileri çalıştı. Başlatıcı bu build'i seçer. İş hâlâ 07:22:03 UTC'ye kadar sürer. [Ara rapor](NIGHT_REPORT.md) en son sonuçları ve sınırları içerir; aşağıdaki saatli kayıtlar önceki kontrol noktalarıdır.

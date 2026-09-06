@@ -12,7 +12,7 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 5;
+        public const int CurrentVersion = 6;
 
         [Serializable] private sealed class Envelope
         {
@@ -51,6 +51,18 @@ namespace PowerAboveAll
         {
             [DataMember(IsRequired = true)] public int DumasForageDueWeek = 0;
             [DataMember(IsRequired = true)] public int DumasNextForageWeek = 0;
+        }
+
+        [DataContract] private sealed class RequiredArmyEstablishmentEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredArmyEstablishmentState State = null;
+        }
+
+        [DataContract] private sealed class RequiredArmyEstablishmentState
+        {
+            [DataMember(IsRequired = true)] public string ArmyPolicyId = null;
+            [DataMember(IsRequired = true)] public int ArmyTargetTroops = 0;
+            [DataMember(IsRequired = true)] public int ArmyReductionDueWeek = 0;
         }
 
         public static string Serialize(CampaignState state, bool prettyPrint = true)
@@ -95,6 +107,13 @@ namespace PowerAboveAll
                         if (required == null || required.State == null)
                             throw new SerializationException("Missing required Dumas initiative data.");
                     }
+                if (envelope != null && envelope.Version >= 6)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredArmyEstablishmentEnvelope)new DataContractJsonSerializer(typeof(RequiredArmyEstablishmentEnvelope)).ReadObject(stream);
+                        if (required == null || required.State == null || required.State.ArmyPolicyId == null)
+                            throw new SerializationException("Missing required army establishment data.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -121,6 +140,14 @@ namespace PowerAboveAll
                 if (state.DumasForageDueWeek != 0 || state.DumasNextForageWeek != 0)
                     throw new ArgumentException("Invalid Dumas initiative data in an older archive.", nameof(json));
                 state.DumasForageDueWeek = state.DumasNextForageWeek = 0;
+            }
+            if (envelope.Version < 6)
+            {
+                if ((state.ArmyPolicyId != null && state.ArmyPolicyId != "campaign") ||
+                    state.ArmyTargetTroops != 0 || state.ArmyReductionDueWeek != 0)
+                    throw new ArgumentException("Invalid army establishment data in an older archive.", nameof(json));
+                state.ArmyPolicyId = "campaign";
+                state.ArmyTargetTroops = state.ArmyReductionDueWeek = 0;
             }
             if (envelope.Version == 1)
             {

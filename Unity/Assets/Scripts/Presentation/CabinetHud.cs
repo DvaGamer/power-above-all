@@ -41,7 +41,7 @@ namespace PowerAboveAll
         public void OpenDocument(string name)
         {
             if(name=="victory"){showVictory=true;return;}
-            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative")return;
+            if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord"&&name!="initiative"&&name!="establishment")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
         }
 
@@ -124,6 +124,7 @@ namespace PowerAboveAll
             ObserveRegionalAccord(state);
             ObserveVictoryDecision(state);
             ObserveDumasInitiative(state);
+            ObserveArmyEstablishment(state);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
@@ -399,7 +400,7 @@ namespace PowerAboveAll
             Fill(new Rect(259,769,868,24),C("#E6DFC0"));
             Fill(new Rect(272,775,13,12),CampaignMap.ModeColor(app.Mode,0));Border(new Rect(272,775,13,12),rule);
             Fill(new Rect(289,775,13,12),CampaignMap.ModeColor(app.Mode,1));Border(new Rect(289,775,13,12),rule);
-            Text(new Rect(314,773,623,18),T("ui.legend."+app.Mode),tiny);Text(new Rect(956,773,165,18),T("ui.atlas.scale"),tiny);
+            Text(new Rect(314,773,623,18),T(app.Mode=="army"&&app.State.Troops==0?"ui.establishment.empty_legend":"ui.legend."+app.Mode),tiny);Text(new Rect(956,773,165,18),T("ui.atlas.scale"),tiny);
         }
 
         private void Province(GameApp app)
@@ -419,11 +420,11 @@ namespace PowerAboveAll
             Order(app,ref y,"bread",T("ui.order.bread"),T("ui.order.bread.detail"));
             Order(app,ref y,"tax",T("ui.order.tax"),T("ui.order.tax.detail"));
             Order(app,ref y,"recruit",T("ui.order.recruit"),T("ui.order.recruit.detail"));
-            var march=CampaignCore.CanMarch(state,region.Id);bool here=state.ArmyRegionId==region.Id;
+            var march=CampaignCore.CanMarch(state,region.Id);bool here=state.Troops>0&&state.ArmyRegionId==region.Id;
             // Düğme durumu değiştirebilir; varış tahmini tıklamadan önce alınır.
             var arrival=!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
             int movementCost=arrival==null?0:state.Moves-arrival.MovesAfter;
-            if(Press(new Rect(4,y,195,34),T(here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=40;
+            if(Press(new Rect(4,y,195,34),T(state.Troops==0?"ui.establishment.empty_army":here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=40;
             string marchDetail=here?T("ui.army.here.detail"):arrival!=null?T("ui.march.cost",Number(arrival.FoodCost),Number(movementCost)):L.Text(march.Key,march.Args);
             var marchStyle=new GUIStyle(tiny);if(!here&&!march.Ok)marchStyle.normal.textColor=red;
             Paragraph(ref y,marchDetail,marchStyle,195,8);
@@ -508,7 +509,7 @@ namespace PowerAboveAll
             string[] names={"council","economy","journal","mandate"};
             for(int i=0;i<names.Length;i++)
             {
-                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative")&&names[i]=="council");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
+                Rect rect=new Rect(1156+i*67,151,65,36);bool selected=document==names[i]||((document=="accord"||document=="initiative")&&names[i]=="council")||(document=="establishment"&&names[i]=="economy");if(selected){Fill(rect,pale);Fill(new Rect(rect.x,rect.yMax-2,rect.width,2),C("#839371"));}
                 if(GUI.Button(rect,T(names[i]=="mandate"?"ui.mandate.tab":"ui.tab."+names[i]),tabStyle)){OpenDocument(names[i]);app.Feedback("paper");}
             }
             if(document=="journal")
@@ -517,7 +518,7 @@ namespace PowerAboveAll
                 foreach(var entry in app.State.Journal)documentContentHeight+=JournalEntryHeight(entry);
             }
             documentScroll=BeginMatteScroll(new Rect(1156,201,278,584),documentScroll,new Rect(0,0,251,Mathf.Max(584,documentContentHeight)),178902);
-            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else Journal(app);
+            if(document=="council")Council(app);else if(document=="economy")Economy(app,forecast);else if(document=="mandate")Mandate(app);else if(document=="accord")RegionalAccord(app);else if(document=="initiative")DumasInitiative(app);else if(document=="establishment")ArmyEstablishment(app);else Journal(app);
             GUI.EndScrollView();
         }
         private void Council(GameApp app)
@@ -557,6 +558,7 @@ namespace PowerAboveAll
             CampaignState state=app.State;
             float y=0;Paragraph(ref y,T("ui.economy.title"),heading,242,10);
             Paragraph(ref y,T("ui.economy.intro"),small,242,18);
+            ArmyEstablishmentEntry(app,ref y);
             if(!weekCheck.Ok)
             {
                 var warning=new GUIStyle(small);warning.normal.textColor=red;

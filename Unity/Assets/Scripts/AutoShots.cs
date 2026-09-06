@@ -142,6 +142,16 @@ namespace PowerAboveAll
                     case "forage":
                         RequireChoice(value, "veto"); RequireIdle(app);
                         app.VetoDumasInitiative(app.State.DumasForageDueWeek); break;
+                    case "establishment":
+                        RequireIdle(app);
+                        string[] establishment = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (establishment.Length != 2 ||
+                            (establishment[0] != "budget" && establishment[0] != "campaign") ||
+                            !int.TryParse(establishment[1], NumberStyles.None, CultureInfo.InvariantCulture, out int targetTroops) ||
+                            targetTroops < 0 || targetTroops > CampaignCore.MaximumArmyTarget ||
+                            (establishment[0] == "campaign" && targetTroops != 0))
+                            throw new InvalidDataException("establishment requires budget and a nonnegative target, or campaign 0.");
+                        app.SetArmyEstablishment(establishment[0], targetTroops); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
@@ -152,7 +162,7 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative");
+                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative", "establishment");
                         app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
@@ -210,6 +220,9 @@ namespace PowerAboveAll
                 key == "HasObligation" ? app.State.Obligation != null : key == "HasAccord" ? CampaignCore.HasRegionalAccord(app.State) :
                 key == "HasPendingVictory" ? CampaignCore.HasPendingVictory(app.State) :
                 key == "HasDumasInitiative" ? CampaignCore.HasDumasInitiative(app.State) :
+                key == "HasArmyEstablishment" ? CampaignCore.HasArmyEstablishment(app.State) :
+                key == "ArmyCost" ? (object)CampaignCore.Forecast(app.State).ArmyCost :
+                key == "ArmyConsumption" ? (object)CampaignCore.Forecast(app.State).ArmyConsumption :
                 key == "ForageFood" ? (object)CampaignCore.Forecast(app.State).ForageFood :
                 key == "SelectedUnrest" ? (object)CampaignCore.Region(app.State,app.State.SelectedRegionId).Unrest :
                 key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :

@@ -70,6 +70,14 @@ $badVictory = Fixture 'injected-victory.script' "new`nexpect HasPendingVictory T
 Reject { Get-ReviewPlan $badVictory } 'Decision review cannot override the domain-computed price'
 $badPending = Fixture 'ambiguous-victory.script' "new`nexpect HasPendingVictory maybe`nshot sample`nquit"
 Reject { Get-ReviewPlan $badPending } 'Ambiguous pending-offer expectation is rejected before a natural battle runs'
+$armyPlan = Fixture 'army-establishment.script' "new`nestablishment budget 800`nexpect HasArmyEstablishment True`npanel establishment`nestablishment campaign 0`nshot sample`nquit"
+Check ((Get-ReviewPlan $armyPlan).Commands -eq 7) 'Army establishment uses a target order and ordinary document'
+foreach ($order in @('budget -1', 'budget 1.5', 'budget 100000001', 'budget 2147483648', 'campaign 800', 'release 200', 'budget 200 troops 200')) {
+  $badArmyPlan = Fixture ('army-invalid-' + [Guid]::NewGuid().ToString('N') + '.script') "new`nestablishment $order`nexpect HasArmyEstablishment True`nshot sample`nquit"
+  Reject { Get-ReviewPlan $badArmyPlan } "Invalid army target or state injection rejected: $order"
+}
+$ambiguousArmy = Fixture 'ambiguous-army.script' "new`nexpect HasArmyEstablishment maybe`nshot sample`nquit"
+Reject { Get-ReviewPlan $ambiguousArmy } 'Army establishment assertion rejects ambiguous boolean'
 $dumasPlan = Fixture 'dumas-response.script' "new`nexpect HasDumasInitiative True`npanel initiative`nforage veto`nshot sample`nquit"
 Check ((Get-ReviewPlan $dumasPlan).Assertions -eq 1) 'Dumas review opens the actual document and sends only the supported veto response'
 $badDumas = Fixture 'injected-dumas.script' "new`nexpect HasDumasInitiative True`nforage gather 40`nshot sample`nquit"
