@@ -1,0 +1,189 @@
+# DumasInterventionProbe-2026-09-06T02-19-01-866Z: gercek ornek1 ve ornek7.
+# Ilk dal yardimi kapatir; ikinci dal40gida alir ama14. haftada80altin borcunu KORUR.
+# Iki yeni sefer de yalniz0/2. haftalarda asker toplar. Gizli state veya sonuc yazimi yok.
+new
+lang ru
+wait 0.6
+shot 00-start
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+week
+week
+week
+week
+week
+week
+week
+week
+expect Week 12
+expect RoleId legacy
+expect Gold 1429
+expect Food 0
+expect Troops 1472
+expect MilitarySupplies 142
+expect Power 55.5
+expect Supply 75
+expect Morale 85
+expect SelectedUnrest 10
+expect DumasForageDueWeek 13
+expect DumasNextForageWeek 16
+expect HasDumasInitiative True
+expect ForageFood 20
+state 01-legacy-gather-warning
+panel initiative
+scroll document 450
+wait 0.4
+shot 01-legacy-before-intervention-ru
+# Eski Paris yardimini kapatma bedeli uygulanir: Power-2 ve ParisUnrest+8.
+act subsidy
+expect SubsidyParis False
+expect Power 53.5
+expect SelectedUnrest 18
+expect Gold 1429
+expect Food 0
+expect Troops 1472
+expect HasDumasInitiative True
+expect DumasForageDueWeek 13
+expect DumasNextForageWeek 16
+expect ForageFood 0
+state 02-legacy-sufficient
+save
+remember legacy-sufficient
+select normandy
+load
+same legacy-sufficient
+state 03-legacy-sufficient-loaded
+panel initiative
+scroll document 450
+wait 0.5
+shot 02-legacy-sufficient-ru
+lang tr
+scroll document 450
+wait 0.3
+shot 03-legacy-sufficient-tr
+week
+expect Week 13
+expect Gold 1507
+expect Food 0
+expect Troops 1472
+expect MilitarySupplies 147
+expect Power 54
+expect Supply 85
+expect Morale 88
+expect SelectedUnrest 14
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 16
+expect ForageFood 0
+state 04-legacy-cancelled-week-thirteen
+save
+remember legacy-cancelled
+load
+same legacy-cancelled
+state 05-legacy-cancelled-loaded
+panel journal
+lang ru
+wait 0.6
+shot 04-legacy-cancelled-journal-ru
+# Ornek7: ayni gercek hazirlik, bu kez ordunun40gida taahhudu tek mudahaledir.
+new
+role-menu
+role-start army
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+week
+week
+week
+week
+week
+week
+week
+week
+expect Week 12
+expect RoleId army
+expect Gold 1429
+expect Food 0
+expect Troops 1472
+expect MilitarySupplies 142
+expect Power 55.5
+expect SelectedUnrest 10
+expect HasObligation False
+expect HasDumasInitiative True
+expect ForageFood 20
+state 06-army-gather-warning
+mandate issue
+expect HasObligation True
+expect MandateDue False
+expect NextMandateWeek 16
+expect Food 40
+expect MilitarySupplies 157
+expect Gold 1429
+expect Power 55.5
+expect SelectedUnrest 18
+expect SubsidyParis True
+expect HasDumasInitiative True
+expect DumasForageDueWeek 13
+expect DumasNextForageWeek 16
+expect ForageFood 0
+state 07-army-sufficient-with-debt
+save
+remember army-sufficient-debt
+select normandy
+load
+same army-sufficient-debt
+state 08-army-sufficient-debt-loaded
+panel initiative
+scroll document 450
+wait 0.4
+shot 05-army-sufficient-ru
+mandate-terms
+wait 0.3
+shot 06-army-eighty-gold-debt-ru
+lang tr
+mandate-terms
+wait 0.3
+shot 07-army-eighty-gold-debt-tr
+week
+expect Week 13
+expect Gold 1507
+expect Food 20
+expect Troops 1472
+expect MilitarySupplies 162
+expect Power 56
+expect Supply 85
+expect Morale 88
+expect SelectedUnrest 10
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 16
+expect ForageFood 0
+expect HasObligation True
+expect MandateDue False
+expect NextMandateWeek 16
+state 09-army-cancelled-debt-remains
+save
+remember army-cancelled-debt
+select orleans
+load
+same army-cancelled-debt
+state 10-army-cancelled-debt-loaded
+panel journal
+wait 0.6
+shot 08-army-cancelled-journal-tr
+lang ru
+mandate-terms
+wait 0.3
+shot 09-army-debt-after-cancellation-ru
+quit

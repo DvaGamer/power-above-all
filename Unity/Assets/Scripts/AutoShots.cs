@@ -139,6 +139,9 @@ namespace PowerAboveAll
                         RequireChoice(value, "recognize", "bonus", "decline"); RequireIdle(app);
                         app.ResolveVictory(app.State.PendingVictoryId, value); break;
                     case "victory-close": RequireIdle(app); app.GetComponent<CabinetHud>().CloseVictoryDecision(); break;
+                    case "forage":
+                        RequireChoice(value, "veto"); RequireIdle(app);
+                        app.VetoDumasInitiative(app.State.DumasForageDueWeek); break;
                     case "lang": RequireChoice(value, "ru", "tr"); app.SetLanguage(value); break;
                     case "mode": RequireChoice(value, "control", "unrest", "tax", "army", "food", "influence"); app.SetMode(value); break;
                     case "select": RequireIdle(app); app.SelectRegion(value); break;
@@ -149,7 +152,7 @@ namespace PowerAboveAll
                     case "save": RequireIdle(app); app.Save(); break;
                     case "load": RequireIdle(app); app.Load(); break;
                     case "panel":
-                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory");
+                        RequireChoice(value, "council", "economy", "journal", "mandate", "accord", "victory", "initiative");
                         app.GetComponent<CabinetHud>().OpenDocument(value); break;
                     case "scroll":
                         RequireIdle(app);
@@ -206,6 +209,8 @@ namespace PowerAboveAll
                 key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
                 key == "HasObligation" ? app.State.Obligation != null : key == "HasAccord" ? CampaignCore.HasRegionalAccord(app.State) :
                 key == "HasPendingVictory" ? CampaignCore.HasPendingVictory(app.State) :
+                key == "HasDumasInitiative" ? CampaignCore.HasDumasInitiative(app.State) :
+                key == "ForageFood" ? (object)CampaignCore.Forecast(app.State).ForageFood :
                 key == "SelectedUnrest" ? (object)CampaignCore.Region(app.State,app.State.SelectedRegionId).Unrest :
                 key == "SelectedControl" ? CampaignCore.Region(app.State,app.State.SelectedRegionId).Control :
                 key == "TaxIncome" ? CampaignCore.Forecast(app.State).TaxIncome :

@@ -1,0 +1,99 @@
+# Alay etiketleri: mevcut guvenilir volley rotasi, tek gercek topcu yaylimi.
+# Topcu erken/gelismis/gec faz boyunca secili kalir; UI veya state enjeksiyonu yok.
+new
+lang ru
+select champagne
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state labels-00-deployment
+battle pause off
+battle wait arrived 45
+battle wait volley-ready 30
+expect BattleSelectionArrived True
+expect BattleCanVolley True
+battle pause on
+wait 0.6
+battle state labels-01-arty-ready-ru
+shot labels-01-arty-ready-ru
+battle pause off
+battle wait volley-ready 5
+battle state labels-02-before-accepted-order
+battle volley
+wait 0.12
+battle pause on
+wait 0.6
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state labels-03-arty-early-ru
+shot labels-03-arty-early-ru
+wait 0.75
+battle state labels-04-arty-early-held-ru
+shot labels-04-arty-early-held-ru
+battle pause off
+wait 1.1
+battle pause on
+wait 0.6
+battle state labels-05-arty-grown-ru
+shot labels-05-arty-grown-ru
+battle pause off
+wait 2
+battle pause on
+wait 0.6
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state labels-06-arty-late-ru
+shot labels-06-arty-late-ru
+
+# Grup emri eski araligi korur; iki piyadeyi normal tekil emirlerle yaklastir.
+# Ardindan ikisini sec ve gercek varisa kadar ilerle; hedefe teleport edilmez.
+battle select 1 replace
+battle move -4 2
+battle select 2 replace
+battle move 1 4
+battle select 1 replace
+battle select 2 add
+battle pause off
+battle wait arrived 20
+battle pause on
+wait 0.6
+expect BattleSelectionArrived True
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state labels-07-infantry-dense-ru
+shot labels-07-infantry-dense-ru
+wait 0.75
+battle state labels-08-infantry-dense-held-ru
+shot labels-08-infantry-dense-held-ru
+lang tr
+wait 0.6
+expect Language tr
+expect BattlePaused True
+battle state labels-09-infantry-dense-tr
+shot labels-09-infantry-dense-tr
+wait 0.75
+battle state labels-10-infantry-dense-held-tr
+shot labels-10-infantry-dense-held-tr
+
+# Kisa inceleme normal retreat ve rapor aktarimiyla biter; dogal zafer iddiasi yok.
+retreat
+accept
+battle verify-return
+expect BattleActive False
+expect ResolvedBattleCount 1
+lang ru
+state labels-11-campaign-return-ru
+shot labels-11-campaign-return-ru
+quit

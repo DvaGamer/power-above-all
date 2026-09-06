@@ -70,6 +70,12 @@ $badVictory = Fixture 'injected-victory.script' "new`nexpect HasPendingVictory T
 Reject { Get-ReviewPlan $badVictory } 'Decision review cannot override the domain-computed price'
 $badPending = Fixture 'ambiguous-victory.script' "new`nexpect HasPendingVictory maybe`nshot sample`nquit"
 Reject { Get-ReviewPlan $badPending } 'Ambiguous pending-offer expectation is rejected before a natural battle runs'
+$dumasPlan = Fixture 'dumas-response.script' "new`nexpect HasDumasInitiative True`npanel initiative`nforage veto`nshot sample`nquit"
+Check ((Get-ReviewPlan $dumasPlan).Assertions -eq 1) 'Dumas review opens the actual document and sends only the supported veto response'
+$badDumas = Fixture 'injected-dumas.script' "new`nexpect HasDumasInitiative True`nforage gather 40`nshot sample`nquit"
+Reject { Get-ReviewPlan $badDumas } 'Review cannot force or price an autonomous Dumas collection'
+$ambiguousDumas = Fixture 'ambiguous-dumas.script' "new`nexpect HasDumasInitiative maybe`nshot sample`nquit"
+Reject { Get-ReviewPlan $ambiguousDumas } 'Ambiguous Dumas state is rejected before player launch'
 $badBattle = Fixture 'invalid-battle.script' "new`nexpect Week 0`nbattle finish true`nshot sample`nquit"
 Reject { Get-ReviewPlan $badBattle } 'Review grammar cannot inject a battle outcome'
 $badWait = Fixture 'unbounded-battle.script' "new`nexpect Week 0`nbattle wait ended 121`nshot sample`nquit"

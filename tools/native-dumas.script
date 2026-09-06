@@ -1,0 +1,52 @@
+# Gerçek alt bildirim, belge kaydırma ve veto tıklaması; girdi penceresinde semantic yanıt yok.
+new
+lang ru
+shot 00-start
+select ile
+act subsidy
+act recruit
+week
+week
+petition relief
+act recruit
+week
+week
+act recruit
+week
+week
+act recruit
+week
+week
+expect Week 8
+expect HasDumasInitiative True
+expect ForageFood 36
+panel council
+wait 0.6
+state 01-before-native
+shot 01-before-native
+
+# Root: alt bildirime tıkla, belgeyi gerçek mouse wheel ile kaydır, açık bedelli vetoyu tıkla.
+wait 90
+expect Week 8
+expect HasDumasInitiative False
+expect DumasForageDueWeek 0
+expect DumasNextForageWeek 12
+state 02-native-veto
+shot 02-native-veto
+week
+expect Week 9
+expect Gold 806
+expect Troops 1692
+expect Power 48.5
+expect Supply 50
+expect Morale 61
+state 03-native-veto-week
+panel journal
+wait 0.6
+shot 03-native-veto-week
+save
+remember native-veto-week
+load
+same native-veto-week
+state 04-loaded
+quit

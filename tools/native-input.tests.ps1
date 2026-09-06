@@ -88,4 +88,22 @@ foreach ($number in 1..4) {
     Check ($digit.VirtualKey -eq (48 + $number) -and $digit.ScanCode -eq (1 + $number) -and $digit.DownFlags -eq 0 -and $digit.UpFlags -eq 2) "Digit$number maps the exact top-row physical key, not NumPad"
 }
 Reject { Get-NativeKeyDescriptor 'Control' } 'Unrequested modifiers remain outside the native review interface'
+$shift = Get-NativeShiftClickDescriptor $false $false
+Check ($shift.VirtualKey -eq 0xa0 -and $shift.ScanCode -eq 0x2a -and $shift.DownFlags -eq 0 -and $shift.UpFlags -eq 2) 'Shift-click uses physical left Shift with a matching nonextended release'
+Reject { Get-NativeShiftClickDescriptor $true $false } 'Already-held left Shift is preserved without generating input'
+Reject { Get-NativeShiftClickDescriptor $false $true } 'Already-held right Shift cannot masquerade as the tested modifier'
+$events = New-Object 'Collections.Generic.List[string]'
+Invoke-NativeShiftClickSequence -Send { param($step) $events.Add($step) } -CheckTarget { $events.Add('target-check') } -Delay { $events.Add('delay') }
+Check (($events -join ',') -eq 'shift-down,delay,target-check,mouse-down,delay,mouse-up,delay,shift-up') 'Shift remains held through mouse-up and an input frame before release'
+$events.Clear()
+Reject { Invoke-NativeShiftClickSequence -Send { param($step) $events.Add($step) } -CheckTarget { throw 'Simulated focus loss after modifier down' } -Delay {} } 'Focus failure after modifier press remains an error'
+Check (($events -join ',') -eq 'shift-down,shift-up') 'Focus failure releases owned Shift without pressing the mouse'
+$events.Clear()
+Reject { Invoke-NativeShiftClickSequence -Send { param($step) $events.Add($step); if ($step -eq 'mouse-down') { throw 'Simulated input failure' } } -CheckTarget {} -Delay {} } 'Failure after mouse press remains an error'
+Check (($events -join ',') -eq 'shift-down,mouse-down,mouse-up,shift-up') 'Failure after mouse press releases both owned inputs'
+$events.Clear()
+Reject { Invoke-NativeShiftClickSequence -Send { param($step) $events.Add($step); if ($step -eq 'mouse-up') { throw 'Simulated mouse cleanup failure' } } -CheckTarget {} -Delay {} } 'Mouse release failure is not hidden'
+Check ($events[-1] -eq 'shift-up') 'Nested finally still releases Shift if mouse cleanup fails'
+$nativeVolleyPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'native-volley.script')
+Check ($nativeVolleyPlan.Captures[0] -eq '00-start.png' -and $nativeVolleyPlan.Captures.Count -eq 6 -and $nativeVolleyPlan.States.Count -eq 6) 'Native group and volley receipt includes both observed phases and paused comparison'
 Write-Output "$count native input checks passed; no player or input launched."

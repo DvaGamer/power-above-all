@@ -2,14 +2,14 @@
   "entries": [
     {"key":"log.victory.ready","ru":"Решение о заслуге победы готово.","tr":"Zaferin takdirine ilişkin karar hazır."},
     {"key":"log.victory.recognize","ru":"{0}: вы признали инициативу Дюма. Личная власть −{1}, усталость армии −{2}; отношения с Дюма +{3}, его амбиции +{4}.","tr":"{0}: Dumas'nın inisiyatifini tanıdınız. Kişisel güç −{1}, ordunun yorgunluğu −{2}; Dumas ile ilişki +{3}, hırsı +{4}."},
-    {"key":"log.victory.bonus","ru":"{0}: полки получили премию от правительства — {1} золота. Лояльность Дюма +{2}, местный контроль +{3}. Военная награда личной власти сохранена.","tr":"{0}: alaylara hükümet adına {1} altın prim ödendi. Dumas'nın sadakati +{2}, yerel kontrol +{3}. Zaferin kişisel güç kazancı korundu."},
+    {"key":"log.victory.bonus","ru":"{0}: полки получили премию от правительства — {1} ливров. Лояльность Дюма +{2}, местный контроль +{3}.","tr":"{0}: alaylara hükümet adına {1} livre prim ödendi. Dumas'nın sadakati +{2}, yerel kontrol +{3}."},
     {"key":"log.victory.decline","ru":"{0}: принят обычный отчёт о победе. Дополнительные награды и расходы не назначены.","tr":"{0}: olağan zafer raporu kabul edildi. Ek ödül veya harcama kararlaştırılmadı."},
     {"key":"error.victory.state","ru":"Данные решения о победе некорректны.","tr":"Zafer kararı verileri geçersiz."},
     {"key":"error.victory.none","ru":"Сейчас нет победы, ожидающей решения о заслуге.","tr":"Şu anda takdir kararı bekleyen bir zafer yok."},
     {"key":"error.victory.stale","ru":"Это предложение относится к другой победе или уже закрылось.","tr":"Bu teklif başka bir zafere ait veya artık kapandı."},
     {"key":"error.victory.choice","ru":"Такого решения о заслуге нет.","tr":"Böyle bir zafer takdiri seçeneği yok."},
     {"key":"error.victory.bonus_complete","ru":"Лояльность Дюма и местный контроль уже максимальны. Премия ничего не улучшит.","tr":"Dumas'nın sadakati ve yerel kontrol zaten en yüksek düzeyde. Prim ek bir fayda sağlamaz."},
-    {"key":"error.victory.gold","ru":"Для премии нынешним полкам нужно {0} золота.","tr":"Mevcut alaylara prim için {0} altın gerekli."},
+    {"key":"error.victory.gold","ru":"Для премии нынешним полкам нужно {0} ливров.","tr":"Mevcut alaylara prim için {0} livre gerekli."},
     {"key":"error.victory.power","ru":"Чтобы уступить Дюма политическую заслугу, нужно {0} личной власти.","tr":"Dumas'ya siyasi takdir bırakmak için {0} kişisel güç gerekli."}
   ]
 }

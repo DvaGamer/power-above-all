@@ -30,7 +30,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":4", json);
+            StringAssert.Contains("\"Version\":5", json);
             var loaded = CampaignArchive.Deserialize(json);
             Assert.AreEqual(before, Snapshot(loaded));
             return loaded;
@@ -42,7 +42,7 @@ namespace PowerAboveAll.Tests
         }
         static string AsOlder(string json, int version)
         {
-            json = json.Replace("\"Version\":4", "\"Version\":" + version)
+            json = json.Replace("\"Version\":5", "\"Version\":" + version)
                 .Replace("\"PendingVictoryId\":", "\"IgnoredVictory\":");
             if (version < 3) json = json.Replace("\"AccordRegionId\":", "\"IgnoredRegion\":")
                 .Replace("\"AccordUntilWeek\":", "\"IgnoredUntil\":");
@@ -311,7 +311,7 @@ namespace PowerAboveAll.Tests
         [TestCase("bonus")]
         [TestCase("decline")]
         [TestCase("week")]
-        public void V4RoundTripPreservesOpenAndClosedDecisionsWithoutAddingOldRewards(string phase)
+        public void CurrentRoundTripPreservesOpenAndClosedDecisionsWithoutAddingOldRewards(string phase)
         {
             var state = phase == "fresh" ? CampaignCore.Create() : Winner();
             if (phase == "week") Success(CampaignCore.NextWeek(state));
@@ -325,11 +325,13 @@ namespace PowerAboveAll.Tests
             }
         }
 
-        [TestCase("missing")]
-        [TestCase("null")]
-        public void V4RequiresAnExplicitNonNullVictoryField(string representation)
+        [TestCase(4, "missing")]
+        [TestCase(4, "null")]
+        [TestCase(5, "missing")]
+        [TestCase(5, "null")]
+        public void V4AndCurrentRequireAnExplicitNonNullVictoryField(int version, string representation)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":5", "\"Version\":" + version);
             StringAssert.Contains("\"PendingVictoryId\":\"\"", json);
             json = json.Replace("\"PendingVictoryId\":\"\"", representation == "missing" ? "\"IgnoredVictory\":\"\"" : "\"PendingVictoryId\":null");
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
@@ -366,7 +368,7 @@ namespace PowerAboveAll.Tests
         public void OlderArchivesDoNotInventChoicesForHistoricWinsOrAcceptHiddenActiveChoices(int version)
         {
             var state = Winner(); string json = CampaignArchive.Serialize(state, false);
-            string disguised = json.Replace("\"Version\":4", "\"Version\":" + version);
+            string disguised = json.Replace("\"Version\":5", "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(disguised));
             var loaded = CampaignArchive.Deserialize(AsOlder(json, version));
             state.PendingVictoryId = "";

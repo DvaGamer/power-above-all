@@ -45,6 +45,29 @@ function Get-NativeKeyDescriptor([ValidateSet('Enter', 'Escape', 'Right', 'Left'
     return [pscustomobject]@{ VirtualKey = [byte]$virtualKey; ScanCode = [byte]($mapped -band 0xff); DownFlags = [uint32]$downFlags; UpFlags = [uint32]($downFlags -bor 2) }
 }
 
+function Get-NativeShiftClickDescriptor([bool]$LeftShiftDown, [bool]$RightShiftDown) {
+    if ($LeftShiftDown -or $RightShiftDown) { throw 'Shift is already held; no modifier or mouse input sent.' }
+    $mapped = [PowerAboveAllReview.NativeArguments]::MapVirtualKeyW(0xa0, 4)
+    if ($mapped -eq 0 -or ($mapped -band 0xff00) -ne 0) { throw 'Unsupported left Shift scan mapping; no input sent.' }
+    return [pscustomobject]@{ VirtualKey = [byte]0xa0; ScanCode = [byte]($mapped -band 0xff); DownFlags = [uint32]0; UpFlags = [uint32]2 }
+}
+
+function Invoke-NativeShiftClickSequence([scriptblock]$Send, [scriptblock]$CheckTarget, [scriptblock]$Delay) {
+    # Dort sabit olay; saf hata testleri gercek tus/fare gondermeden finally yolunu kullanir.
+    $shiftPressed = $false; $mousePressed = $false
+    try {
+        $shiftPressed = $true; & $Send 'shift-down'; & $Delay
+        & $CheckTarget
+        $mousePressed = $true; & $Send 'mouse-down'; & $Delay
+    } finally {
+        try {
+            if ($mousePressed) { & $Send 'mouse-up'; & $Delay }
+        } finally {
+            if ($shiftPressed) { & $Send 'shift-up' }
+        }
+    }
+}
+
 function Assert-NativeReviewPath([string]$Path) {
     if ([string]::IsNullOrWhiteSpace($Path)) { throw 'Review provenance path is missing.' }
     $full = [IO.Path]::GetFullPath($Path)

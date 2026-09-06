@@ -36,8 +36,9 @@ namespace PowerAboveAll
                 state.Week > MaximumWeek - RegionalAccordWeeks) return null;
             var terms = BuildRegionalAccordTerms(regionId, state.Week + RegionalAccordWeeks, state.Week);
             terms.CurrentTaxIncome = Forecast(state).TaxIncome;
-            terms.ProjectedTaxIncome = ForecastWithRegionalAccord(state, regionId, regionId, terms.Immediate.Unrest, terms.Immediate.Control).TaxIncome;
-            int withoutHoliday = ForecastWithRegionalAccord(state, null, regionId, terms.Immediate.Unrest, terms.Immediate.Control).TaxIncome;
+            var plan = BuildWeekProjection(new EconomyView(state, regionId, regionId, terms.Immediate.Unrest, terms.Immediate.Control));
+            terms.ProjectedTaxIncome = plan.Economy.TaxIncome;
+            int withoutHoliday = CalculateEconomy(plan.View.WithExemption(null)).TaxIncome;
             terms.TaxForgone = withoutHoliday - terms.ProjectedTaxIncome;
             return terms;
         }
@@ -47,8 +48,9 @@ namespace PowerAboveAll
             if (!ValidRegionalAccordCampaign(state) || !HasRegionalAccord(state)) return null;
             var terms = BuildRegionalAccordTerms(state.AccordRegionId, state.AccordUntilWeek, state.Week);
             terms.IsActive = true;
-            terms.CurrentTaxIncome = terms.ProjectedTaxIncome = Forecast(state).TaxIncome;
-            terms.TaxForgone = ForecastWithRegionalAccord(state, null, null, 0, 0).TaxIncome - terms.CurrentTaxIncome;
+            var plan = BuildWeekProjection(new EconomyView(state, state.AccordRegionId));
+            terms.CurrentTaxIncome = terms.ProjectedTaxIncome = plan.Economy.TaxIncome;
+            terms.TaxForgone = CalculateEconomy(plan.View.WithExemption(null)).TaxIncome - terms.CurrentTaxIncome;
             return terms;
         }
 

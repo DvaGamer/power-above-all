@@ -142,7 +142,9 @@ function Get-ReviewPlan([string]$Path) {
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
     if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
     if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
-    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^forage(?:\s|$)' -and $line -cne 'forage veto') { throw "Unsupported Dumas response: $line" }
+    if ($line -match '^expect\s+HasDumasInitiative(?:\s|$)' -and $line -cnotmatch '^expect HasDumasInitiative (True|False)$') { throw "Dumas initiative assertion requires True or False: $line" }
     if ($line -match '^expect\s+HasPendingVictory(?:\s|$)' -and $line -cnotmatch '^expect HasPendingVictory (True|False)$') { throw "Pending victory assertion requires True or False: $line" }
     if ($line -match '^(shot|state|battle\s+state)\s+(.+)$') {
       $kind = $Matches[1]; $name = $Matches[2]

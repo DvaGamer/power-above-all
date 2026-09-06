@@ -1,0 +1,58 @@
+# Gercek Shift group secimi ve tek manuel aimed volley; hazirlik disinda semantic input yok.
+new
+lang ru
+select champagne
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state 00-deployment
+shot 00-start
+battle pause off
+battle wait arrived 45
+battle wait volley-ready 30
+expect BattleSelectionArrived True
+expect BattleCanVolley True
+battle pause on
+battle state 01-artillery-ready
+shot 01-artillery-ready
+
+# Ilk40s: gercek Digit1, sonra ikinci kart BASLIGINA ShiftClick(337,769).
+wait 40
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 02-native-group
+shot 02-native-group
+
+# Ikinci40s: 02 gorunmeden baslama. Digit4 -> Space -> tek Click(1332,817) -> Space.
+# Son gercek Space reload'u pozitifken dondurur; bu aralikta semantic select/volley/pause yok.
+wait 40
+expect BattlePaused True
+expect BattleHasOutcome False
+battle state 03-native-volley
+shot 03-native-volley
+wait 0.75
+expect BattlePaused True
+battle state 04-native-pause-held
+shot 04-native-pause-held
+
+# Dumanin kendisi veya kesin ayni-tick double-click bu fixture'in iddiasi degildir.
+retreat
+accept
+battle verify-return
+expect BattleActive False
+expect ResolvedBattleCount 1
+state 05-campaign-return
+shot 05-campaign-return
+quit

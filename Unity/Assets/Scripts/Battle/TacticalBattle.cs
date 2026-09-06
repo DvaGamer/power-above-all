@@ -70,6 +70,15 @@ namespace PowerAboveAll
             public string Cue;
         }
 
+        sealed class RegimentLabelLayout
+        {
+            public Regiment Regiment;
+            public Rect Body, Muzzle, Panel;
+            public Vector2 Anchor;
+            public bool HasMuzzle;
+            public int Priority, Choice = -1;
+        }
+
         public bool Active { get; private set; }
         public event Action<string> Feedback;
         readonly List<Regiment> regiments = new List<Regiment>();
@@ -78,6 +87,10 @@ namespace PowerAboveAll
         readonly List<Material> materials = new List<Material>();
         readonly List<Mesh> meshes = new List<Mesh>();
         readonly List<Texture2D> hudTextures = new List<Texture2D>();
+        readonly Dictionary<Regiment, RegimentLabelLayout> regimentLabelCache = new Dictionary<Regiment, RegimentLabelLayout>();
+        readonly List<RegimentLabelLayout> regimentLabelObstacles = new List<RegimentLabelLayout>(8);
+        readonly List<RegimentLabelLayout> visibleRegimentLabels = new List<RegimentLabelLayout>(8);
+        int regimentLabelFrame = -1;
         Texture2D meadowPainting, powderMask;
         Mesh powderMesh;
         bool powderDiagnosticsLogged;
@@ -148,6 +161,7 @@ namespace PowerAboveAll
             powderMesh = null;
             powderDiagnosticsLogged = false;
             materials.Clear(); meshes.Clear(); regiments.Clear(); selected.Clear(); effects.Clear();
+            regimentLabelCache.Clear(); regimentLabelObstacles.Clear(); visibleRegimentLabels.Clear(); regimentLabelFrame = -1;
             hudTextures.Clear(); bodyStyle = titleStyle = smallStyle = cardStyle = buttonStyle = null;
             chosenButtonStyle = inkSmallStyle = inkCardStyle = null;
             dispatchTitle = dispatchBody = dispatchSmall = dispatchNumber = null;
@@ -1180,22 +1194,175 @@ namespace PowerAboveAll
 
         void DrawRegimentLabels()
         {
+            CacheRegimentLabels();
+            foreach (RegimentLabelLayout label in visibleRegimentLabels) DrawRegimentLeader(label);
+            // Sıkışık yerde en önemli metin en son çizilir.
+            for (int i = visibleRegimentLabels.Count - 1; i >= 0; i--)
+            {
+                RegimentLabelLayout label = visibleRegimentLabels[i];
+                Regiment regiment = label.Regiment;
+                bool selectedRegiment = selected.Contains(regiment);
+                Rect rect = label.Panel;
+                Panel(new Rect(rect.x, rect.y, 156, 36), regiment.Player ? new Color(.15f, .26f, .31f, .90f) : new Color(.39f, .23f, .18f, .90f));
+                Text(new Rect(rect.x + 7, rect.y + 1, 145, 18), "battle.strength_label", smallStyle, regiment.Men, Mathf.RoundToInt(regiment.Morale));
+                Text(new Rect(rect.x + 7, rect.y + 18, 145, 20), "battle.condition." + regiment.Condition.ToString().ToLowerInvariant(), smallStyle);
+                Panel(new Rect(rect.x, rect.y + 36, 156, 3), new Color(.15f, .19f, .15f));
+                Panel(new Rect(rect.x, rect.y + 36, 156 * regiment.Men / Mathf.Max(1f, regiment.Original), 3), selectedRegiment ? new Color(.86f, .74f, .43f) : new Color(.68f, .68f, .48f));
+            }
+        }
+
+        void CacheRegimentLabels()
+        {
+            if (regimentLabelFrame == Time.frameCount) return;
+            regimentLabelFrame = Time.frameCount;
+            regimentLabelObstacles.Clear(); visibleRegimentLabels.Clear();
+            float pixelsPerWorld = battleCamera.pixelHeight / (2 * battleCamera.orthographicSize * ViewLayout.Scale);
             foreach (Regiment regiment in regiments)
             {
                 if (regiment.Withdrawn || regiment.Men <= 0) continue;
+                if (!regimentLabelCache.TryGetValue(regiment, out RegimentLabelLayout label))
+                {
+                    label = new RegimentLabelLayout { Regiment = regiment };
+                    regimentLabelCache.Add(regiment, label);
+                }
+                label.Anchor = LabelCanvasPoint(regiment.Root.transform.position + Vector3.up * 2);
+                label.Body = RegimentLabelBody(regiment, pixelsPerWorld);
+                label.HasMuzzle = regiment.Kind != Kind.Cavalry;
+                if (label.HasMuzzle) label.Muzzle = RegimentLabelMuzzle(regiment, pixelsPerWorld);
+                regimentLabelObstacles.Add(label);
                 bool selectedRegiment = selected.Contains(regiment);
                 if (!selectedRegiment && hovered != regiment && visualClock - regiment.LastHit > 4 && regiment.Morale >= 36) continue;
                 Vector3 position = battleCamera.WorldToScreenPoint(regiment.Root.transform.position + Vector3.up * 4.8f);
                 if (position.z <= 0) continue;
                 Vector2 canvasPosition = ViewLayout.ToCanvas(position);
-                float x = canvasPosition.x, y = canvasPosition.y;
-                if (y < 148 || y > 710) continue;
-                Panel(new Rect(x - 78, y - 18, 156, 36), regiment.Player ? new Color(.15f, .26f, .31f, .90f) : new Color(.39f, .23f, .18f, .90f));
-                Text(new Rect(x - 71, y - 17, 145, 18), "battle.strength_label", smallStyle, regiment.Men, Mathf.RoundToInt(regiment.Morale));
-                Text(new Rect(x - 71, y, 145, 20), "battle.condition." + regiment.Condition.ToString().ToLowerInvariant(), smallStyle);
-                Panel(new Rect(x - 78, y + 18, 156, 3), new Color(.15f, .19f, .15f));
-                Panel(new Rect(x - 78, y + 18, 156 * regiment.Men / Mathf.Max(1f, regiment.Original), 3), selectedRegiment ? new Color(.86f, .74f, .43f) : new Color(.68f, .68f, .48f));
+                if (canvasPosition.y < 148 || canvasPosition.y > 710) continue;
+                label.Priority = selectedRegiment ? 0 : regiment.Morale < 36 || regiment.Routed ? 1 : 2;
+                int insert = 0;
+                while (insert < visibleRegimentLabels.Count &&
+                    (visibleRegimentLabels[insert].Priority < label.Priority ||
+                     (visibleRegimentLabels[insert].Priority == label.Priority && visibleRegimentLabels[insert].Regiment.Id < regiment.Id))) insert++;
+                visibleRegimentLabels.Insert(insert, label);
             }
+            for (int i = 0; i < visibleRegimentLabels.Count; i++)
+            {
+                RegimentLabelLayout label = visibleRegimentLabels[i];
+                float bestScore = float.MaxValue;
+                int bestChoice = 0;
+                Rect best = default;
+                for (int candidate = 0; candidate < 10; candidate++)
+                {
+                    Rect rect = RegimentLabelCandidate(label, candidate);
+                    float score = RegimentLabelScore(label, rect, i);
+                    // Önceki yan/kat korunur; küçük sınır farkları metni sıçratmaz.
+                    if (label.Choice >= 0 && candidate != label.Choice) score += 120;
+                    else if (label.Choice < 0 && (candidate % 2 == 0) != (label.Anchor.x >= 720)) score += 6;
+                    if (score >= bestScore) continue;
+                    bestScore = score; bestChoice = candidate; best = rect;
+                }
+                label.Choice = bestChoice; label.Panel = best;
+            }
+        }
+
+        Vector2 LabelCanvasPoint(Vector3 point)
+        {
+            return ViewLayout.ToCanvas(battleCamera.WorldToScreenPoint(point));
+        }
+
+        void IncludeLabelPoint(ref Rect bounds, Vector3 point, float radius)
+        {
+            Vector2 canvas = LabelCanvasPoint(point);
+            bounds = Rect.MinMaxRect(Mathf.Min(bounds.xMin, canvas.x - radius), Mathf.Min(bounds.yMin, canvas.y - radius),
+                Mathf.Max(bounds.xMax, canvas.x + radius), Mathf.Max(bounds.yMax, canvas.y + radius));
+        }
+
+        Rect RegimentLabelBody(Regiment regiment, float pixelsPerWorld)
+        {
+            Vector2 root = LabelCanvasPoint(regiment.Root.transform.position);
+            Rect bounds = new Rect(root, Vector2.zero);
+            bool mounted = regiment.Kind == Kind.Cavalry;
+            // Mevcut figür dönüşümleri okunur; her OnGUI olayında renderer ağacı taranmaz.
+            foreach (Miniature figure in regiment.Figures)
+            {
+                if (figure.Falling) continue;
+                IncludeLabelPoint(ref bounds, figure.Root.position, (mounted ? .9f : .6f) * pixelsPerWorld);
+                IncludeLabelPoint(ref bounds, figure.Root.position + Vector3.up * (mounted ? 2.4f : 1.85f), .45f * pixelsPerWorld);
+            }
+            IncludeLabelPoint(ref bounds, regiment.Flag.transform.position, .9f * pixelsPerWorld);
+            if (regiment.Kind == Kind.Artillery)
+            {
+                for (int x = -1; x <= 1; x += 2)
+                    for (int z = 0; z < 2; z++)
+                        for (int y = 0; y < 2; y++)
+                            IncludeLabelPoint(ref bounds, regiment.Root.transform.TransformPoint(new Vector3(x * 2.5f, y * 1.5f, z == 0 ? .15f : 3.1f)), 2);
+            }
+            return bounds;
+        }
+
+        Rect RegimentLabelMuzzle(Regiment regiment, float pixelsPerWorld)
+        {
+            bool cannon = regiment.Kind == Kind.Artillery;
+            Vector3 centre = regiment.Root.transform.position + regiment.Root.transform.forward * (cannon ? 2.7f : 1) + Vector3.up * (cannon ? .85f : 1);
+            Rect bounds = new Rect(LabelCanvasPoint(centre), Vector2.zero);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Vector3 muzzle = centre + regiment.Root.transform.right * (side * (cannon ? 1.5f : 2.7f));
+                IncludeLabelPoint(ref bounds, muzzle, 0);
+                IncludeLabelPoint(ref bounds, muzzle + new Vector3(1.4f, .75f, .26f), 0);
+            }
+            // Sabit ilk yayılma payı; gerçek duman nesnelerinin doğup sönmesi yerleşimi değiştirmez.
+            float horizontal = (cannon ? 2.2f : 1.7f) * pixelsPerWorld, vertical = 1.1f * pixelsPerWorld;
+            return Rect.MinMaxRect(bounds.xMin - horizontal, bounds.yMin - vertical, bounds.xMax + horizontal, bounds.yMax + vertical);
+        }
+
+        Rect RegimentLabelCandidate(RegimentLabelLayout label, int candidate)
+        {
+            float left = label.HasMuzzle ? Mathf.Min(label.Body.xMin, label.Muzzle.xMin) : label.Body.xMin;
+            float right = label.HasMuzzle ? Mathf.Max(label.Body.xMax, label.Muzzle.xMax) : label.Body.xMax;
+            int tier = candidate / 2;
+            float vertical = tier == 0 ? 0 : tier == 1 ? -45 : tier == 2 ? 45 : tier == 3 ? -90 : 90;
+            Rect rect = new Rect(candidate % 2 == 0 ? right + 10 : left - 166, label.Anchor.y - 18 + vertical, 156, 39);
+            rect.x = Mathf.Clamp(rect.x, 20, 1420 - rect.width);
+            rect.y = Mathf.Clamp(rect.y, 148, 720 - rect.height);
+            // Pausa ve emir açıklaması için sürekli pay, açılıp kapanırken yan değişimini önler.
+            if (rect.Overlaps(new Rect(502, 140, 436, 48))) rect.y = 188;
+            if (rect.Overlaps(new Rect(941, 683, 486, 55))) rect.y = 683 - rect.height;
+            return rect;
+        }
+
+        float RegimentLabelScore(RegimentLabelLayout label, Rect candidate, int placed)
+        {
+            float score = Mathf.Abs(candidate.center.y - label.Anchor.y) * .3f;
+            foreach (RegimentLabelLayout obstacle in regimentLabelObstacles)
+            {
+                score += LabelOverlap(candidate, obstacle.Body) * 6;
+                if (obstacle.HasMuzzle) score += LabelOverlap(candidate, obstacle.Muzzle) * 2;
+            }
+            Rect spaced = Rect.MinMaxRect(candidate.xMin - 3, candidate.yMin - 3, candidate.xMax + 3, candidate.yMax + 3);
+            for (int i = 0; i < placed; i++) score += LabelOverlap(spaced, visibleRegimentLabels[i].Panel) * 10;
+            return score;
+        }
+
+        static float LabelOverlap(Rect a, Rect b)
+        {
+            return Mathf.Max(0, Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin)) *
+                Mathf.Max(0, Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin));
+        }
+
+        void DrawRegimentLeader(RegimentLabelLayout label)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+            Vector2 from = new Vector2(Mathf.Clamp(label.Panel.center.x, label.Body.xMin, label.Body.xMax),
+                Mathf.Clamp(label.Panel.center.y, label.Body.yMin, label.Body.yMax));
+            Vector2 to = new Vector2(Mathf.Clamp(from.x, label.Panel.xMin, label.Panel.xMax),
+                Mathf.Clamp(from.y, label.Panel.yMin, label.Panel.yMax));
+            Vector2 direction = to - from;
+            if (direction.sqrMagnitude < 4) return;
+            Matrix4x4 oldMatrix = GUI.matrix;
+            Color oldColor = GUI.color;
+            GUI.color = label.Regiment.Player ? new Color(.15f, .26f, .31f, .68f) : new Color(.39f, .23f, .18f, .68f);
+            GUIUtility.RotateAroundPivot(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, from);
+            GUI.DrawTexture(new Rect(from.x, from.y - .5f, direction.magnitude, 1), Texture2D.whiteTexture);
+            GUI.matrix = oldMatrix; GUI.color = oldColor;
         }
 
         void DrawResult()

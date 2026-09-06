@@ -1,7 +1,7 @@
 # Gerçek Windows fare/tuş yolu için dar inceleme yardımcısı.
 # Yalnız bu yardımcının başlattığı, output/verify altındaki player'a girdi gönderir.
 param(
-    [Parameter(Mandatory = $true)][ValidateSet('Start', 'Inspect', 'Click', 'RightMouse', 'Key', 'Scroll')][string]$Action,
+    [Parameter(Mandatory = $true)][ValidateSet('Start', 'Inspect', 'Click', 'ShiftClick', 'RightMouse', 'Key', 'Scroll')][string]$Action,
     [string]$PlayerPath,
     [string]$ScriptPath,
     [string]$ReceiptPath,
@@ -37,12 +37,21 @@ namespace PowerAboveAllReview {
         [DllImport("user32.dll")] public static extern bool GetCursorPos(out Point p);
         [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Point p);
         [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr h, uint flags);
+        [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int key);
         [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint x, uint y, int data, UIntPtr extra);
         [DllImport("user32.dll")] public static extern void keybd_event(byte key, byte scan, uint flags, UIntPtr extra);
     }
 }
 '@
 [void][PowerAboveAllReview.InputWindow]::SetProcessDPIAware()
+
+function Assert-NativePointerTarget([IntPtr]$Handle, [int]$ExpectedX, [int]$ExpectedY) {
+    $cursor = New-Object PowerAboveAllReview.InputWindow+Point
+    if (-not [PowerAboveAllReview.InputWindow]::GetCursorPos([ref]$cursor) -or [Math]::Abs($cursor.X - $ExpectedX) -gt 1 -or [Math]::Abs($cursor.Y - $ExpectedY) -gt 1) { throw 'Cursor moved or was clipped; no click sent.' }
+    $underPointer = [PowerAboveAllReview.InputWindow]::WindowFromPoint($cursor)
+    if ($underPointer -eq [IntPtr]::Zero -or [PowerAboveAllReview.InputWindow]::GetAncestor($underPointer, 2) -ne $Handle) { throw 'Cursor is over another window; no click sent.' }
+    if ([PowerAboveAllReview.InputWindow]::GetForegroundWindow() -ne $Handle) { throw 'Focus changed; no click sent.' }
+}
 
 if ($Action -eq 'Start') {
     if (-not $VisiblePlayer) { throw 'Native input inspection requires explicit -VisiblePlayer.' }
@@ -94,19 +103,26 @@ $width = $bounds.Right - $bounds.Left
 $height = $bounds.Bottom - $bounds.Top
 if ($width -lt 640 -or $height -lt 400) { throw 'Unexpected or minimized player client.' }
 
-if ($Action -in @('Click', 'RightMouse', 'Scroll')) {
+if ($Action -in @('Click', 'ShiftClick', 'RightMouse', 'Scroll')) {
     if ([double]::IsNaN($X) -or [double]::IsInfinity($X) -or [double]::IsNaN($Y) -or [double]::IsInfinity($Y) -or $X -lt 0 -or $X -ge 1440 -or $Y -lt 0 -or $Y -ge 900) { throw 'Coordinates must be finite points inside the 1440x900 design canvas.' }
     # ViewLayout yatay/dikey boşluk eklediği için en-boy oranını koru.
     $scale = [Math]::Min($width / 1440.0, $height / 900.0)
     $screenX = $origin.X + ($width - 1440 * $scale) / 2 + $X * $scale
     $screenY = $origin.Y + ($height - 900 * $scale) / 2 + $Y * $scale
     if (-not [PowerAboveAllReview.InputWindow]::SetCursorPos([int]$screenX, [int]$screenY)) { throw 'Cursor positioning failed; no input sent.' }
-    $cursor = New-Object PowerAboveAllReview.InputWindow+Point
-    if (-not [PowerAboveAllReview.InputWindow]::GetCursorPos([ref]$cursor) -or [Math]::Abs($cursor.X - [int]$screenX) -gt 1 -or [Math]::Abs($cursor.Y - [int]$screenY) -gt 1) { throw 'Cursor moved or was clipped; no input sent.' }
-    $underPointer = [PowerAboveAllReview.InputWindow]::WindowFromPoint($cursor)
-    if ($underPointer -eq [IntPtr]::Zero -or [PowerAboveAllReview.InputWindow]::GetAncestor($underPointer, 2) -ne $handle) { throw 'Cursor is over another window; no input sent.' }
-    if ([PowerAboveAllReview.InputWindow]::GetForegroundWindow() -ne $handle) { throw 'Focus changed; no input sent.' }
-    if ($Action -in @('Click', 'RightMouse')) {
+    Assert-NativePointerTarget $handle ([int]$screenX) ([int]$screenY)
+    if ($Action -eq 'ShiftClick') {
+        $shiftInput = Get-NativeShiftClickDescriptor (([PowerAboveAllReview.InputWindow]::GetAsyncKeyState(0xa0) -band 0x8000) -ne 0) (([PowerAboveAllReview.InputWindow]::GetAsyncKeyState(0xa1) -band 0x8000) -ne 0)
+        Invoke-NativeShiftClickSequence -Send {
+            param([string]$Step)
+            switch ($Step) {
+                'shift-down' { [PowerAboveAllReview.InputWindow]::keybd_event($shiftInput.VirtualKey, $shiftInput.ScanCode, $shiftInput.DownFlags, [UIntPtr]::Zero) }
+                'mouse-down' { [PowerAboveAllReview.InputWindow]::mouse_event(2, 0, 0, 0, [UIntPtr]::Zero) }
+                'mouse-up' { [PowerAboveAllReview.InputWindow]::mouse_event(4, 0, 0, 0, [UIntPtr]::Zero) }
+                'shift-up' { [PowerAboveAllReview.InputWindow]::keybd_event($shiftInput.VirtualKey, $shiftInput.ScanCode, $shiftInput.UpFlags, [UIntPtr]::Zero) }
+            }
+        } -CheckTarget { Assert-NativePointerTarget $handle ([int]$screenX) ([int]$screenY) } -Delay { Start-Sleep -Milliseconds 70 }
+    } elseif ($Action -in @('Click', 'RightMouse')) {
         $mouseDown = 2; $mouseUp = 4
         if ($Action -eq 'RightMouse') { $mouseDown = 8; $mouseUp = 16 }
         try {

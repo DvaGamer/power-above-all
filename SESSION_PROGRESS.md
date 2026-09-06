@@ -1,10 +1,24 @@
 # Aktif geliştirme — hızlı devam kaydı
 
-Güncel: **01:40 UTC, 6 Eylül 2026**. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar sürer. Erken final veya goal complete yok. Kullanıcı farklı başlangıç rolleri; kişisel iktidar, ülke yönetimi ve savaş; sonuçlu alternatif tarih; hoş, yarı stilize ve özenle tasarlanmış görseller istedi. Kesin rol kadrosu ve kampanya sonu hâlâ çalışma varsayımıdır.
+Güncel: **02:30 UTC, 6 Eylül 2026**. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar sürer. Erken final veya goal complete yok. Kullanıcı farklı başlangıç rolleri; kişisel iktidar, ülke yönetimi ve savaş; sonuçlu alternatif tarih; hoş, yarı stilize ve özenle tasarlanmış görseller istedi. Kesin rol kadrosu ve kampanya sonu hâlâ çalışma varsayımıdır.
 
 ## Son doğrulanmış paket
 
-Dal `polish/unity-visual-feel`; önceki commit `3040767`. Root yeni paketin yerel commit'ini hazırlıyor. Açık Unity/player/owner yok. Güvensiz eski `tools/night.ps1` ve `tools/night-prompt.txt` untracked kalır; çalıştırılmaz ve commit'e alınmaz.
+**02:30 güncel ek:** `dumas-labels-first-20260906-021758-659-0da55b25` GREEN **230 Unity /24PNG /66 kontrol /21JSON /10 tarayıcı /141 build dosyası**. Runtime `72628a77ed862d41e2c9538e4637d32a0a7bd33c36cd3e537b71c1fb4f917fe3`; launcher bunu complete-build olarak seçer. Native/Unity/player süreçleri tamamlandı. Root yeni doğrulanmış paketi yerel commit'e hazırlıyor; son commit hâlâ ab378c0.
+
+Dumas gerçek açlıktan sonra due=Week+1, next=Week+4 erzak emri ilan eder; takvim son4haftasında yeni emir yok. Ortak `BuildWeekProjection → CalculateEconomy(EconomyView)` normal/hypotheticalaccord tahminini ve NextWeek'i birleştirir. Son yerel zarar sonrası açık1–40 ise tam miktar, Unrest+8/Elite−6/Ambition+3/Power−min(current,4) uygulanır; hırs sadakatten büyük değilse Power0. Diğer durumlar sufficient/too_large/no_army, toplama etkileri sıfır. Veto ilişki−4, due temizlenir, next kalır. Food ayrı tekrar eklenmez: EconomyForecast.ForageFood ve NetFood tek hesapta. Journal uygulama vadesinin haftasında yazılır. Arşiv v5 yeni iki int alanı zorunlu tutar; v3accord/v4victory geçiş eşikleri ayrı kalır.
+
+Yeni `CabinetDumasInitiative` normal konsey belgesidir; modal/hafta engeli eklenmez. Alt bildirim, tarihi ve gerçek bedelleri gösterir; kapanış emri iptal etmez. `forage veto` yalnız aynı public GameApp/Core API'sini çağırır, `panel initiative` belgeyi açar. 557 RU/TR giriş PASS;50 tools ve51 native saf kontrol PASS. Savaş etiketleri yalnız TacticalBattle.cs içindeki readonly layout/cache ile yanlara alındı; short leader, fixed muzzle reserve, selected/critical/Id priority. Üç pausedPNG/JSON çifti eşit; 05/06'da6×3px köşe teması metin kaybı yaratmıyor.
+
+Gerçek8hafta/9hesap NPC:765Gold/1840troops,36toplama. Allow9:Gold804/Troops1840/Power50; veto9:Gold806/Troops1692/Power48.5. Save/load raw01=02=05,03=04,06=07,08=09. Saf `DumasInitiativeProbe`141 kontrol PASS. `DumasInterventionProbe`6283 kontrol PASS;36 kampanya/45uyarı/123 deneme/26sufficient. Bu log büyük SETTLED-ARCHIVE satırları içerir; yalnız EXAMPLE/before/after/SEARCH/PASS satırlarını oku.
+
+Ek actual `dumas-intervene-20260906-022412-198-6555cda1`: PARTIAL/native0,184 komut/81 kontrol/10PNG/10JSON/141 unchanged. Legacy12hafta iki recruit0/2,20gıda toplama; subsidy stop eskiPower−2/Unrest+8 ile sufficient, week13Gold1507/Troops1472/Power54. Army aynı durumda40gıda mandate ile sufficient; week14 için80livre borç yüklemede kalır. Root iptal RU ve borç RU/TR gördü.
+
+Native Shift/tek salvo: `native-input-20260906-015859-f35ec6e1`, PARTIAL/native0/noTimeout,117.48s,6PNG11kontrol6JSON. Gerçek Shift [0,1], Digit4 [3], Ammo11→10/Reload13.6894, pause JSON/PNG eşit. Native NPC: `native-input-20260906-022151-e4eb7bdb`, PARTIAL/native0/noTimeout100.62s,4PNG14kontrol4JSON. Root footer800875/Scroll−8at1270620/veto1280734 gördü; yalnız Dumas50→46,due temizliği,teklog. Native03=04 ve semantic sonuçla byte-eşit.
+
+**Önceki askerî paketin ayrıntıları aşağıdadır; güncel build yukarıdaki Dumas kapısıdır.**
+
+Dal `polish/unity-visual-feel`; son doğrulanmış commit **ab378c0** (01:44 UTC,55 dosya), önceki `3040767`. Açık Unity/player/owner yok. Güvensiz eski `tools/night.ps1` ve `tools/night-prompt.txt` untracked kalır; çalıştırılmaz ve commit'e alınmaz.
 
 Son tam kapı `military-art-final-20260906-012710-424-48b0deff`: **GREEN**, 176 Unity testi, 21 PNG, 38 kontrol, 21 JSON, 10 tarayıcı testi ve 141 dosyalık build. Runtime SHA256 `fc1e21937ace6213b4f62fd20cd2e7727fe465ada5baa3e853f713ce61a4cff6`. `node play-game.cjs --check` bu build'i complete-build olarak seçti; `tools/verified-player.cjs` bir kütüphanedir, CLI kontrolü değildir.
 
@@ -24,9 +38,9 @@ Arşiv v4 PendingVictoryId varlığını/non-null değerini zorunlu tutar. v1–
 
 ## Sıradaki iş
 
-Önce bu doğrulanmış paketin commit'ini bitir ve notes'a hash yaz. Sonra `Unity/WorkNotes/next-opponent-choice.md` tasarımını oku: üç NPC girişimi arasında Dumas'nın gerçek açlık sonrası ilan ettiği yerel rekvizisyon öneriliyor. **Henüz uygulama onayı verilmedi veya Assets yazılmadı.** Tetikleyici, gerçek tahmin hesabı, müdahale ve eski vade sırası root tarafından netleştirilmelidir. Diğer görsel aday `regiment-label-readability.md`: üç konsept ve önerilen alan dışı kısa bağlantı çizgili etiket; henüz uygulanmadı.
+Root doğrulanmış NPC/etiket paketini commit'e hazırlıyor. Gameplay ajanı `Unity/WorkNotes/next-country-decision.md` içinde ülke yönetimi için3 yeni konsept hazırlıyor; **bu sonraki özellik henüz onaylı veya uygulanmış değildir**. Visual ve verification ajanları son incelemelerini bitirdi. Yeni bounded iş için followup_task gerekir. Eski `next-opponent-choice.md` artık uygulanmış Dumas sözleşmesi ve kanıtını içerir.
 
-Üç alt ajan mevcut; hepsi son görevlerini tamamladı. Yeni bounded iş için `followup_task` gerekir, yalnız send_message çalışmayı başlatmaz. Root entegrasyon ve bütün compile/probe/Unity/player/native başlatmalarının tek sahibidir. Ajanlar ayrı dosyalarda çalışır ve kendi süreçlerini başlatmaz.
+02:01 UTC yeni işler: gameplay ajanı Dumas'nın tam açığı kapatan girişimini Core/Archive/test dosyalarında uyguluyor; root GameApp/UI/AutoShots/localization sahibi. Visual ajanı yalnız TacticalBattle.cs etiket düzenini uyguluyor. Verification ajanı ShiftClick ve iki40s fazlı native-volley hazırlığını bitirdi; root51 saf kontrol PASS. Canlı `native-input-20260906-015859-f35ec6e1` fc1e build kullanıyor, Start exit0; root gerçek Shift grubu ve tek topçu salvosu/pause karelerini gördü, son JSON/owner raporu bekleniyor. Owner/helper koşu boyunca değişmez. Root bütün compile/probe/Unity/player/native başlatmalarının tek sahibidir.
 
 ## Ortam
 

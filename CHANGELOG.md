@@ -4,6 +4,12 @@
 
 ### 6 Eylül 2026 — gece kontrol noktaları
 
+- Dumas açlıktan sonra sonraki haftaya kendi erzak toplama emrini hazırlar. Normal ikmal ihtiyacı kaldırabilir; veto ilişkiyi azaltır. Tam açığı kapatan en fazla40 gıda, yerel huzursuzluk ve generalin siyasi nüfuzuyla bağlantılıdır. Ekonomi tahmini ve gerçek hesap aynı planı kullanır; v5 arşiv eski söz ve zafer verilerini korur.
+- Alay etiketleri figür ve namlu alanının yanına kısa çizgiyle yerleşir. RU/TR metinler ve duraklatılmış sahne sabittir; yoğun yerde küçük köşe teması kalabilir.
+- 02:25 UTC tam kapısı230 Unity / 24 PNG / 66 kontrol / 21 JSON / 10 tarayıcı PASS. Gerçek Shift grubu, tek elle topçu salvosu ve NPC belge/veto fare yolu ayrıca incelendi. Dumas'nın izin/veto dallarında1840 ve1692 asker kaldı; yüklemeler aynı sonucu korudu.
+
+### 01:38 UTC — önceki askerî kontrol noktası
+
 - Gerçek zafer sonrası isteğe bağlı siyasi karar: Dumas'nın girişimini tanıyarak orduyu toparlamak veya sağ kalan askerlere hükümet adına prim ödemek. Sadakat ve hırs siyasi bedeli belirler; eski savaş sonucu yalnız bir kez uygulanır. Yan yana RU/TR belge, Esc ile haritaya dönüş ve konseyden yeniden açma eklendi.
 - Arşiv v4 açık zafer teklifini saklar ve v1–v3 kayıtlarını taşır; v3 bölgesel anlaşmaları korunur. Faydasız prim reddedilir; uzun süreli sadakatle kazanılan ücretsiz komutan desteği korunur.
 - Duman ayrı alfa shader'ıyla yumuşak ve saydam çizilir. Opak dörtgen hatası giderildi; erken duman hâlâ hafiftir. Dumas portresinin komşu resimden gelen küçük parçası, kaynak PNG değiştirilmeden gösterim sınırından çıkarıldı.

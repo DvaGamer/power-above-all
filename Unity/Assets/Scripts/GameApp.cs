@@ -303,6 +303,13 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.CloseVictoryDecision(); Map.Pulse(State.ArmyRegionId); Feedback("seal"); }
         }
+        public void VetoDumasInitiative(int expectedDueWeek)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.VetoDumasInitiative(State, expectedDueWeek);
+            Report(result);
+            if (result.Ok) { hud.OpenDocument("initiative"); Feedback("quill"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;

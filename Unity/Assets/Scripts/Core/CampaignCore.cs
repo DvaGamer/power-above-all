@@ -52,6 +52,7 @@ namespace PowerAboveAll
         [System.Runtime.Serialization.OptionalField] public int AccordUntilWeek;
         // v4 arşivinde zorunlu; eski zaferler yeni bir tercih üretmez.
         [System.Runtime.Serialization.OptionalField] public string PendingVictoryId = "";
+        [System.Runtime.Serialization.OptionalField] public int DumasForageDueWeek, DumasNextForageWeek;
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -81,6 +82,7 @@ namespace PowerAboveAll
     {
         public int TaxIncome, ArmyCost, Production, CivilianConsumption;
         public int ArmyConsumption, SubsidyConsumption, NetGold, NetFood;
+        public int ForageFood;
     }
 
     // Fictional balance data. No engine, rendering, clock or localization dependency.
@@ -143,18 +145,18 @@ namespace PowerAboveAll
         // Taxes depend on unrest, actual government control and Assembly approval.
         // Weekly army cost includes 36 gold to replenish 18 military supplies.
         public static EconomyForecast Forecast(CampaignState s)
-        { return ForecastWithRegionalAccord(s, HasRegionalAccord(s) ? s.AccordRegionId : null, null, 0, 0); }
+        { return BuildWeekProjection(new EconomyView(s, HasRegionalAccord(s) ? s.AccordRegionId : null)).Economy; }
 
-        // Gerçek hesap ve salt okunur anlaşma önizlemesi aynı yuvarlama/üretim yolunu kullanır.
-        private static EconomyForecast ForecastWithRegionalAccord(CampaignState s,string exemptRegion,string adjustedRegion,float unrestDelta,float controlDelta)
+        // Saf yaprak: girişim/önizleme çağırmaz; bütün senaryolar aynı yuvarlamayı kullanır.
+        private static EconomyForecast CalculateEconomy(EconomyView view)
         {
+            var s=view.State;
             double tax=0,food=0;
             foreach(var d in Regions)
             {
                 var r=Region(s,d.Id);
-                float unrest=d.Id==adjustedRegion?Clamp(r.Unrest+unrestDelta):r.Unrest;
-                float control=d.Id==adjustedRegion?Clamp(r.Control+controlDelta):r.Control;
-                if(d.Id!=exemptRegion)tax+=d.BaseTax*(1-unrest/150f)*(.5f+control/200f);
+                float unrest=view.Unrest(r),control=view.Control(r);
+                if(d.Id!=view.ExemptRegion)tax+=d.BaseTax*(1-unrest/150f)*(.5f+control/200f);
                 food+=d.BaseFood*(1-unrest/200f);
             }
             var f=new EconomyForecast {
@@ -298,12 +300,15 @@ namespace PowerAboveAll
             if(s.PendingPetition)return Result(false,"error.petition.pending");
             if(MandateDue(s))return Result(false,"error.mandate.due");
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
+            var plan=BuildWeekProjection(new EconomyView(s,HasRegionalAccord(s)?s.AccordRegionId:null));
             s.PendingVictoryId="";
-            var f=Forecast(s);bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
+            var f=plan.Economy;bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
+            ApplyDumasInitiative(s,plan.Initiative);
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
             bool unequipped=(long)s.MilitarySupplies+materials<materialUse;
             s.Gold=Stock((long)s.Gold+f.NetGold);s.Food=Stock((long)s.Food+f.NetFood);
             s.MilitarySupplies=Stock((long)s.MilitarySupplies+materials-materialUse);s.Week++;s.Moves=2;
+            RecordDumasInitiative(s,plan.Initiative);
             var urban=Faction(s,"urban");var army=Faction(s,"army");
             bool strained=hunger||unpaid||unequipped;
             int lost=strained?(int)Math.Ceiling(s.Troops*(hunger?.08d:unpaid?.04d:.02d)):0;
@@ -328,6 +333,7 @@ namespace PowerAboveAll
             if(strained)Record(s,"log.shortage",N(lost),hunger?"shortage.food":unpaid?"shortage.pay":"shortage.materials");
             if(s.Week==2&&!s.PetitionResolved){s.PendingPetition=true;Record(s,"log.petition.arrived");}
             CompleteRegionalAccordAfterWeek(s);
+            AnnounceDumasInitiativeAfterWeek(s,hunger);
             return Record(s,"log.week",N(s.Week),N(f.TaxIncome),N(f.ArmyCost),N(f.NetFood));
         }
         private static bool Percent(float n) { return !float.IsNaN(n)&&!float.IsInfinity(n)&&n>=0&&n<=100; }
@@ -339,6 +345,7 @@ namespace PowerAboveAll
             ValidateRoleState(s);
             ValidateRegionalAccordState(s);
             ValidateVictoryDecisionState(s);
+            ValidateDumasInitiativeState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

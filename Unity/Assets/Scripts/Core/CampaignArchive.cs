@@ -12,7 +12,7 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
 
         [Serializable] private sealed class Envelope
         {
@@ -40,6 +40,17 @@ namespace PowerAboveAll
         [DataContract] private sealed class RequiredVictoryState
         {
             [DataMember(IsRequired = true)] public string PendingVictoryId = null;
+        }
+
+        [DataContract] private sealed class RequiredDumasEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredDumasState State = null;
+        }
+
+        [DataContract] private sealed class RequiredDumasState
+        {
+            [DataMember(IsRequired = true)] public int DumasForageDueWeek = 0;
+            [DataMember(IsRequired = true)] public int DumasNextForageWeek = 0;
         }
 
         public static string Serialize(CampaignState state, bool prettyPrint = true)
@@ -77,6 +88,13 @@ namespace PowerAboveAll
                         if (required == null || required.State == null || required.State.PendingVictoryId == null)
                             throw new SerializationException("Missing required victory decision data.");
                     }
+                if (envelope != null && envelope.Version >= 5)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredDumasEnvelope)new DataContractJsonSerializer(typeof(RequiredDumasEnvelope)).ReadObject(stream);
+                        if (required == null || required.State == null)
+                            throw new SerializationException("Missing required Dumas initiative data.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -97,6 +115,12 @@ namespace PowerAboveAll
                 if (!string.IsNullOrEmpty(state.PendingVictoryId))
                     throw new ArgumentException("Invalid victory decision data in an older archive.", nameof(json));
                 state.PendingVictoryId = "";
+            }
+            if (envelope.Version < 5)
+            {
+                if (state.DumasForageDueWeek != 0 || state.DumasNextForageWeek != 0)
+                    throw new ArgumentException("Invalid Dumas initiative data in an older archive.", nameof(json));
+                state.DumasForageDueWeek = state.DumasNextForageWeek = 0;
             }
             if (envelope.Version == 1)
             {
