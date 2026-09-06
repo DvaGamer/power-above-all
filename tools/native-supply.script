@@ -1,0 +1,26 @@
+new
+lang ru
+select normandy
+march
+time 3
+world wait arrived 30
+time pause
+world focus
+world supplypanel
+state 00-before
+shot 00-start
+wait 45
+expect WorldConvoyCount 1
+state 01-dispatched
+shot 01-dispatched-ru
+time 3
+world wait delivered 30
+time pause
+state 02-delivered
+shot 02-delivered-ru
+remember delivered
+save
+load
+same delivered
+expect WorldHasArena False
+quit

@@ -1,5 +1,19 @@
 # Power Above All — görsel temel ve bağlantılı oynanış
 
+## Güncel bağlayıcı sıra — sürekli dünya
+
+İlk28gün hami raporu ve üç role özgü açık hedefler uygulandı; [FIRST_COMMISSION.md](FIRST_COMMISSION.md). Son doğrulama590Unity/yeniWindows, doğal saatle ilk başarı ve ihlal/ikmalsizlik sonucu. Şimdi bu çerçevenin içinde operasyonel rakip, muharebe sonrası neden raporu ve farklı hazırlık yollarının tekrar değeri öne çıkar. Yeni ülke veya kaynak eklemek öncelik değildir.
+
+Saat/tek-harita/komuta ve ilk askerî depo→konvoy→ordu kesiti uygulanmıştır. Şimdiki kalite sırası [PLAYABILITY_REPORT.md](PLAYABILITY_REPORT.md) içindeki on iştir: anlaşılır oturum hedefi ve öğretim, operasyonel rakip, toparlanma/takip, geçit doğruluğu, fiziksel asker toplanması, siyasi zamanlama ve sınırlı yerel inşaat. Erken/geç/hiç ikmal kararları artık aynı gerçek sefer kaydından karşılaştırılır. Tek başarılı build, bütün oyunun dengelendiği anlamına gelmez.
+
+Eski haftalı ve ayrı arena adımları aşağıda tarihçe olarak kalır. Yeni sıra: (1) saat/fiziksel yürüyüş/aynı harita muharebesi/kayıt, (2) cephe-yedek-komuta ve nedenleri okunur savaş, (3) gerçek coğrafyada ve native girdide uzun oyun/denge, (4) fiziksel depo/konvoy/yerel stok/asker toplanması, (5) inşaat ve siyasi süreçlerin süreye aktarımı. Her adım çalışan önceki kesitin üzerinde test edilir. Çok sayıda ülke veya yeni mod, bu oynanabilir döngünün önüne geçmez. Kesin uygulama ve kanıt [STATUS.md](STATUS.md) içindedir.
+
+## 08:39 UTC — önceki sıranın yerini alan kullanıcı önceliği
+
+Gerçek global coğrafya → Fransa entegrasyonu → native girdilerle kamera → semantic LOD → harita/HUD/belge polish → RU/TR dört çözünürlük ve gerçek karşılaştırma. Bu milestone tamamlanmadan ülke/ekonomi/diplomasi kapsamı genişletilmez.
+
+Dar yeni-mekanik istisnası [COMMAND_SLICE.md](COMMAND_SLICE.md): Paris–Bordeaux bilgi/emir/kişi/yanıt ve ayrı HQ/alay komutası. İki küçük deney uygulanıp520test ve gerçek Windows senaryolarıyla doğrulandı; seyahat, genel standing orders ve bütün ülkenin kişilerle yönetimi sonraki değerlendirme bekler. [STATUS](STATUS.md) ve [referans dersleri](References/Design_Lessons.md) güncel boşlukları gösterir. Aşağıdaki06:10gece kaydı geçmiş aşamadır.
+
 **6 Eylül 2026 güncel talimat: geliştirme sürüyor.** Kullanıcı on saatlik özerk çalışma istedi. Önceki durdurma ve yalnız polish sınırı sona erdi. Kullanıcının onaylı yönü [VISION.md](VISION.md), ilk rol kesitinin çalışma varsayımları [ROLE_SLICE.md](ROLE_SLICE.md), güncel kanıt [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir.
 
 **Güncel durum, 06:10 UTC:** Unity'de roller, siyasi sözler ve güven, bölgesel anlaşma, ordu hedefi/subay hakkı, Dumas'nın ikmal girişimi ve ilk bölgesel iaşe/ticaret projesi bağlı bir kesit oluşturur. Son Windows kapısı **GREEN496**; reform rotası18PNG/72kontrol/14JSON ile geçti, RU/TR kareler ayrıca incelendi. Kullanıcı son oyunu açıp inceliyor. Kesin kanıt ve kalan işler [STATUS.md](STATUS.md) ve [NIGHT_REPORT.md](NIGHT_REPORT.md) içindedir; Tarayıcı0.1 referans olarak kalır.

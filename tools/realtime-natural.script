@@ -1,0 +1,42 @@
+new
+lang ru
+expect WorldHasArena False
+select champagne
+march
+time 3
+world wait contact 30
+time pause
+world unit royal-0
+world focus
+shot 00-contact-ru
+state 00-contact
+world close
+shot 01-close-ru
+lang tr
+shot 02-close-tr
+world focus
+time 1
+wait 45
+time pause
+shot 03-deploy-tr
+state 03-deploy
+remember fighting
+save
+load
+same fighting
+time 1
+world wait ended 900
+time pause
+expect WorldMapVisible True
+expect WorldHasArena False
+expect WorldArmyCount 2
+state 04-result
+world focus
+shot 04-result-tr
+atlas france
+shot 05-france-after-tr
+remember after
+save
+load
+same after
+quit

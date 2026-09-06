@@ -13,7 +13,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":8", json);
+            StringAssert.Contains("\"Version\":" + CampaignArchive.CurrentVersion, json);
             var loaded = CampaignArchive.Deserialize(json); Assert.AreEqual(before, Snapshot(loaded)); return loaded;
         }
         static void Refused(CampaignState state, Func<ActionResult> action, string key)
@@ -292,7 +292,7 @@ namespace PowerAboveAll.Tests
         [TestCase(8, "invalid_used")]
         public void V7AndCurrentRequireBothExplicitBooleanFields(int version, string corruption)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             string field = corruption.EndsWith("right") ? "DumasOfficerCommission" : "DumasExtraRecruitUsed";
             string original = "\"" + field + "\":false";
             string replacement = corruption.StartsWith("missing") ? "\"Ignored" + field + "\":false" :
@@ -341,7 +341,7 @@ namespace PowerAboveAll.Tests
 
         static string Older(string json, int version)
         {
-            json = json.Replace("\"Version\":8", "\"Version\":" + version)
+            json = json.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version)
                 .Replace("\"DumasOfficerCommission\":", "\"IgnoredCommission\":")
                 .Replace("\"DumasExtraRecruitUsed\":", "\"IgnoredExtra\":");
             if (version < 6) json = json.Replace("\"ArmyPolicyId\":", "\"IgnoredArmy\":")
@@ -416,7 +416,7 @@ namespace PowerAboveAll.Tests
         {
             var state = Ready(); Success(CampaignCore.RecruitThroughDumas(state));
             if (revoked) Success(CampaignCore.RevokeOfficerCommission(state));
-            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(state, false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
         }
     }

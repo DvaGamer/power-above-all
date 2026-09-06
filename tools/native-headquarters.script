@@ -1,0 +1,24 @@
+new
+lang ru
+desk open
+select champagne
+march
+battle wait active 10
+battle pause on
+battle select 1 replace
+battle select 1 toggle
+battle state 00-before
+shot 00-start
+wait 65
+battle pause on
+battle state 01-after
+shot 01-headquarters-moved
+retreat
+accept
+settle 5
+battle verify-return
+save
+remember returned
+load
+same returned
+quit

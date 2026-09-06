@@ -1,0 +1,189 @@
+{
+  "entries": [
+    {
+      "key": "world.ready",
+      "ru": "Мир на паузе. Выберите скорость I, II или III.",
+      "tr": "Dünya duraklatıldı. I, II veya III hızını seçin."
+    },
+    {
+      "key": "world.use_clock",
+      "ru": "Время управляется часами мира.",
+      "tr": "Zaman dünya saatiyle yönetilir."
+    },
+    {
+      "key": "world.speed.0",
+      "ru": "Пауза · Space",
+      "tr": "Duraklatıldı · Space"
+    },
+    {
+      "key": "world.speed.1",
+      "ru": "I · секунда за секунду",
+      "tr": "I · saniye / saniye"
+    },
+    {
+      "key": "world.speed.2",
+      "ru": "II · час за секунду",
+      "tr": "II · saat / saniye"
+    },
+    {
+      "key": "world.speed.3",
+      "ru": "III · день за секунду",
+      "tr": "III · gün / saniye"
+    },
+    {
+      "key": "world.army.royal",
+      "ru": "Королевская армия",
+      "tr": "Kraliyet ordusu"
+    },
+    {
+      "key": "world.army.resistance",
+      "ru": "Региональное ополчение",
+      "tr": "Bölge milisleri"
+    },
+    {
+      "key": "world.order_unavailable",
+      "ru": "Сейчас этот приказ выполнить нельзя.",
+      "tr": "Bu emir şu anda uygulanamaz."
+    },
+    {
+      "key": "world.order_too_far",
+      "ru": "Выберите позицию в пределах участка боя.",
+      "tr": "Muharebe çevresinde bir konum seçin."
+    },
+    {
+      "key": "world.route_unavailable",
+      "ru": "Нет доступного маршрута.",
+      "tr": "Kullanılabilir güzergâh yok."
+    },
+    {
+      "key": "world.route_hint",
+      "ru": "Приказ создаёт маршрут. Армия идёт по нему с течением времени.",
+      "tr": "Emir bir güzergâh oluşturur. Ordu zaman içinde yürür."
+    },
+    {
+      "key": "world.march_sent",
+      "ru": "Приказ передан штабу. Армия готовится к маршу.",
+      "tr": "Emir karargâha iletildi. Ordu yürüyüşe hazırlanıyor."
+    },
+    {
+      "key": "world.road_blocked",
+      "ru": "Марш остановлен: дорога перекрыта.",
+      "tr": "Yürüyüş durdu: yol kapalı."
+    },
+    {
+      "key": "world.arrived",
+      "ru": "Армия достигла места назначения.",
+      "tr": "Ordu hedefine ulaştı."
+    },
+    {
+      "key": "world.contact",
+      "ru": "Боевой контакт. Время замедлено — приблизьте камеру к армии.",
+      "tr": "Muharebe teması. Zaman yavaşladı — orduya yaklaşın."
+    },
+    {
+      "key": "world.victory",
+      "ru": "Противник отступает. Наши части остаются на месте боя.",
+      "tr": "Düşman çekiliyor. Birliklerimiz muharebe yerinde kalıyor."
+    },
+    {
+      "key": "world.defeat",
+      "ru": "Наши части отходят. Остальная страна продолжает жить.",
+      "tr": "Birliklerimiz geri çekiliyor. Ülkenin geri kalanında hayat sürüyor."
+    },
+    {
+      "key": "world.legacy_save",
+      "ru": "Это сохранение более ранней версии мира. Начните новую кампанию с непрерывным временем и снабжением; старый файл не изменён.",
+      "tr": "Bu kayıt dünyanın eski sürümüne ait. Sürekli zaman ve ikmal için yeni sefer başlatın; eski dosya değiştirilmedi."
+    },
+    {
+      "key": "world.focus",
+      "ru": "К армии · G",
+      "tr": "Orduya git · G"
+    },
+    {
+      "key": "world.retreat",
+      "ru": "Отступить",
+      "tr": "Geri çekil"
+    },
+    {
+      "key": "world.remaining",
+      "ru": "По маршруту осталось {0} км.",
+      "tr": "Güzergâhta {0} km kaldı."
+    },
+    {
+      "key": "world.command_hint",
+      "ru": "Выберите полк → Shift + щелчок по карте: приказ позиции.",
+      "tr": "Alay seçin → haritada Shift + tık: konum emri."
+    },
+    {
+      "key": "world.command_eta",
+      "ru": "Приказ в пути · ещё {0} с",
+      "tr": "Emir yolda · {0} sn kaldı"
+    },
+    {
+      "key": "world.unit_state",
+      "ru": "Людей: {0} · мораль {1} · порядок {2}",
+      "tr": "Mevcut: {0} · moral {1} · düzen {2}"
+    },
+    {
+      "key": "world.pending_document",
+      "ru": "Ожидает вашего решения →",
+      "tr": "Kararınızı bekliyor →"
+    },
+    {
+      "key": "world.contact_pause",
+      "ru": "При контакте: пауза",
+      "tr": "Temasta: duraklat"
+    },
+    {
+      "key": "world.contact_slow",
+      "ru": "При контакте: скорость I",
+      "tr": "Temasta: I hızı"
+    },
+    {
+      "key": "world.activity.holding",
+      "ru": "Удерживает позицию",
+      "tr": "Konumu tutuyor"
+    },
+    {
+      "key": "world.activity.marching",
+      "ru": "Марш по маршруту",
+      "tr": "Güzergâhta yürüyor"
+    },
+    {
+      "key": "world.activity.fighting",
+      "ru": "Бой на этой карте",
+      "tr": "Bu haritada muharebe"
+    },
+    {
+      "key": "world.activity.retreating",
+      "ru": "Физическое отступление",
+      "tr": "Geri çekiliyor"
+    },
+    {
+      "key": "world.activity.recovering",
+      "ru": "Восстанавливает порядок",
+      "tr": "Düzenini topluyor"
+    },
+    {
+      "key": "world.kind.infantry",
+      "ru": "Пехота",
+      "tr": "Piyade"
+    },
+    {
+      "key": "world.kind.militia",
+      "ru": "Ополчение",
+      "tr": "Milis"
+    },
+    {
+      "key": "world.kind.cavalry",
+      "ru": "Кавалерия",
+      "tr": "Süvari"
+    },
+    {
+      "key": "world.kind.artillery",
+      "ru": "Артиллерия",
+      "tr": "Topçu"
+    }
+  ]
+}

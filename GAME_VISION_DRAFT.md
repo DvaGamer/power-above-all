@@ -1,5 +1,7 @@
 # Power Above All — oynanış ve görsel dünya taslağı
 
+**Güncel kullanıcı kararı:** tek sürekli gerçek-zaman dünyası ve tek küresel harita. Politika, ekonomi, yapılaşma, fiziksel yürüyüş ve yerel savaş aynı anda gerçekleşir. `1 tur=1hafta`, hareket kotası, anlık March ve ayrı arena hedef davranış değildir. Aşağıdaki eski iki-faz varsayımlarını [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) geçersiz kılar. Sayı üstünlüğü önemlidir; hazırlık, mevzi, ikmal, keşif, yedek ve komuta sonucu değiştirebilir. Hedef toplam imhadan önce organizasyonu kırmaktır. Uygulama sınırları [STATUS.md](STATUS.md) içindedir.
+
 Bu belge kullanıcının yanıtları üzerine geliştirilmiş çalışma önerisidir. Kesinleşenler: parti öncesi rol seçimi; kişisel iktidar, ülke yönetimi ve savaşın birlikte temel deneyim olması; tarihsel koşullardan beslenen, sonuçlu geniş alternatif tarih; hoş ve yumuşak renkler, yer yer aydınlık ve gerektiğinde karanlık, tam gerçekçi olmayan tutarlı grafik. Görüşmenin cevaplanmamış coğrafya, karakter, süre ve nihai rol soruları [VISION.md](VISION.md) içinde açıktır. Buradaki bütün gelecek mekanikleri uygulanmış sayılmaz.
 
 ## Tarihî çerçeve ve oyun kurgusu
@@ -15,6 +17,18 @@ Bir devleti yönetirken kendi iktidarınızı kurarsınız. Orduyu beslemek içi
 Başarılı bir parti oyuncunun anlatabileceği bir hikâye üretmeli: “Orduyu yürütmek için halkın tahılını aldım. Kazandığım parayla tazmin ettim ve bölgeyi geri kazandım” veya “Geçiş hakkı için verdiğim sözü bozunca dönüş yolum kapandı.” Hikâye sistemde hesaplanan sonuçlardan doğar.
 
 ## Üç deneyimin birbirine bağlanması
+
+### Kullanıcı tarafından kesinleştirilen ilke: oyuncu devlet değildir
+
+**PLAYER → PEOPLE → ORDERS → DELAY → INTERPRETATION → ACTION → REPORT → CONSEQUENCE.**
+
+Oyuncu başkentteki bir makamda bulunan somut kişidir. Serbest kamera o kişinin bedeni veya bilgisi değildir. Gerçek dünya durumu, kişinin son doğrulanmış bilgisi ve harita bakışı ayrı tutulur. Bilginin tarihi, kaynağı ve Confirmed/Reported/Estimated/Rumored/Unknown/Outdated niteliği vardır; belirsizlik sebepsiz zar atışı değildir.
+
+Uzak bölgedeki sonuç bir tıkla gerçekleşmez: bir kişi emri alır, yorumlar, uygular ve raporlar. Yetki seviyesi, sürekli direktif, sadakat, yetenek ve kişisel çıkar hem fayda hem siyasi risk yaratır. Yolculuk, başkentte bulunmamanın bedelini taşır; ordu oyuncudan bağımsız bir komuta örgütüdür. En yetenekli general aynı zamanda rakip olabilir.
+
+Taktik ustalık korunur: kısa, anlaşılır emir iletimi; hazırlık, yedek, kararın zamanlaması ve birliklerin mevcut hareketine bağlı atalet. Ştabın yeri, komutan inisiyatifi ve intent küçük deneylerle sınanır. Son emir bağlantı kesilince ortadan kaybolmaz. Kurye mikroyönetimi, sürekli onay, amaçsız bekleme ve keyfî itaatsizlik hedef değildir.
+
+**Uygulama durumu:** Paris–Bordeaux ve ayrı HQ/alay küçük kesitleri Unity/Windows içinde çalışır; ayrıntı [COMMAND_SLICE.md](COMMAND_SLICE.md). Bordeaux dosyası açılınca HUD ve harita son alınan raporu okur; kamerayla bilgi yenilenmez. Diğer bölgeler eski kurallardadır. Oyuncu seyahati, cephede bulunma şartı, bütün ülke idaresi ve kapsamlı istihbarat henüz yoktur. Genişletme öncesi bu küçük kesit oynanarak değerlendirilir. Dünya atlası/kamera/HUD milestone'u sürer. Unity Hub erişimi tamamlandı.
 
 | Deneyim | Oyuncunun yaptığı iş | Diğer katmanda görülen sonuç |
 | --- | --- | --- |

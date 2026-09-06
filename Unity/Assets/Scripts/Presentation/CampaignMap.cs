@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 namespace PowerAboveAll
 {
     /// <summary>A relief atlas built locally from polygon data; no downloaded artwork or SVG runtime.</summary>
-    public sealed class CampaignMap : MonoBehaviour
+    public sealed partial class CampaignMap : MonoBehaviour
     {
         private sealed class Seed
         {
@@ -20,13 +20,17 @@ namespace PowerAboveAll
             public readonly List<Vector3> Vertices = new List<Vector3>();
             public readonly List<int> Indices = new List<int>();
             public readonly List<Color> Colors = new List<Color>();
+            private int layer;
+            public void BeginGlyph() { layer = 0; }
             public void Shape(Color color, params float[] coordinates)
             {
                 int start = Vertices.Count, count = coordinates.Length / 2;
+                float height = .12f + layer++ * .0015f;
+                Color vertexInk = QualitySettings.activeColorSpace == ColorSpace.Linear ? color.linear : color;
                 for (int i = 0; i < coordinates.Length; i += 2)
                 {
-                    Vertices.Add(new Vector3(coordinates[i], .12f, coordinates[i + 1]));
-                    Colors.Add(color);
+                    Vertices.Add(new Vector3(coordinates[i], height, coordinates[i + 1]));
+                    Colors.Add(vertexInk);
                 }
                 for (int i = 1; i < count - 1; i++)
                 { Indices.Add(start); Indices.Add(start + i); Indices.Add(start + i + 1); }
@@ -84,8 +88,9 @@ namespace PowerAboveAll
         private float pulseStarted = -10f;
         private LineRenderer pulseRing;
         private bool built;
+        private bool continuousWorld;
 
-        public void Build(Camera camera)
+        private void BuildLegacyAtlas(Camera camera)
         {
             if (built) return;
             built = true; atlasCamera = camera;
@@ -153,6 +158,7 @@ namespace PowerAboveAll
         public void Refresh(CampaignState state, string mode)
         {
             if (!built || state == null) return;
+            continuousWorld=state.World!=null;
             foreach (Seed seed in Seeds)
             {
                 var region = CampaignCore.Region(state, seed.Id);
@@ -175,18 +181,18 @@ namespace PowerAboveAll
             {
                 selectedId = state.SelectedRegionId; armyId = state.ArmyRegionId;
                 lastWeek = state.Week; lastMoves = state.Moves; lastTroops = state.Troops;
-                armyRoot.gameObject.SetActive(state.Troops > 0);
+                armyRoot.gameObject.SetActive(!continuousWorld && state.Troops > 0);
                 ClearChildren(routeRoot);
                 if (selectionChanged)
                 {
                     ClearChildren(selectionRoot);
                     if (cells.TryGetValue(selectedId ?? "", out var selectedCell))
                     {
-                        BorderOfCell(selectedCell, selectionRoot, selectionInkMat, .20f, .19f);
-                        BorderOfCell(selectedCell, selectionRoot, goldMat, .09f, .21f);
+                        GeographicRegionBorder(selectedId, selectionRoot, selectionInkMat, .19f);
                     }
                     RebuildHover();
                 }
+                if(continuousWorld){armyPositioned=false;return;}
                 if (!armyPositioned)
                 {
                     if (armyRoot.childCount == 0) MakeArmy(state.ArmyRegionId);
@@ -213,6 +219,7 @@ namespace PowerAboveAll
         private void Update()
         {
             if (!built) return;
+            UpdateGeographicLod();
             // Presentation only: the authoritative campaign transition has already completed.
             if (armyPositioned)
             {
@@ -264,7 +271,7 @@ namespace PowerAboveAll
         {
             ClearChildren(hoverRoot);
             if (hoveredId != selectedId && cells.TryGetValue(hoveredId ?? "", out var cell))
-                BorderOfCell(cell, hoverRoot, hoverMat, .10f, .18f);
+                GeographicRegionBorder(hoveredId, hoverRoot, hoverMat, .18f);
         }
 
         public void ResetPresentation()
@@ -287,15 +294,12 @@ namespace PowerAboveAll
         {
             if (!built || !gameObject.activeInHierarchy || !atlasCamera.pixelRect.Contains(screenPosition)) return null;
             var ray = atlasCamera.ScreenPointToRay(screenPosition);
-            if (Physics.Raycast(ray, out var hit, 500f) && hit.collider.name.StartsWith("Province:", StringComparison.Ordinal)) return hit.collider.name.Substring(9);
+            if (Physics.Raycast(ray, out var hit, 10000f) && hit.collider.name.StartsWith("Province:", StringComparison.Ordinal)) return hit.collider.name.Substring(9);
             var plane = new Plane(transform.up, transform.position);
             if (!plane.Raycast(ray, out var distance)) return null;
             Vector3 local = transform.InverseTransformPoint(ray.GetPoint(distance));
-            Vector2 point = new Vector2(local.x * 12f + 450f, 390f - local.z * 12f);
-            if (!Inside(point, mainland)) return null;
-            string nearest = null; float best = float.PositiveInfinity;
-            foreach (Seed seed in Seeds) { float d = (point - seed.Point).sqrMagnitude; if (d < best) { best = d; nearest = seed.Id; } }
-            return nearest;
+            // GIS siyasi poligonları dışında en yakın şehre sessiz seçim yapılmaz.
+            return null;
         }
 
         public void SetVisible(bool visible) { if (!visible) SetHovered(null); gameObject.SetActive(visible); }
@@ -318,7 +322,7 @@ namespace PowerAboveAll
         private Material MakeMaterial(Color color) { var shader = Shader.Find("Unlit/Color"); if (!shader) shader = Shader.Find("Sprites/Default"); var material = new Material(shader) { color = color }; owned.Add(material); return material; }
         private Material MakeAtlasMaterial(Color color)
         {
-            var material = new Material(Shader.Find("Sprites/Default")) { color = color, mainTexture = paperGrain };
+            var material = new Material(Resources.Load<Shader>("World/AtlasInk")) { color = color, mainTexture = paperGrain };
             owned.Add(material);
             return material;
         }
@@ -435,7 +439,7 @@ namespace PowerAboveAll
         {
             var uv = new List<Vector2>();
             foreach (var vertex in vertices) uv.Add(new Vector2(vertex.x * .2f, vertex.z * .2f));
-            var mesh = new Mesh { name = "Atlas polygon" }; mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(indices, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds(); owned.Add(mesh); return mesh;
+            var mesh = new Mesh { name = "Atlas polygon", indexFormat = vertices.Count > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16 }; mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(indices, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds(); owned.Add(mesh); return mesh;
         }
         private static void AddFan(List<Vector2> polygon, List<Vector3> vertices, List<int> indices, float height)
         {
@@ -837,7 +841,7 @@ namespace PowerAboveAll
                 for (int sample = 1; sample < 32; sample++)
                 {
                     Vector3 point = RoutePoint(from, control, to, sample / 32f);
-                    if (Inside(new Vector2(point.x * 12f + 450f, 390f - point.z * 12f), mainland)) continue;
+                    if (OnFrenchLand(point)) continue;
                     onLand = false; break;
                 }
                 if (onLand) return control;

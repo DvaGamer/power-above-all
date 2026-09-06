@@ -10,8 +10,9 @@ if (!name || !/^[A-Za-z][A-Za-z0-9_]*$/.test(name)) throw new Error('Usage: node
 const data = 'C:/Users/USER/Tools/Unity/6000.3.23f1/Editor/Data/MonoBleedingEdge';
 const mono = path.join(data, 'bin', 'mono.exe');
 const compiler = path.join(data, 'lib', 'mono', '4.5', 'mcs.exe');
-const sources = ['CampaignCore', 'CampaignRoles', 'CampaignPatronTrust', 'CampaignRegionalAccords', 'CampaignVictoryDecisions', 'CampaignDumasInitiative', 'CampaignArmyEstablishment', 'CampaignOfficerCommission', 'CampaignRegionalResistance', 'CampaignRegionalReforms', 'CampaignArchive']
-  .map(file => path.join(root, 'Unity/Assets/Scripts/Core', file + '.cs'));
+const core = path.join(root, 'Unity/Assets/Scripts/Core');
+// L yalnız Unity Resources yerelleştirme adaptörüdür; saf simülasyon bağımlılığı değildir.
+const sources = fs.readdirSync(core).filter(file => file.endsWith('.cs') && file !== 'L.cs').sort().map(file => path.join(core, file));
 sources.push(path.join(root, 'Unity/WorkNotes', name + '.cs'));
 for (const file of [mono, compiler, ...sources]) if (!fs.statSync(file).isFile()) throw new Error('Required file missing: ' + file);
 const started = new Date().toISOString();
@@ -27,7 +28,7 @@ function run(stage, args) {
 try {
   const executable = path.join(out, name + '.exe');
   run('compile', [compiler, '-nologo', '-r:System.Runtime.Serialization', '-out:' + executable, ...sources]);
-  run('probe', [executable]);
+  run('probe', [executable, ...process.argv.slice(3)]);
   receipt.verdict = 'PASS';
 } catch (error) {
   receipt.verdict = 'FAILED'; receipt.failure = error.message; process.exitCode = 1;

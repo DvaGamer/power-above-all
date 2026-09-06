@@ -73,6 +73,9 @@ def contact_sheet(folder, names, target):
 
 
 def main():
+    global EXPECTED
+    if '--width' in sys.argv and '--height' in sys.argv:
+        EXPECTED=(int(sys.argv[sys.argv.index('--width')+1]),int(sys.argv[sys.argv.index('--height')+1]))
     folder = sys.argv[1] if len(sys.argv) > 1 else "output/shots"
     baseline = None
     if "--baseline" in sys.argv:

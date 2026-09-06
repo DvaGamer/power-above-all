@@ -1,0 +1,63 @@
+new
+lang ru
+expect WorldSpeed 0
+expect WorldArmyCount 2
+expect WorldHasArena False
+atlas france
+shot 00-country-ru
+atlas europe
+shot 01-europe-ru
+atlas france
+select champagne
+march
+expect WorldActivity Marching
+expect Moves 0
+time 2
+wait 1
+time pause
+state 02-mid-route
+shot 02-mid-route
+remember mid-route
+save
+load
+same mid-route
+time 3
+world wait contact 30
+expect WorldSpeed 1
+time pause
+expect WorldMapVisible True
+expect WorldHasArena False
+expect WorldBattleCount 1
+world focus
+world unit royal-0
+shot 03-contact-ru
+state 03-contact
+remember contact
+save
+load
+same contact
+lang tr
+shot 04-contact-tr
+world close
+shot 04b-unit-close-tr
+world focus
+atlas clean
+shot 05-contact-clean
+atlas panels
+world retreat
+expect WorldActivity Retreating
+expect WorldArmyCount 2
+time 2
+wait 1
+time pause
+state 06-retreated
+world focus
+shot 06-retreated-tr
+remember retreated
+save
+load
+same retreated
+atlas france
+shot 07-country-after-tr
+expect WorldMapVisible True
+quit

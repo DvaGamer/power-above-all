@@ -30,7 +30,7 @@ namespace PowerAboveAll.Tests
         {
             string before = Snapshot(state);
             string archive = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":8", archive);
+            StringAssert.Contains("\"Version\":" + CampaignArchive.CurrentVersion, archive);
             CampaignState loaded = CampaignArchive.Deserialize(archive);
             Assert.AreEqual(before, Snapshot(loaded), "Kayıt bütün sefer durumunu korumalı.");
             return loaded;
@@ -355,7 +355,7 @@ namespace PowerAboveAll.Tests
         public void CurrentAndV2MissingOrNullMandateCollectionCannotSilentlyLoadAsAnEmptyPromiseList(int version, string representation)
         {
             string valid = CampaignArchive.Serialize(CampaignCore.Create("crown"), false);
-            valid = valid.Replace("\"Version\":8", "\"Version\":" + version);
+            valid = valid.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             StringAssert.Contains("\"Mandates\":[]", valid);
             // Alanı yeniden adlandırmak mevcut RoleId dahil diğer bütün alanları korur.
             string invalid = valid.Replace("\"Mandates\":[]", representation == "missing" ? "\"IgnoredOldMandates\":[]" : "\"Mandates\":null");

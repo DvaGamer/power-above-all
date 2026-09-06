@@ -23,7 +23,7 @@ namespace PowerAboveAll
         // Bugünkü koşullarda yalnızca ordunun gideri; bütün ülkenin iki haftalık tahmini değildir.
         private static int ArmyCostFor(CampaignState state, int troops)
         { return (int)Math.Ceiling(troops / 12d) + (troops > 0 || state.MilitarySupplies < 120 ? 36 : 0); }
-        private static int ArmyFoodFor(int troops)
+        internal static int ArmyFoodFor(int troops)
         { return (int)Math.Ceiling(troops / 30d); }
 
         public static bool HasArmyEstablishment(CampaignState state)

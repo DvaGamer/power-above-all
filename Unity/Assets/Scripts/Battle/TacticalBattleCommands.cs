@@ -20,6 +20,9 @@ namespace PowerAboveAll
         public bool Player, Selected, Commandable, FireAtWill, Moving, Routed, Withdrawn, CanVolley, AimedVolleyPending;
         public string Kind, Formation, Condition, VolleyReasonKey;
         public float Morale, Cohesion, Fatigue, Reload, ContactReload, Facing, PositionX, PositionZ, DestinationX, DestinationZ;
+        public int PendingCommands;
+        public float NextCommandAt, LastReceivedAt;
+        public string Intent, LastReceivedOrder, LocalInitiative;
     }
 
     [Serializable] public sealed class BattleSnapshot
@@ -30,6 +33,8 @@ namespace PowerAboveAll
         public float ElapsedSeconds, PlayerHold, EnemyHold, ConvoyX, ConvoyZ, EndingMorale, CampaignReturnMorale;
         public int[] SelectedIds;
         public BattleRegimentSnapshot[] Regiments;
+        public bool CommandNetwork, HeadquartersUnderThreat;
+        public float HeadquartersX, HeadquartersZ;
     }
 
     public sealed partial class TacticalBattle
@@ -74,6 +79,7 @@ namespace PowerAboveAll
                 return OrderResult(false, "battle.order_invalid");
             int count = CommandableSelectionCount();
             if (count == 0) return OrderResult(false, "battle.select_to_command");
+            if(CommandNetwork)return QueueCommands(CommandKind.Move,new Vector3(worldXZ.x,0,worldXZ.y));
             Vector3 centre = Vector3.zero;
             foreach (Regiment regiment in selected) if (Commandable(regiment)) centre += regiment.Position;
             centre /= count;
@@ -102,6 +108,7 @@ namespace PowerAboveAll
                 if ((int)regiment.Formation != (int)formation) changed++;
             }
             if (eligible == 0) return OrderResult(false, CommandableSelectionCount() == 0 ? "battle.select_to_command" : "battle.square_infantry");
+            if(CommandNetwork)return QueueCommands(CommandKind.Formation,Vector3.zero,(int)formation);
             OrderFormation((Formation)formation);
             return OrderResult(true, affected: changed);
         }
@@ -111,6 +118,7 @@ namespace PowerAboveAll
             var gate = OrderGate(); if (!gate.Ok) return gate;
             int count = CommandableSelectionCount();
             if (count == 0) return OrderResult(false, "battle.select_to_command");
+            if(CommandNetwork)return QueueCommands(CommandKind.Fire,Vector3.zero,fire?1:0);
             SetFireOrder(fire);
             return OrderResult(true, affected: count);
         }
@@ -134,6 +142,7 @@ namespace PowerAboveAll
                 Regiment primary = FirstCommandable();
                 return OrderResult(false, primary == null ? "battle.select_to_command" : VolleyReason(primary));
             }
+            if(CommandNetwork)return QueueCommands(CommandKind.Volley,Vector3.zero);
             OrderVolley();
             return OrderResult(true, affected: newlyQueued);
         }
@@ -166,7 +175,7 @@ namespace PowerAboveAll
             var selection = new List<int>();
             foreach (Regiment regiment in selected) selection.Add(regiment.Id);
             bool arrived = selected.Count > 0;
-            foreach (Regiment regiment in selected) arrived &= Commandable(regiment) && !regiment.Moving;
+            foreach (Regiment regiment in selected) arrived &= Commandable(regiment) && !regiment.Moving && regiment.Commands.Count==0;
             bool volley = false;
             int playerSlot = 0;
             foreach (Regiment regiment in regiments)
@@ -181,6 +190,8 @@ namespace PowerAboveAll
                     FireAtWill = regiment.FireAtWill, Moving = regiment.Moving, Routed = regiment.Routed, Withdrawn = regiment.Withdrawn,
                     Morale = regiment.Morale, Cohesion = regiment.Cohesion, Fatigue = regiment.Fatigue, Reload = regiment.Reload, Facing = regiment.Facing,
                     ContactReload = regiment.ContactReload, AimedVolleyPending = regiment.AimedVolleyPending,
+                    PendingCommands=regiment.Commands.Count,NextCommandAt=regiment.Commands.Count==0?0:regiment.Commands[0].ReceiveAt,
+                    Intent=regiment.Intent.ToString(),LastReceivedOrder=regiment.LastReceivedOrder,LastReceivedAt=regiment.LastReceivedAt,LocalInitiative=regiment.LocalInitiative,
                     PositionX = regiment.Position.x, PositionZ = regiment.Position.z,
                     DestinationX = regiment.Destination.x, DestinationZ = regiment.Destination.z,
                     CanVolley = ready, VolleyReasonKey = !Active || ended ? "battle.order_unavailable" : !Commandable(regiment) ? "battle.select_to_command" : VolleyReason(regiment)
@@ -191,6 +202,7 @@ namespace PowerAboveAll
                 OriginalTroops = originalTroops, EnemyOriginalTroops = enemyOriginalTroops,
                 PlayerHold = playerHold, EnemyHold = enemyHold, ConvoyX = convoy.x, ConvoyZ = convoy.z,
                 SelectedIds = selection.ToArray(), Regiments = units.ToArray(), CanVolley = volley, SelectionArrived = arrived,
+                CommandNetwork=CommandNetwork,HeadquartersUnderThreat=HeadquartersUnderThreat,HeadquartersX=HeadquartersPosition.x,HeadquartersZ=HeadquartersPosition.z,
                 HasOutcome = ended && outcome != null, Won = outcome != null && outcome.Won,
                 Casualties = outcome == null ? 0 : outcome.Casualties, EndingMorale = outcome == null ? 0 : outcome.EndingMorale,
                 MilitarySuppliesRecovered = outcome == null ? 0 : outcome.MilitarySuppliesRecovered, CampaignReturnMorale = campaignReturnMorale

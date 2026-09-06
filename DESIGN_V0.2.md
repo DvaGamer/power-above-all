@@ -1,5 +1,7 @@
 # Power Above All — v0.2 tasarım tanımı
 
+**Güncel yön düzeltmesi:** bu eski kapsam belgesindeki haftalı tur/ayrı savaş varsayımı artık geçerli değildir. Oyun tek haritada sürekli gerçek zamanda çalışacaktır; ilk uygulama [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md), doğrulanan sınırlar [STATUS.md](STATUS.md) içindedir. Kullanıcı bu mimari aktarımı, fiziksel lojistiği ve yapılaşmayı açıkça istedi; aşağıdaki eski yeni-mekanik yasağı bunları engellemez.
+
 **Güncel durum: gelecekteki kapsamlı tasarım.** Son kullanıcı kararıyla motor **Unity**, yeni oyunun dilleri **Rusça ve Türkçe** olarak seçildi. İlk temel aktarım sürüyor; Unity çalışma zamanı henüz doğrulanmadı. **Etkin sonraki aşama 0.2 Visual & Feel Polish Pass; yeni mekanik veya ekonomi genişletmesi yok.** Bu belgedeki dört bağlı sistem, gelecekteki geliştirmeler için korunur; hemen uygulanacak görev listesi değildir.
 
 Belge, önceki kapsamlı talebi Türkçe olarak kaydeder: siyasi güçler ve karakterler, bölgesel harita katmanları, moral ve düzen içeren alay savaşları, ordu ikmali. Önceki “yalnızca siyaset, savaş veya ekonomi dallarından birini seçme” yaklaşımı artık kullanılmaz.

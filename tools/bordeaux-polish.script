@@ -1,0 +1,82 @@
+new
+lang ru
+desk open
+expect KnownUnrest 35
+state 00-strict-start
+shot 00-received-ru
+desk view draft
+shot 01-draft-ru
+desk order strict express
+expect Gold 828
+desk view outbox
+shot 02-strict-sent-ru
+week
+expect SelectedUnrest 29
+expect KnownUnrest 35
+state 01-strict-unreported
+desk view report
+shot 03-old-information-ru
+save
+remember strict-pending
+load
+same strict-pending
+week
+petition negotiate
+expect KnownUnrest 29
+expect SelectedUnrest 31
+state 02-strict-reply
+desk view report
+shot 04-strict-reply-ru
+week
+week
+petition negotiate
+state 03-strict-four-weeks
+new
+lang tr
+desk open
+state 04-mission-start
+desk order mission express
+desk view outbox
+shot 05-mission-sent-tr
+week
+expect SelectedUnrest 21
+expect KnownUnrest 35
+state 05-mission-unreported
+week
+petition negotiate
+expect KnownUnrest 21
+expect SelectedUnrest 23
+state 06-mission-reply
+desk view report
+shot 06-mission-reply-tr
+desk view draft
+shot 07-next-draft-tr
+week
+week
+petition negotiate
+state 07-mission-four-weeks
+new
+lang ru
+desk open
+state 08-wait-start
+week
+expect KnownUnrest 35
+week
+petition negotiate
+expect KnownUnrest 37
+state 09-wait-new-information
+desk view report
+shot 08-wait-fresh-report-ru
+desk order strict express
+week
+state 10-wait-unreported
+week
+petition negotiate
+state 11-wait-four-weeks
+desk view report
+shot 09-wait-reply-ru
+save
+remember waiting-finished
+load
+same waiting-finished
+quit

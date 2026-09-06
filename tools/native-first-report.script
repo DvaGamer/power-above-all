@@ -1,0 +1,20 @@
+new
+role-menu
+role-start assembly
+lang ru
+first-report open
+shot 00-start
+wait 35
+expect SelectedRegionId champagne
+expect WorldSpeed 0
+state 01-region
+shot 01-region-ru
+first-report open
+lang tr
+shot 02-brief-tr
+remember native-first-report
+save
+load
+same native-first-report
+expect WorldMapVisible True
+quit

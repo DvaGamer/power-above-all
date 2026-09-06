@@ -61,6 +61,7 @@ namespace PowerAboveAll
         {
             if (!Active || ended || paused || dt <= 0 || float.IsNaN(dt) || float.IsInfinity(dt)) return;
             elapsed += dt;
+            AdvanceCommandNetwork(dt);
             Regiment[] units = StableRegiments();
             var before = new StepState[units.Length];
             var prepared = new StepState[units.Length];

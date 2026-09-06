@@ -1,5 +1,15 @@
 # Power Above All — bütünsel oyun vizyonu
 
+## 6 Eylül 2026 — yeni kesin kullanıcı ilkeleri
+
+**Tek sürekli gerçek-zaman dünyası.** Hafta tur değildir; ayrı taktik arena yoktur. Saat duraklatılır veya 1/3600/86400 oyun saniyesi hızıyla ilerler. Fiziksel ordular, yollar ve muharebeler aynı haritadadır. Ekonomi ve politika çatışma sırasında devam eder. Eski aşağıdaki görüşme seçenekleri bu kesin kullanıcı kararını geçersiz kılamaz. Öncelik artık dengeli, anlaşılır ve yeniden oynanabilir bir sefer döngüsüdür; ayrıntılı kapsam [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md), doğrulama [STATUS.md](STATUS.md).
+
+**PLAYER ≠ STATE.** Oyuncu fiziksel bir yerde bulunan tek kişidir; kamera konumu varlık veya bilgi değildir. Ülkeyi doğrudan değiştirmek yerine insan, yetki, emir, gecikme, yorum, eylem ve geri gelen rapor üzerinden yönetir. Bilgi kaynak ve tarih taşır. Belirsizlik açıklanabilir olmalı, gecikme karar üretmeli; kurye mikro yönetimi ve boş bekleme hedef değildir.
+
+Uzun vadeli yön: kişisel seyahat/başkentten ayrılma bedeli; yetki ve sürekli direktifler; yetenekli ama siyasi açıdan tehlikeli generaller; fiziksel HQ, kısa okunur command delay ve son görevi sürdüren yerel komutanlar. Kullanıcı APM üstünlüğü yerine hazırlık, yedek, komuta yerleşimi ve zamanında plan değişimi istiyor. Ayrıntı ve gerçek küçük uygulama [COMMAND_SLICE.md](COMMAND_SLICE.md); hedeflerin tümü uygulanmış sayılmaz.
+
+Coğrafi mimari küresel, oynanabilir ayrıntı Fransa ve gerekli komşularda. Gerçek GIS ve kaynaklı1789 sınırı ayrı. Final grafik constructive/manual; image generation yalnız geçici reference olabilir. Büyük yeni içerikten önce kamera, semantic zoom, harita ve RU/TR UI kalite milestone'u. Kitaplar/hatırat/mektuplar tarihî kanıt ve atmosfer olarak ayrı incelenir.
+
 **Durum: ilk tur tamamlandı; kullanıcı on saatlik özerk geliştirme istedi.** Başlangıç: 6 Eylül 2026. Bu belge uzun vadede nasıl bir oyun istendiğini belirler. Yeni kullanıcı talimatı geliştirmeyi yeniden başlatır; görüşmenin açık seçenekleri yine karar sayılmaz. Gece boyunca gerekli tercihler çalışma varsayımı olarak ayrıca kaydedilir. Görüşme Rusça, depo kaydı Türkçe tutulur.
 
 ## Görüşmenin amacı ve yöntemi

@@ -1,0 +1,15 @@
+{"entries":[
+{"key":"ui.world.world","ru":"Мир","tr":"Dünya"},
+{"key":"ui.world.europe","ru":"Европа","tr":"Avrupa"},
+{"key":"ui.world.france","ru":"Франция","tr":"Fransa"},
+{"key":"ui.world.region","ru":"Область","tr":"Bölge"},
+{"key":"ui.world.hide","ru":"Атлас ⇥","tr":"Atlas ⇥"},
+{"key":"ui.world.restore","ru":"Панели · Tab","tr":"Paneller · Tab"},
+{"key":"ui.world.presence","ru":"Кабинет · Париж","tr":"Çalışma odası · Paris"},
+{"key":"ui.world.controls","ru":"WASD / СКМ — карта · Колесо — масштаб · Q/E / ПКМ — поворот · F — регион · G — армия · Tab — панели","tr":"WASD / orta tuş — kaydır · Teker — ölçek · Q/E / sağ tuş — döndür · F — bölge · G — ordu · Tab — paneller"},
+{"key":"ui.world.north_america","ru":"СЕВЕРНАЯ АМЕРИКА","tr":"KUZEY AMERİKA"},
+{"key":"ui.world.south_america","ru":"ЮЖНАЯ АМЕРИКА","tr":"GÜNEY AMERİKA"},
+{"key":"ui.world.africa","ru":"АФРИКА","tr":"AFRİKA"},
+{"key":"ui.world.asia","ru":"АЗИЯ","tr":"ASYA"},
+{"key":"ui.world.australia","ru":"АВСТРАЛИЯ","tr":"AVUSTRALYA"}
+]}

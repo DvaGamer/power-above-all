@@ -1,0 +1,65 @@
+new
+lang ru
+expect WorldSpeed 0
+expect WorldHasArena False
+atlas france
+shot 00-france-ru
+atlas europe
+shot 01-europe-ru
+atlas france
+select champagne
+march
+time 3
+world wait contact 30
+time pause
+world focus
+world unit royal-0
+shot 02-battle-ru
+lang tr
+shot 03-battle-tr
+world close
+shot 04-close-tr
+remember battle
+save
+load
+same battle
+world retreat
+expect WorldActivity Retreating
+time 2
+wait 1
+time pause
+expect WorldMapVisible True
+state 05-retreated
+new
+lang ru
+world supplypanel
+select normandy
+march
+time 3
+world wait arrived 30
+time pause
+world supply
+expect WorldConvoyCount 1
+time 2
+wait 2
+time pause
+world convoy
+shot 06-supply-ru
+lang tr
+shot 07-supply-tr
+remember transit
+save
+load
+same transit
+state 08-transit
+time 3
+world wait delivered 30
+time pause
+world focus
+shot 09-delivered-tr
+remember delivered
+save
+load
+same delivered
+state 09-delivered
+quit

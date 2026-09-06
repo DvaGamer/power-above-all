@@ -42,12 +42,12 @@ namespace PowerAboveAll
             bool closed = reformCurrent != null && reformCurrent.StatusId == "closed";
             if (closed)
             {
-                Paragraph(ref y, T("region." + app.State.SelectedRegionId), heading, 238, 10);
+                Paragraph(ref y, T("region." + app.ViewState.SelectedRegionId), heading, 238, 10);
                 string[] modes = { "provisioning", "commerce" };
                 for (int i = 0; i < modes.Length; i++)
                 {
                     if (Press(new Rect(4 + i * 123, y, 115, 34), T("reform.mode." + modes[i]), true, reformDraftMode == modes[i]))
-                    { reformDraftMode = modes[i]; ObserveRegionalReform(app.State); app.Feedback("paper"); }
+                    { reformDraftMode = modes[i]; ObserveRegionalReform(app.ViewState); app.Feedback("paper"); }
                 }
                 y += 45;
             }

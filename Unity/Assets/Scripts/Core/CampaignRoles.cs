@@ -113,6 +113,7 @@ namespace PowerAboveAll
             if (!ValidRoleData(state)) return Result(false, "error.role.invalid");
             if (state.RoleId == "legacy") return Result(false, "error.role.legacy");
             if (Definition(regionId) == null) return Result(false, "error.mandate.region");
+            if (Desk(state)?.RegionId == regionId) return Result(false, "dispatch.outside_slice");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (state.Obligation != null) return Result(false, "error.mandate.open");
             string patronId = PatronIdForRole(state.RoleId);
@@ -153,6 +154,8 @@ namespace PowerAboveAll
             if (state.Obligation == null) return Result(false, "error.mandate.none");
             if (string.IsNullOrEmpty(expectedId) || expectedId != MandateId(state.Obligation)) return Result(false, "error.mandate.stale");
             if (choice != "fulfil" && choice != "break") return Result(false, "error.mandate.choice");
+            if (choice == "fulfil" && state.World != null && state.World.Clock.Milliseconds >= state.Obligation.DueWeek * WorldClock.Week + MandateGrace)
+                return Result(false, "log.commission.promise_expired");
             if (state.PendingPetition) return Result(false, "error.mandate.petition");
             if (choice == "fulfil")
             {
@@ -170,6 +173,7 @@ namespace PowerAboveAll
             var terms = GetObligationTerms(state);
             ApplyMandateEffect(state, obligation.RegionId, choice == "fulfil" ? terms.Fulfil : terms.Break);
             state.Obligation = null;
+            CountCommissionPromise(state, choice == "fulfil");
             return Record(state, "log.mandate." + obligation.Kind + "." + choice,
                 "region." + obligation.RegionId, N(obligation.GoldDue), N(obligation.FoodDue));
         }
@@ -222,7 +226,7 @@ namespace PowerAboveAll
             var obligation = state.Obligation;
             Require(obligation.Kind == RoleKind(state.RoleId) && Definition(obligation.RegionId) != null);
             Require(obligation.IssuedWeek >= 0 && obligation.IssuedWeek <= state.Week && obligation.IssuedWeek <= MaximumWeek - MandateDelayWeeks);
-            Require(obligation.DueWeek == obligation.IssuedWeek + MandateDelayWeeks && state.Week <= obligation.DueWeek);
+            Require(obligation.DueWeek == obligation.IssuedWeek + MandateDelayWeeks && (state.World!=null || state.Week <= obligation.DueWeek));
             Require(state.NextMandateWeek == obligation.IssuedWeek + MandateCooldownWeeks);
             var terms = BuildMandateTerms(obligation.Kind, obligation.RegionId, obligation.IssuedWeek);
             Require(terms != null && terms.RegionId == obligation.RegionId);

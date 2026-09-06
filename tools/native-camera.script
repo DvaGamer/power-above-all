@@ -1,0 +1,17 @@
+new
+lang ru
+desk open
+atlas france
+remember before-camera
+shot 00-start
+wait 120
+same before-camera
+expect KnownUnrest 35
+expect ReportAge 4
+shot 01-after-camera
+state 01-after-camera
+save
+remember after-camera
+load
+same after-camera
+quit

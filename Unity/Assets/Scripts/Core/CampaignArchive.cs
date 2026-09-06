@@ -12,7 +12,17 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 8;
+        public const int CurrentVersion = 13;
+
+        [DataContract] private sealed class RequiredCommissionEnvelope
+        { [DataMember(IsRequired=true)] public RequiredCommissionState State=null; }
+        [DataContract] private sealed class RequiredCommissionState
+        { [DataMember(IsRequired=true)] public List<FirstCommission> Commissions=null; }
+
+        [DataContract] private sealed class RequiredWorldEnvelope
+        { [DataMember(IsRequired=true)] public RequiredWorldState State=null; }
+        [DataContract] private sealed class RequiredWorldState
+        { [DataMember(IsRequired=true)] public List<WorldState> Worlds=null; }
 
         [Serializable] private sealed class Envelope
         {
@@ -88,9 +98,19 @@ namespace PowerAboveAll
             [DataMember(IsRequired = true)] public int ReformStepsRemaining = 0;
         }
 
+        [DataContract] private sealed class RequiredCorrespondenceEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredCorrespondenceState State = null;
+        }
+        [DataContract] private sealed class RequiredCorrespondenceState
+        {
+            [DataMember(IsRequired = true)] public List<CorrespondenceDesk> Correspondence = null;
+        }
+
         public static string Serialize(CampaignState state, bool prettyPrint = true)
         {
             CampaignCore.Validate(state);
+            WorldValidation.Validate(state);
             var serializer = new DataContractJsonSerializer(typeof(Envelope));
             using (var stream = new MemoryStream())
             using (var writer = JsonReaderWriterFactory.CreateJsonWriter(stream, Encoding.UTF8, false, prettyPrint, "  "))
@@ -151,6 +171,25 @@ namespace PowerAboveAll
                         if (required == null || required.State == null || required.State.ReformRegionId == null || required.State.ReformModeId == null)
                             throw new SerializationException("Missing required regional reform data.");
                     }
+                if (envelope != null && envelope.Version >= 9)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredCorrespondenceEnvelope)new DataContractJsonSerializer(typeof(RequiredCorrespondenceEnvelope)).ReadObject(stream);
+                        if(required == null || required.State == null || required.State.Correspondence == null)
+                            throw new SerializationException("Missing required correspondence data.");
+                    }
+                if(envelope!=null&&envelope.Version>=13)
+                    using(var stream=new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required=(RequiredCommissionEnvelope)new DataContractJsonSerializer(typeof(RequiredCommissionEnvelope)).ReadObject(stream);
+                        if(required?.State?.Commissions==null)throw new SerializationException("Missing first-commission container.");
+                    }
+                if(envelope!=null&&envelope.Version>=10)
+                    using(var stream=new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required=(RequiredWorldEnvelope)new DataContractJsonSerializer(typeof(RequiredWorldEnvelope)).ReadObject(stream);
+                        if(required?.State?.Worlds==null)throw new SerializationException("Missing continuous-world container.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
@@ -159,6 +198,24 @@ namespace PowerAboveAll
             if (envelope == null || envelope.State == null || envelope.Version < 1 || envelope.Version > CurrentVersion)
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
+            if(envelope.Version<13)
+            {
+                if(state.Commissions!=null&&state.Commissions.Count>0)throw new ArgumentException("First commission in an older archive.",nameof(json));
+                state.Commissions=new List<FirstCommission>();
+            }
+            if(state.World!=null&&state.World.Schema<3)
+                throw new NotSupportedException("This continuous-world save predates physical supply. Start a new campaign; the original file was not changed.");
+            if(envelope.Version<10)
+            {
+                if(state.Worlds!=null&&state.Worlds.Count>0)throw new ArgumentException("Continuous world data in an older archive.",nameof(json));
+                state.Worlds=new List<WorldState>();
+            }
+            if(envelope.Version < 9)
+            {
+                if(state.Correspondence != null && state.Correspondence.Count != 0)
+                    throw new ArgumentException("Invalid correspondence in an older archive.", nameof(json));
+                state.Correspondence = new List<CorrespondenceDesk>();
+            }
             if (envelope.Version < 3)
             {
                 if (!string.IsNullOrEmpty(state.AccordRegionId) || state.AccordUntilWeek != 0)
@@ -209,6 +266,7 @@ namespace PowerAboveAll
                 state.Mandates = new List<MandateObligation>();
             }
             CampaignCore.Validate(state);
+            WorldValidation.Validate(state);
             return state;
         }
 

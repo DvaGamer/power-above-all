@@ -22,7 +22,7 @@ namespace PowerAboveAll
         private void RegionalAccordEntry(GameApp app,ref float y)
         {
             bool active=accordPreview!=null&&accordPreview.IsActive;
-            string regionId=active?accordPreview.RegionId:app.State.SelectedRegionId;
+            string regionId=active?accordPreview.RegionId:app.ViewState.SelectedRegionId;
             Paragraph(ref y,T(active?"ui.accord.entry_active":"ui.accord.entry_offer",T("region."+regionId)),small,238,8);
             if(Press(new Rect(4,y,238,39),T("ui.accord.entry_button"),true,true))
             { OpenDocument("accord");app.Feedback("paper"); }
@@ -42,7 +42,7 @@ namespace PowerAboveAll
                 Paragraph(ref y,accordCheck==null?T("ui.mandate.select_region"):L.Text(accordCheck.Key,accordCheck.Args),body);
                 documentContentHeight=y+14;return;
             }
-            var patron=app.State.Characters.Find(person=>person.Id=="morel");
+            var patron=app.ViewState.Characters.Find(person=>person.Id=="morel");
             Seal(new Rect(2,y,82,96),1);
             string name=T("character.morel.name");
             float nameHeight=body.CalcHeight(new GUIContent(name),146);
@@ -56,7 +56,7 @@ namespace PowerAboveAll
             if(terms.IsActive)
             {
                 Paragraph(ref y,T("ui.accord.remaining",terms.RemainingWeeks,MandatePresentation.Date(terms.UntilWeek)),body,238,12);
-                if(terms.RegionId!=app.State.SelectedRegionId)
+                if(terms.RegionId!=app.ViewState.SelectedRegionId)
                 {
                     if(Press(new Rect(4,y,238,38),T("ui.accord.show_region")))app.SelectRegion(terms.RegionId);
                     y+=51;
@@ -64,7 +64,7 @@ namespace PowerAboveAll
             }
             else
             {
-                var region=CampaignCore.Region(app.State,terms.RegionId);
+                var region=CampaignCore.Region(app.ViewState,terms.RegionId);
                 Paragraph(ref y,T("ui.accord.immediate",AccordMeasure(region.Unrest),AccordMeasure(Mathf.Clamp(region.Unrest+terms.Immediate.Unrest,0,100)),
                     AccordMeasure(region.Control),AccordMeasure(Mathf.Clamp(region.Control+terms.Immediate.Control,0,100))),body,238,12);
                 Paragraph(ref y,T("ui.accord.proposed_end",MandatePresentation.Date(terms.UntilWeek)),small,238,14);

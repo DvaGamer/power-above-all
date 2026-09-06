@@ -1,0 +1,44 @@
+new
+lang ru
+desk open
+select champagne
+march
+battle wait active 10
+battle pause on
+battle state 00-before
+battle move 0 0
+battle state 01-sent
+shot 00-command-sent-ru
+battle pause off
+wait 5
+battle pause on
+battle state 02-received
+shot 01-command-received-ru
+battle intent reserve
+battle hq -12 -18
+battle pause off
+wait 5
+battle pause on
+battle state 03-intent
+lang tr
+shot 02-headquarters-tr
+battle select 2 replace
+battle intent flank
+battle pause off
+wait 5
+battle pause on
+battle state 04-flank
+shot 03-flank-tr
+retreat
+battle state 05-result
+shot 04-result-tr
+accept
+settle 5
+battle verify-return
+state 05-return
+shot 05-atlas-return-tr
+save
+remember return
+load
+same return
+quit

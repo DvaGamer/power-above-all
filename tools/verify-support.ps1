@@ -35,13 +35,13 @@ function Invoke-OwnedProcess([string]$FilePath, [string[]]$Arguments, [int]$Time
   } finally { $ownedProcess.Dispose() }
 }
 
-function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory, [ValidateRange(1, 300)][int]$TimeoutSeconds = 300) {
+function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$OutputDirectory, [ValidateRange(1, 300)][int]$TimeoutSeconds = 300, [int]$Width=1440, [int]$Height=900) {
   if (-not (Test-Path -LiteralPath $CheckerPath -PathType Leaf)) { throw "Frame checker missing: $CheckerPath" }
   $pythonPath = (Get-Command python.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
   $stdoutPath = Join-Path $OutputDirectory 'frames.log'
   $stderrPath = Join-Path $OutputDirectory 'frames.stderr.log'
   # Yerel pipeline yerine sahip olunan gizli surec: cikis kodu ve iki akis ayri kanit olur.
-  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder) $TimeoutSeconds (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
+  $frameExit = Invoke-OwnedProcess $pythonPath @('-X', 'utf8', $CheckerPath, $Folder, '--width', [string]$Width, '--height', [string]$Height) $TimeoutSeconds (Split-Path -Parent $CheckerPath) -StdoutPath $stdoutPath -StderrPath $stderrPath
   $receiptPath = Join-Path $OutputDirectory 'frames-process.json'
   [IO.File]::WriteAllText($receiptPath, ([ordered]@{ executable = $pythonPath; exitCode = $frameExit; completedUtc = [DateTime]::UtcNow.ToString('O'); stdout = $stdoutPath; stderr = $stderrPath } | ConvertTo-Json), [Text.Encoding]::UTF8)
   if ($frameExit -ne 0) { throw "Frame checker exited $frameExit; see frames.log and frames.stderr.log." }
@@ -53,7 +53,7 @@ function Invoke-FrameReview([string]$CheckerPath, [string]$Folder, [string]$Outp
   $frames = @($parsedFrames)
   if ($frames.Count -eq 0) { throw 'Frame checker reported zero frames.' }
   foreach ($frame in $frames) {
-    if ($frame.width -ne 1440 -or $frame.height -ne 900 -or @($frame.problems).Count -ne 0) { throw "Frame checker reported a broken image: $($frame.name)" }
+    if ($frame.width -ne $Width -or $frame.height -ne $Height -or @($frame.problems).Count -ne 0) { throw "Frame checker reported a broken image: $($frame.name)" }
   }
   $sheet = Join-Path $Folder 'contact-sheet.jpg'
   if (-not (Test-Path -LiteralPath $sheet -PathType Leaf) -or (Get-Item -LiteralPath $sheet).Length -eq 0) { throw 'Frame contact sheet is missing or empty.' }
@@ -110,6 +110,8 @@ function Assert-BattleReviewCommand([string]$Line) {
   switch ($parts[1]) {
     'select' { $valid = $parts.Count -eq 4 -and $parts[2] -match '^[1-4]$' -and $parts[3] -in @('replace', 'add', 'toggle') }
     'formation' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('line', 'column', 'square') }
+    'intent' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('hold', 'reserve', 'flank') }
+    'hq' { $valid = $parts.Count -eq 4 -and $parts[2] -match '^-?[0-9]+(?:\.[0-9]+)?$' -and $parts[3] -match '^-?[0-9]+(?:\.[0-9]+)?$' }
     'fire' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('hold', 'free') }
     'pause' { $valid = $parts.Count -eq 3 -and $parts[2] -in @('on', 'off') }
     'volley' { $valid = $parts.Count -eq 2 }
@@ -139,6 +141,16 @@ function Get-ReviewPlan([string]$Path) {
   if ($lines.Count -lt 2 -or $lines[0] -ne 'new' -or $lines[-1] -ne 'quit' -or @($lines | Where-Object { $_ -eq 'quit' }).Count -ne 1) { throw "Review must start with new and have one final quit." }
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
+    if ($line -match '^time(?:\s|$)' -and $line -cnotmatch '^time (pause|1|2|3)$') { throw "Unsupported world speed: $line" }
+    if ($line -match '^world(?:\s|$)' -and $line -cnotmatch '^world (focus|close|retreat|supply|stock|supplypanel|convoy|day [0-9]+|unit [a-zA-Z0-9_-]+|wait (contact|ended|arrived|delivered) [0-9]+(?:\.[0-9]+)?)$') { throw "Unsupported world review command: $line" }
+    if ($line -match '^world day ([0-9]+)$' -and ([double]$Matches[1] -lt 1 -or [double]$Matches[1] -gt 60)) { throw "World day must be between 1 and 60: $line" }
+    if ($line -match '^first-report(?:\s|$)' -and $line -cnotmatch '^first-report (open|close)$') { throw "Unsupported first report action: $line" }
+    if ($line -match '^world wait \w+ ([0-9]+(?:\.[0-9]+)?)$') {
+      [double]$worldWait=[double]::Parse($Matches[1],[Globalization.CultureInfo]::InvariantCulture)
+      if($worldWait -le 0 -or $worldWait -gt 1200){throw "World wait must be between 0 and 1200 seconds: $line"}
+    }
+    if ($line -match '^desk(?:\s|$)' -and $line -cnotmatch '^desk (open|view (report|outbox|draft)|(bread|tax|order|report) (strict|mission) (normal|express))$') { throw "Unsupported cabinet correspondence command: $line" }
+    if ($line -match '^atlas(?:\s|$)' -and $line -cnotmatch '^atlas (world|europe|france|region|oblique|clean|panels)$') { throw "Unsupported atlas review view: $line" }
     if ($line -match '^accord(?:\s|$)' -and $line -cne 'accord grant') { throw "Unsupported regional accord order: $line" }
     if ($line -match '^scroll(?:\s|$)') {
       if ($line -cnotmatch '^scroll (document|province) (\S+)$') { throw "Unsupported review scroll: $line" }
@@ -169,7 +181,7 @@ function Get-ReviewPlan([string]$Path) {
       if ($name -notmatch '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z') { throw "Unsafe artifact name: $name" }
       if ($kind -eq 'shot') { $captures += "$name.png" } else { $states += "$name.json" }
     }
-    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return') { $assertions++ }
+    if ($line -match '^(expect|same)\s+' -or $line -eq 'battle verify-return' -or $line -match '^world (wait|day) ') { $assertions++ }
   }
   if ($captures.Count -eq 0 -or $assertions -eq 0) { throw "Review needs frames and assertions." }
   if (@($captures | Select-Object -Unique).Count -ne $captures.Count -or @($states | Select-Object -Unique).Count -ne $states.Count) { throw "Duplicate artifact names." }

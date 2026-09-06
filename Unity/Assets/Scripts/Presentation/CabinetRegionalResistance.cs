@@ -18,7 +18,7 @@ namespace PowerAboveAll
             var link=new GUIStyle(tiny);link.normal.textColor=resistancePreview.RequiresBattle?red:ink;
             link.hover.textColor=ink;link.active.textColor=ink;
             float height=link.CalcHeight(new GUIContent(text),195);
-            string ourText=T("ui.resistance.ours",Number(app.State.Troops));
+            string ourText=T("ui.resistance.ours",Number(app.ViewState.Troops));
             float ourHeight=tiny.CalcHeight(new GUIContent(ourText),195);
             if(GUI.Button(new Rect(4,y,195,height+ourHeight+3),GUIContent.none,GUIStyle.none))
             {seekResistanceReport=true;app.Feedback("paper");}

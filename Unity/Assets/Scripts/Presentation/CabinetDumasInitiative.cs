@@ -64,7 +64,7 @@ namespace PowerAboveAll
                 Paragraph(ref y, T("ui.forage.political", Change(terms.AmbitionDelta), Change(-terms.PowerCost)), body, 238, 12);
                 Paragraph(ref y, T("ui.forage.payroll_separate"), small, 238, 16);
             }
-            if (terms.RegionId != app.State.SelectedRegionId)
+            if (terms.RegionId != app.ViewState.SelectedRegionId)
             {
                 if (Press(new Rect(4, y, 238, 38), T("ui.forage.show_camp"))) app.SelectRegion(terms.RegionId);
                 y += 52;

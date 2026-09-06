@@ -30,7 +30,7 @@ namespace PowerAboveAll.Tests
         static CampaignState Reload(CampaignState state)
         {
             string before = Snapshot(state), json = CampaignArchive.Serialize(state, false);
-            StringAssert.Contains("\"Version\":8", json);
+            StringAssert.Contains("\"Version\":" + CampaignArchive.CurrentVersion, json);
             var loaded = CampaignArchive.Deserialize(json);
             Assert.AreEqual(before, Snapshot(loaded));
             return loaded;
@@ -42,7 +42,7 @@ namespace PowerAboveAll.Tests
         }
         static string AsOlder(string json, int version)
         {
-            json = json.Replace("\"Version\":8", "\"Version\":" + version)
+            json = json.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version)
                 .Replace("\"PendingVictoryId\":", "\"IgnoredVictory\":");
             if (version < 3) json = json.Replace("\"AccordRegionId\":", "\"IgnoredRegion\":")
                 .Replace("\"AccordUntilWeek\":", "\"IgnoredUntil\":");
@@ -337,7 +337,7 @@ namespace PowerAboveAll.Tests
         [TestCase(8, "null")]
         public void V4AndCurrentRequireAnExplicitNonNullVictoryField(int version, string representation)
         {
-            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":8", "\"Version\":" + version);
+            string json = CampaignArchive.Serialize(CampaignCore.Create(), false).Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             StringAssert.Contains("\"PendingVictoryId\":\"\"", json);
             json = json.Replace("\"PendingVictoryId\":\"\"", representation == "missing" ? "\"IgnoredVictory\":\"\"" : "\"PendingVictoryId\":null");
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(json));
@@ -374,7 +374,7 @@ namespace PowerAboveAll.Tests
         public void OlderArchivesDoNotInventChoicesForHistoricWinsOrAcceptHiddenActiveChoices(int version)
         {
             var state = Winner(); string json = CampaignArchive.Serialize(state, false);
-            string disguised = json.Replace("\"Version\":8", "\"Version\":" + version);
+            string disguised = json.Replace("\"Version\":" + CampaignArchive.CurrentVersion, "\"Version\":" + version);
             Assert.Throws<ArgumentException>(() => CampaignArchive.Deserialize(disguised));
             var loaded = CampaignArchive.Deserialize(AsOlder(json, version));
             state.PendingVictoryId = "";
