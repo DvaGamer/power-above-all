@@ -1,0 +1,120 @@
+# Salt okunur direnis raporu, yogun Paris emirleri ve sifir-ordu gorunumu.
+new
+lang ru
+select champagne
+panel journal
+expect ResistanceTroops 1114
+remember resistance-details
+state 00-details-source
+scroll province 528
+wait 0.8
+shot 00-reason-top-ru
+scroll province 657
+wait 0.5
+shot 01-reason-bottom-ru
+lang tr
+scroll province 528
+wait 0.5
+shot 02-reason-top-tr
+scroll province 657
+wait 0.5
+shot 03-reason-bottom-tr
+same resistance-details
+state 01-details-unchanged
+select provence
+scroll province 500
+expect ResistanceActive False
+expect ResistanceTroops 0
+wait 0.5
+shot 04-distant-peace-tr
+
+# Sekiz farkli yerde gercek ekmek dagitimi ile erzak azaltilir.
+new
+role-menu
+role-start army
+act recruit
+accord grant
+select brittany
+act bread
+select picardy
+act bread
+select champagne
+act bread
+select lorraine
+act bread
+select burgundy
+act bread
+select orleans
+act bread
+select poitou
+act bread
+select guyenne
+act bread
+select normandy
+march
+select ile
+panel journal
+lang ru
+expect ArmyRegionId normandy
+expect Troops 1400
+expect Food 6
+expect Moves 1
+expect HasAccord True
+expect ResistanceActive False
+expect PendingPetition False
+remember paris-hungry-layout
+state 02-paris-hungry-source
+wait 1.2
+shot 05-paris-hungry-orders-ru
+lang tr
+wait 0.6
+shot 06-paris-hungry-orders-tr
+scroll province 686
+wait 0.5
+shot 06b-paris-hungry-report-tr
+lang ru
+scroll province 686
+wait 0.5
+shot 06c-paris-hungry-report-ru
+same paris-hungry-layout
+state 03-paris-hungry-unchanged
+
+# Eski gercek iki-haftalik kadro emri sifira kadar uygulanir.
+new
+establishment budget 0
+week
+week
+expect PendingPetition True
+petition negotiate
+week
+week
+week
+week
+week
+week
+week
+week
+week
+week
+expect Week 12
+expect Troops 0
+expect Manpower 3600
+select champagne
+panel journal
+lang ru
+expect ResistanceActive True
+remember zero-army-resistance
+scroll province 500
+wait 1.2
+state 04-zero-army-resistance
+shot 07-zero-army-resistance-ru
+lang tr
+scroll province 500
+wait 0.6
+shot 08-zero-army-resistance-tr
+same zero-army-resistance
+save
+load
+same zero-army-resistance
+state 05-zero-army-loaded
+quit

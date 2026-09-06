@@ -75,7 +75,7 @@ namespace PowerAboveAll
         public string Key;
         public string[] Args = new string[0];
     }
-    public sealed class MarchPreview
+    [System.Serializable] public sealed class MarchPreview
     {
         public int FoodCost, FoodAfter, MilitarySuppliesAfter, MovesAfter;
         public float Supply, Fatigue, Morale;
@@ -209,7 +209,7 @@ namespace PowerAboveAll
             if(s.Troops<=0)return Result(false,"error.army.empty");
             if(s.Moves<=0)return Result(false,"error.moves");
             if(Array.IndexOf(Definition(s.ArmyRegionId).Neighbours,id)<0)return Result(false,"error.adjacent");
-            bool hostile=Region(s,id).Unrest>=65;
+            bool hostile=IsHostileRegion(Region(s,id));
             var result=Result(true,hostile?"march.battle":"march.ready");result.RequiresBattle=hostile;return result;
         }
         public static MarchPreview PreviewMarch(CampaignState s,string id)

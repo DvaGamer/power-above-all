@@ -344,6 +344,9 @@ namespace PowerAboveAll
             var result = CampaignCore.March(State, State.SelectedRegionId);
             if (!result.RequiresBattle) { Report(result); if (result.Ok) Feedback("march"); return; }
             var arrival = CampaignCore.PreviewMarch(State, State.SelectedRegionId);
+            var resistance = CampaignCore.GetRegionalResistance(State, State.SelectedRegionId);
+            if (resistance == null || !resistance.RequiresBattle || resistance.EnemyTroops <= 0)
+            { Report(new ActionResult { Ok = false, Key = "ui.resistance.unavailable" }); return; }
             pendingTarget = State.SelectedRegionId;
             pendingBattleId = "battle-" + State.Week + "-" + State.Moves + "-" + State.ArmyRegionId + "-" + pendingTarget;
             WriteSave(false);
@@ -351,7 +354,7 @@ namespace PowerAboveAll
             {
                 Map.SetVisible(false);
                 var commander = State.Characters.Find(c => c.Id == "dumas");
-                battle.Begin(new BattleSetup { Troops = State.Troops, Supply = arrival.Supply, Morale = arrival.Morale,
+                battle.Begin(new BattleSetup { Troops = State.Troops, EnemyTroops = resistance.EnemyTroops, Supply = arrival.Supply, Morale = arrival.Morale,
                     Fatigue = arrival.Fatigue, CommanderCompetence = commander == null ? 60 : commander.Competence,
                     CampaignMoraleAfterBattle = (won, morale) => CampaignCore.BattleReturnMorale(arrival.Morale, morale, won),
                     Seed = 1789 + State.Week * 31 + State.Moves, RegionNameKey = "region." + pendingTarget }, Camera, CompleteBattle);

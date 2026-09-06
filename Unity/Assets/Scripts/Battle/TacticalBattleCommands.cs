@@ -26,7 +26,7 @@ namespace PowerAboveAll
     {
         public int SchemaVersion = 1;
         public bool Active, Paused, Ended, Delivered, HasOutcome, Won, CanVolley, SelectionArrived;
-        public int OriginalTroops, Casualties, MilitarySuppliesRecovered;
+        public int OriginalTroops, EnemyOriginalTroops, Casualties, MilitarySuppliesRecovered;
         public float ElapsedSeconds, PlayerHold, EnemyHold, ConvoyX, ConvoyZ, EndingMorale, CampaignReturnMorale;
         public int[] SelectedIds;
         public BattleRegimentSnapshot[] Regiments;
@@ -188,7 +188,8 @@ namespace PowerAboveAll
             }
             return new BattleSnapshot {
                 Active = Active, Paused = paused, Ended = ended, Delivered = delivered, ElapsedSeconds = elapsed,
-                OriginalTroops = originalTroops, PlayerHold = playerHold, EnemyHold = enemyHold, ConvoyX = convoy.x, ConvoyZ = convoy.z,
+                OriginalTroops = originalTroops, EnemyOriginalTroops = enemyOriginalTroops,
+                PlayerHold = playerHold, EnemyHold = enemyHold, ConvoyX = convoy.x, ConvoyZ = convoy.z,
                 SelectedIds = selection.ToArray(), Regiments = units.ToArray(), CanVolley = volley, SelectionArrived = arrived,
                 HasOutcome = ended && outcome != null, Won = outcome != null && outcome.Won,
                 Casualties = outcome == null ? 0 : outcome.Casualties, EndingMorale = outcome == null ? 0 : outcome.EndingMorale,

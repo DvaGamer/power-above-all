@@ -48,7 +48,7 @@ namespace PowerAboveAll.Tests
 
         void Begin()
         {
-            battle.Begin(new BattleSetup { Troops = 1200, Morale = 90, Supply = 100, Fatigue = 0,
+            battle.Begin(new BattleSetup { Troops = 1200, EnemyTroops = 1080, Morale = 90, Supply = 100, Fatigue = 0,
                 CommanderCompetence = 55, Seed = 1789 }, camera, null);
             foreach (object unit in Units)
             {

@@ -54,7 +54,7 @@ namespace PowerAboveAll.Tests
 
         void Begin(Action<BattleOutcome> callback = null, Func<bool, float, float> returnMorale = null)
         {
-            battle.Begin(new BattleSetup { Troops = 1200, Seed = 1789, Supply = 74, Morale = 76,
+            battle.Begin(new BattleSetup { Troops = 1200, EnemyTroops = 1080, Seed = 1789, Supply = 74, Morale = 76,
                 Fatigue = 13, CommanderCompetence = 63, CampaignMoraleAfterBattle = returnMorale }, camera, callback);
         }
 

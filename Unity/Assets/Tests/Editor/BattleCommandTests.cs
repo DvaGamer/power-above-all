@@ -25,11 +25,59 @@ namespace PowerAboveAll.Tests
         }
 
         void Begin(System.Action<BattleOutcome> callback = null)
-        { battle.Begin(new BattleSetup { Troops = 1200, Supply = 100, Morale = 78, Seed = 1789 }, camera, callback); }
+        { battle.Begin(new BattleSetup { Troops = 1200, EnemyTroops = 1080, Supply = 100, Morale = 78, Seed = 1789 }, camera, callback); }
 
         static void Accepted(BattleOrderResult result) { Assert.IsTrue(result.Ok, result.ReasonKey); }
         string Snapshot() => JsonUtility.ToJson(battle.CaptureSnapshot());
         BattleRegimentSnapshot Unit(int slot) => System.Array.Find(battle.CaptureSnapshot().Regiments, unit => unit.PlayerSlot == slot);
+
+        [Test]
+        public void ExplicitEnemyDeploymentMatchesCampaignPreviewForBothPlayerArmySizes()
+        {
+            int enemy = CampaignCore.GetRegionalResistance(CampaignCore.Create(), "champagne").EnemyTroops;
+            foreach (int troops in new[] { 1200, 1600 })
+            {
+                battle.Begin(new BattleSetup { Troops = troops, EnemyTroops = enemy }, camera, null);
+                var snapshot = battle.CaptureSnapshot();
+                int playerSum = 0, enemySum = 0, enemyGroups = 0;
+                foreach (var unit in snapshot.Regiments)
+                    if (unit.Player) playerSum += unit.Men;
+                    else { enemySum += unit.Men; enemyGroups++; Assert.AreEqual(unit.Original, unit.Men); }
+                Assert.AreEqual(troops, snapshot.OriginalTroops); Assert.AreEqual(troops, playerSum);
+                Assert.AreEqual(1114, snapshot.EnemyOriginalTroops); Assert.AreEqual(enemy, enemySum);
+                Assert.AreEqual(4, enemyGroups);
+            }
+        }
+
+        [Test]
+        public void LaterSetupMutationAndRealRetreatCannotRescaleTheDeployedEnemy()
+        {
+            var input = new BattleSetup { Troops = 1600, EnemyTroops = 1114 };
+            battle.Begin(input, camera, null);
+            input.Troops = 200; input.EnemyTroops = 1;
+            Accepted(battle.SetPaused(true)); Accepted(battle.Retreat());
+            var report = battle.CaptureSnapshot();
+            Assert.IsTrue(report.HasOutcome); Assert.Greater(report.Casualties, 0);
+            Assert.AreEqual(1600, report.OriginalTroops); Assert.AreEqual(1114, report.EnemyOriginalTroops);
+            int originals = 0, survivors = 0;
+            foreach (var unit in report.Regiments) if (!unit.Player) { originals += unit.Original; survivors += unit.Men; }
+            Assert.AreEqual(1114, originals); Assert.AreEqual(1114, survivors);
+        }
+
+        [Test]
+        public void InvalidNewBattleInputPreservesTheExistingWorldSnapshotAndCompletion()
+        {
+            int delivered = 0; Begin(result => delivered++);
+            var originalWorld = GameObject.Find("Power Above All - Crossing Diorama");
+            Assert.IsNotNull(originalWorld); string before = Snapshot();
+            Assert.Throws<System.ArgumentNullException>(() => battle.Begin(null, camera, null));
+            foreach (int enemy in new[] { 0, -1 })
+                Assert.Throws<System.ArgumentOutOfRangeException>(() => battle.Begin(new BattleSetup { Troops = 1200, EnemyTroops = enemy }, camera, null));
+            Assert.Throws<System.ArgumentNullException>(() => battle.Begin(new BattleSetup { Troops = 1200, EnemyTroops = 1080 }, null, null));
+            Assert.AreSame(originalWorld, GameObject.Find("Power Above All - Crossing Diorama"));
+            Assert.AreEqual(before, Snapshot()); Assert.AreEqual(0, delivered);
+            Accepted(battle.Retreat()); Accepted(battle.AcceptReport()); Assert.AreEqual(1, delivered);
+        }
 
         [Test]
         public void InactiveAndInvalidOrdersRefuseWithoutChangingSnapshot()

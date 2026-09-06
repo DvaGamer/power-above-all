@@ -173,11 +173,12 @@ namespace PowerAboveAll
                     case "scroll":
                         RequireIdle(app);
                         string[] scroll = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (scroll.Length != 2 || scroll[0] != "document" ||
+                        if (scroll.Length != 2 || (scroll[0] != "document" && scroll[0] != "province") ||
                             !float.TryParse(scroll[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float offset) ||
                             float.IsNaN(offset) || float.IsInfinity(offset) || offset < 0 || offset > 5000)
-                            throw new InvalidDataException("scroll requires document and an offset between 0 and 5000.");
-                        Field(typeof(CabinetHud), "documentScroll").SetValue(app.GetComponent<CabinetHud>(), new Vector2(0, offset)); break;
+                            throw new InvalidDataException("scroll requires document or province and an offset between 0 and 5000.");
+                        Field(typeof(CabinetHud), scroll[0] == "document" ? "documentScroll" : "provinceScroll")
+                            .SetValue(app.GetComponent<CabinetHud>(), new Vector2(0, offset)); break;
                     case "retreat":
                         if (!app.BattleActive) throw new InvalidOperationException("Cannot retreat outside battle.");
                         CheckOrder(app.GetComponent<TacticalBattle>().Retreat()); break;
@@ -219,7 +220,7 @@ namespace PowerAboveAll
             int space = value.IndexOf(' ');
             if (space < 1 || space == value.Length - 1) throw new InvalidDataException("expect requires a field and value: " + value);
             string key = value.Substring(0, space), expected = value.Substring(space + 1).Trim();
-            object actual = key == "BattlePaused" || key == "BattleEnded" || key == "BattleWon" || key == "BattleHasOutcome" || key == "BattleCanVolley" || key == "BattleSelectionArrived"
+            object actual = key == "BattlePaused" || key == "BattleEnded" || key == "BattleWon" || key == "BattleHasOutcome" || key == "BattleCanVolley" || key == "BattleSelectionArrived" || key == "BattleEnemyTroops" || key == "BattleOurTroops"
                 ? BattleExpectation(app.GetComponent<TacticalBattle>().CaptureSnapshot(), key) :
                 key == "PatronRelationship" ? PatronRelationship(app.State) :
                 key == "ChoosingRole" ? (object)app.ChoosingRole : key == "MandateDue" ? CampaignCore.MandateDue(app.State) :
@@ -228,6 +229,8 @@ namespace PowerAboveAll
                 key == "HasDumasInitiative" ? CampaignCore.HasDumasInitiative(app.State) :
                 key == "HasArmyEstablishment" ? CampaignCore.HasArmyEstablishment(app.State) :
                 key == "HasOfficerCommission" ? CampaignCore.HasOfficerCommission(app.State) :
+                key == "ResistanceTroops" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).EnemyTroops :
+                key == "ResistanceActive" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).RequiresBattle :
                 key == "CommissionRevokeGold" ? (object)CampaignCore.GetOfficerCommissionTerms(app.State).RevokeGoldCost :
                 key == "DumasLoyalty" ? (object)app.State.Characters.Find(person=>person.Id=="dumas").Loyalty :
                 key == "ArmyCost" ? (object)CampaignCore.Forecast(app.State).ArmyCost :
@@ -262,6 +265,8 @@ namespace PowerAboveAll
                 case "BattleHasOutcome": return snapshot.HasOutcome;
                 case "BattleCanVolley": return snapshot.CanVolley;
                 case "BattleSelectionArrived": return snapshot.SelectionArrived;
+                case "BattleEnemyTroops": return snapshot.EnemyOriginalTroops;
+                case "BattleOurTroops": return snapshot.OriginalTroops;
                 case "BattleWon":
                     if (!snapshot.HasOutcome) throw new InvalidOperationException("Battle outcome has not been produced.");
                     return snapshot.Won;
@@ -362,6 +367,11 @@ namespace PowerAboveAll
             RequireIdle(app);
             if (battleCampaignBefore == null || battleArrival == null || acceptedBattle == null || !acceptedBattle.HasOutcome)
                 throw new InvalidOperationException("No observed battle and accepted report to compare.");
+            var resistance = CampaignCore.GetRegionalResistance(battleCampaignBefore, battleTarget);
+            int deployedEnemy = 0;
+            foreach (var regiment in acceptedBattle.Regiments) if (!regiment.Player) deployedEnemy += regiment.Original;
+            if (resistance == null || !resistance.RequiresBattle || acceptedBattle.EnemyOriginalTroops != resistance.EnemyTroops || deployedEnemy != resistance.EnemyTroops)
+                throw new InvalidOperationException("Observed enemy deployment does not match the original region's resistance.");
             var after = app.State;
             if (after.Troops != battleCampaignBefore.Troops - acceptedBattle.Casualties ||
                 after.ArmyRegionId != (acceptedBattle.Won ? battleTarget : battleCampaignBefore.ArmyRegionId) ||
@@ -373,7 +383,7 @@ namespace PowerAboveAll
             foreach (string previous in battleCampaignBefore.ResolvedBattles)
                 if (!after.ResolvedBattles.Contains(previous)) throw new InvalidOperationException("Earlier battle history was lost.");
             CampaignCore.Validate(after);
-            assertions++; report.Add("  PASS battle return; won=" + acceptedBattle.Won + "; casualties=" + acceptedBattle.Casualties.ToString(CultureInfo.InvariantCulture));
+            assertions++; report.Add("  PASS battle return; won=" + acceptedBattle.Won + "; casualties=" + acceptedBattle.Casualties.ToString(CultureInfo.InvariantCulture) + "; enemy=" + deployedEnemy.ToString(CultureInfo.InvariantCulture));
         }
 
         private IEnumerator Shot(string name)

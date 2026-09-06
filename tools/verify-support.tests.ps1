@@ -82,6 +82,22 @@ foreach ($order in @('recruit 400', 'revoke 0', 'grant loyalty 100', 'reset')) {
 }
 $ambiguousCommission = Fixture 'ambiguous-commission.script' "new`nexpect DumasExtraRecruitUsed maybe`nshot sample`nquit"
 Reject { Get-ReviewPlan $ambiguousCommission } 'Officer commission assertion rejects ambiguous boolean'
+$resistancePlan = Fixture 'regional-resistance.script' "new`nselect champagne`nexpect ResistanceActive True`nexpect ResistanceTroops 1114`nshot sample`nquit"
+$accordPlan = Fixture 'accord-grant.script' "new`naccord grant`nexpect HasAccord True`nshot sample`nquit"
+Check ((Get-ReviewPlan $accordPlan).Commands -eq 5) 'Regional accord review uses the existing grant command'
+$badAccordPlan = Fixture 'accord-sign.script' "new`naccord sign`nexpect HasAccord True`nshot sample`nquit"
+Reject { Get-ReviewPlan $badAccordPlan } 'Unsupported regional accord verb is rejected before launch'
+foreach ($order in @('document 0', 'province 156', 'province 285.5', 'document 5000')) {
+  $scrollPlan = Fixture ('scroll-valid-' + [Guid]::NewGuid().ToString('N') + '.script') "new`nscroll $order`nexpect Week 0`nshot sample`nquit"
+  Check ((Get-ReviewPlan $scrollPlan).Commands -eq 5) "Read-only review scroll accepted: $order"
+}
+foreach ($order in @('province -1', 'document 5001', 'province NaN', 'document Infinity', 'campaign 156', 'province 156 extra', 'Province 156')) {
+  $badScrollPlan = Fixture ('scroll-invalid-' + [Guid]::NewGuid().ToString('N') + '.script') "new`nscroll $order`nexpect Week 0`nshot sample`nquit"
+  Reject { Get-ReviewPlan $badScrollPlan } "Invalid review scroll rejected before launch: $order"
+}
+Check ((Get-ReviewPlan $resistancePlan).Commands -eq 6) 'Resistance review observes existing region state without a mutation command'
+$ambiguousResistance = Fixture 'ambiguous-resistance.script' "new`nexpect ResistanceActive maybe`nshot sample`nquit"
+Reject { Get-ReviewPlan $ambiguousResistance } 'Resistance assertion rejects ambiguous boolean'
 $armyPlan = Fixture 'army-establishment.script' "new`nestablishment budget 800`nexpect HasArmyEstablishment True`npanel establishment`nestablishment campaign 0`nshot sample`nquit"
 Check ((Get-ReviewPlan $armyPlan).Commands -eq 7) 'Army establishment uses a target order and ordinary document'
 foreach ($order in @('budget -1', 'budget 1.5', 'budget 100000001', 'budget 2147483648', 'campaign 800', 'release 200', 'budget 200 troops 200')) {

@@ -7,7 +7,7 @@ namespace PowerAboveAll
     [Serializable]
     public class BattleSetup
     {
-        public int Troops;
+        public int Troops, EnemyTroops;
         public float Supply = 75, Morale = 75, Fatigue = 10, CommanderCompetence = 60;
         public int Seed = 1789;
         public string RegionNameKey = "";
@@ -107,7 +107,7 @@ namespace PowerAboveAll
         bool paused, ended, delivered;
         Regiment hovered;
         string messageKey = "battle.hint";
-        int originalTroops;
+        int originalTroops, enemyOriginalTroops;
         const float Tick = .05f;
         GUIStyle bodyStyle, titleStyle, smallStyle, cardStyle, buttonStyle, chosenButtonStyle, inkSmallStyle, inkCardStyle;
         GUIStyle dispatchTitle, dispatchBody, dispatchSmall, dispatchNumber;
@@ -116,13 +116,16 @@ namespace PowerAboveAll
 
         public void Begin(BattleSetup battleSetup, Camera camera, Action<BattleOutcome> callback)
         {
+            if (battleSetup == null) throw new ArgumentNullException(nameof(battleSetup));
+            if (battleSetup.EnemyTroops <= 0) throw new ArgumentOutOfRangeException(nameof(battleSetup.EnemyTroops));
+            if (camera == null) throw new ArgumentNullException(nameof(camera));
             Stop();
             if (smokeProperties == null) smokeProperties = new MaterialPropertyBlock();
-            setup = battleSetup ?? new BattleSetup();
+            setup = battleSetup;
             battleCamera = camera;
-            if (battleCamera == null) throw new ArgumentNullException(nameof(camera));
             completion = callback;
             originalTroops = Mathf.Max(0, setup.Troops);
+            enemyOriginalTroops = setup.EnemyTroops;
             rng = new System.Random(setup.Seed);
             accumulator = elapsed = playerHold = enemyHold = visualClock = campaignReturnMorale = 0;
             paused = ended = delivered = false;
@@ -135,7 +138,7 @@ namespace PowerAboveAll
             CreateMaterials();
             BuildLandscape();
             DeployArmy(true, originalTroops);
-            DeployArmy(false, Mathf.Max(200, Mathf.RoundToInt(originalTroops * .9f)));
+            DeployArmy(false, enemyOriginalTroops);
             if (regiments.Count > 0) selected.Add(regiments[0]);
             battleCamera.rect = ViewLayout.CameraRect(ViewLayout.BattleViewport);
             battleCamera.orthographic = true;

@@ -126,6 +126,7 @@ namespace PowerAboveAll
             ObserveDumasInitiative(state);
             ObserveArmyEstablishment(state);
             ObserveOfficerCommission(state);
+            resistancePreview=CampaignCore.GetRegionalResistance(state,state.SelectedRegionId);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
@@ -415,8 +416,9 @@ namespace PowerAboveAll
             var regionTitle=new GUIStyle(title);regionTitle.fontSize=26;
             Text(new Rect(18,152,212,64),T("region."+region.Id),regionTitle);
             Text(new Rect(19,214,209,24),T("city."+region.Id),small);
-            // Emirler sabit kalır; yalnızca alttaki durum raporu kaydırılır.
-            GUI.BeginGroup(new Rect(12,246,226,540));
+            // Uzun uyarılar raporu sıfır yüksekliğe sıkıştırmaz; bütün depeşe tek yapraktır.
+            if(seekResistanceReport){provinceScroll.y=resistanceReportOffset;seekResistanceReport=false;}
+            provinceScroll=BeginMatteScroll(new Rect(12,246,226,540),provinceScroll,new Rect(0,0,205,Mathf.Max(540,provinceContentHeight)),178901);
             float y=0;Text(new Rect(4,y,195,25),T("ui.orders"),tiny);y+=29;
             Order(app,ref y,"bread",T("ui.order.bread"),T("ui.order.bread.detail"));
             Order(app,ref y,"tax",T("ui.order.tax"),T("ui.order.tax.detail"));
@@ -431,6 +433,7 @@ namespace PowerAboveAll
             // Düğme durumu değiştirebilir; varış tahmini tıklamadan önce alınır.
             var arrival=!here&&march.Ok?CampaignCore.PreviewMarch(state,region.Id):null;
             int movementCost=arrival==null?0:state.Moves-arrival.MovesAfter;
+            if(arrival!=null)ResistanceMarchSummary(app,ref y);
             if(Press(new Rect(4,y,195,34),T(state.Troops==0?"ui.establishment.empty_army":here?"ui.army.here":march.RequiresBattle?"ui.army.battle":"ui.army.march"),!here&&march.Ok,true))app.March();y+=40;
             string marchDetail=here?T("ui.army.here.detail"):arrival!=null?T("ui.march.cost",Number(arrival.FoodCost),Number(movementCost)):L.Text(march.Key,march.Args);
             var marchStyle=new GUIStyle(tiny);if(!here&&!march.Ok)marchStyle.normal.textColor=red;
@@ -441,11 +444,9 @@ namespace PowerAboveAll
             }
             if(region.Id=="ile")Order(app,ref y,"subsidy",T(state.SubsidyParis?"ui.order.subsidy.stop":"ui.order.subsidy"),T(state.SubsidyParis?"ui.order.subsidy.stop.detail":"ui.order.subsidy.detail"));
             Rule(4,y+3,195);y+=15;
-            float reportTop=246+y,reportHeight=Mathf.Max(1,786-reportTop);
-            GUI.EndGroup();
-            provinceScroll=BeginMatteScroll(new Rect(12,reportTop,226,reportHeight),provinceScroll,new Rect(0,0,205,Mathf.Max(reportHeight,provinceContentHeight)),178901);
-            y=4;
+            y+=4;
             Meter(4,y,196,T("ui.control"),region.Control,C("#698260"));y+=48;Meter(4,y,196,T("ui.unrest"),region.Unrest,red);y+=48;Meter(4,y,196,T("ui.elite"),region.EliteLoyalty,C("#AF9964"));y+=52;
+            RegionalResistanceReport(ref y);
             Pair(4,y,195,T("ui.population"),T("ui.million",(definition.Population/1000000f).ToString("0.0",CultureInfo.GetCultureInfo(L.Language=="tr"?"tr-TR":"ru-RU"))));y+=30;
             Pair(4,y,195,T("ui.tax.base"),Number(definition.BaseTax));y+=30;Pair(4,y,195,T("ui.food.base"),Number(definition.BaseFood));y+=39;
             Rule(4,y,195);y+=17;Text(new Rect(4,y,195,22),T("ui.army.dispatch"),tiny);y+=28;

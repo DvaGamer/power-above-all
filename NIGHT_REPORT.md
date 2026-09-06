@@ -1,6 +1,20 @@
 # Gece geliştirme raporu — çalışma sürüyor
 
-Güncelleme: 6 Eylül 2026, 03:59 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
+Güncelleme: 6 Eylül 2026, 05:04 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
+
+## Son ek: bölgesel direniş
+
+05:10 gerçek girdi sonucu: [native inceleme](output/verify/native-input-20260906-050250-67a1117e/REPORT.md) **PARTIAL/native0**,44 kontrol/5 PNG/5 JSON. Root RU/TR açıklama oklarını ve tam raporu, tekerlekle emirlere dönüşü, vergiyle1234 ve ekmekle1106'yı gerçek Windows girdisiyle gördü. İlk üç kampanya JSON'u eşit; iki gerçek karar sonrası save/load da eşit. Eski55 saniyelik denemede root yanlış Wheel25 verdi; helper sınırı10 bunu reddetti, sonraki düzeltme yetişmedi. Yeni75 saniyelik pencerelerle akış tamamlandı; eski RED korunur. Aşağıdaki uygulama sırasında yazılmış ayrıntılar bu tamamlanan sonuçla birlikte okunmalıdır.
+
+[Birleşik bölge depeşesi kapısı](output/verify/resistance-unified-dispatch-20260906-045736-445-e8fe43ec/REPORT.md) **GREEN397**: yeni Windows build,11 gerçek PNG,19 kontrol,6 JSON ve10 tarayıcı testi. Runtime `fb28c24721e885a2e13bd9800c1419b7a21e2a883e4212b1cad6ba014b987b62`;141 dosyalık manifest vardır. RU/TR nedenler, aç Paris'in bütün emirleri ve raporu, sıfır ordu ayrıca görüntüde kabul edildi.
+
+Düşman oyuncunun ordusuna otomatik ölçeklenmez. Bölgenin sabit ekonomik tabanı ile gerçek huzursuzluk, denetim açığı ve elit muhalefeti kuvveti belirler. Champagne1114 kişi; kendi ordusunu1600'e hazırlamak bu sayıyı değiştirmez. Yerel vergi1234'e çıkarır, ardından ekmek1106'ya indirir; yeterli siyasi sakinleşme savaşı kaldırabilir. Hesap tarihsel asker sayısı iddiası değil, açık bir oyun kuralıdır. Yeni kayıt alanı yoktur, arşiv v7 kalır.
+
+Emrin yanındaki kuvvet satırı mevcut bölge raporuna açılır. Yoğun uyarı durumunda eski alt rapor çok daralıyordu; sol gövde artık tek kaydırılan yapraktır. Bölge adı yerinde kalır, bütün emir ve nedenlere ulaşılır. Son gerçek fare incelemesi sürüyor.
+
+[Yeni kuvvetlerle doğal savaş](output/verify/resistance-natural-victory-20260906-045323-372-ede571f9/REPORT.md) **PARTIAL/native0**:1200'e karşı1114, gerçek125,803 saniyelik zafer,196 kayıp/1004 sağ kalan/+24 teçhizat. Yeni Arrival verisi JSON'da bütün9 alanıyla korunur; geri dönüş ve save/load bağımsız denetimde eşittir.9 PNG/15 kontrol/8 JSON. İlk dört ayrı konuşlanma da1200/1114,1600/1114,1200/1234 ve1200/1106 sayılarını gerçek alaylara taşıdı; o dört inceleme geri çekilmeyle bitti, zafer kanıtı olarak sunulmaz.
+
+Eski detay denemelerinin iki RED'i inceleme komutlarından kaynaklandı: desteklenmeyen province scroll eklendi, yanlış accord fiili mevcut grant ile düzeltildi. Araçların82 kontrolü geçer. Önceki GREEN397 raporuyla dış oturumun exit1 bildirmesi ayrı bir belirsizlik olarak kaydedildi; nedeni mevcut dosyalardan kanıtlanmadı. Son birleşik kapı dışexit0 ile tamamlandı. Eski raporlar değiştirilmedi.
 
 ## Çalışan sürüm
 

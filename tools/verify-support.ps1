@@ -139,12 +139,19 @@ function Get-ReviewPlan([string]$Path) {
   if ($lines.Count -lt 2 -or $lines[0] -ne 'new' -or $lines[-1] -ne 'quit' -or @($lines | Where-Object { $_ -eq 'quit' }).Count -ne 1) { throw "Review must start with new and have one final quit." }
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
+    if ($line -match '^accord(?:\s|$)' -and $line -cne 'accord grant') { throw "Unsupported regional accord order: $line" }
+    if ($line -match '^scroll(?:\s|$)') {
+      if ($line -cnotmatch '^scroll (document|province) (\S+)$') { throw "Unsupported review scroll: $line" }
+      [float]$scrollOffset = 0
+      if (-not [float]::TryParse($Matches[2], [Globalization.NumberStyles]::Float, [Globalization.CultureInfo]::InvariantCulture, [ref]$scrollOffset) -or [float]::IsNaN($scrollOffset) -or [float]::IsInfinity($scrollOffset) -or $scrollOffset -lt 0 -or $scrollOffset -gt 5000) { throw "Review scroll offset must be finite and between 0 and 5000: $line" }
+    }
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
     if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
     if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
     if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory|initiative|establishment|officers)$') { throw "Unsupported review panel: $line" }
     if ($line -match '^commission(?:\s|$)' -and $line -cnotmatch '^commission (grant|recruit|revoke)$') { throw "Unsupported officer commission order: $line" }
     if ($line -match '^expect\s+(HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed)(?:\s|$)' -and $line -cnotmatch '^expect (HasOfficerCommission|DumasOfficerCommission|DumasExtraRecruitUsed) (True|False)$') { throw "Officer commission assertion requires True or False: $line" }
+    if ($line -match '^expect\s+ResistanceActive(?:\s|$)' -and $line -cnotmatch '^expect ResistanceActive (True|False)$') { throw "Resistance assertion requires True or False: $line" }
     if ($line -match '^establishment(?:\s|$)') {
       if ($line -cnotmatch '^establishment (campaign 0|budget [0-9]+)$') { throw "Unsupported army establishment order: $line" }
       [int]$armyTarget = 0

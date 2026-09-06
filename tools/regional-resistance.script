@@ -1,0 +1,176 @@
+# Yeni B sözleşmesi: aynı Champagne, daha büyük ordu, sonra gerçek vergi/ekmek.
+# Sayılar root'un kabul ettiği Core hesabıdır; bu fixture henüz runtime sonucu değildir.
+# Province özeti mevcut yerde okunur; denenmemiş bir scroll konumu kabul sayılmaz.
+new
+lang ru
+mode control
+panel journal
+select champagne
+expect Week 0
+expect Troops 1200
+expect Gold 840
+expect Food 360
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect SelectedUnrest 69
+expect SelectedControl 60.5
+expect ResolvedBattleCount 0
+expect BattleActive False
+remember initial-resistance
+wait 0.7
+state 00-initial-resistance
+shot 00-initial-resistance-ru
+lang tr
+wait 0.7
+same initial-resistance
+shot 01-initial-resistance-tr
+
+# İki gerçek200 kişilik grup aynı kampta ödenir; Champagne değişmez.
+select ile
+act recruit
+commission grant
+commission recruit
+select champagne
+expect Troops 1600
+expect Manpower 2000
+expect Gold 600
+expect Food 320
+expect MilitarySupplies 90
+expect Morale 74
+expect DumasLoyalty 61
+expect HasOfficerCommission True
+expect DumasExtraRecruitUsed True
+expect Moves 2
+expect Fatigue 0
+expect ArmyRegionId ile
+expect ResistanceActive True
+expect ResistanceTroops 1114
+expect SelectedUnrest 69
+expect SelectedControl 60.5
+remember prepared-resistance
+lang ru
+wait 0.7
+state 02-prepared-resistance
+shot 02-prepared-resistance-ru
+lang tr
+wait 0.7
+same prepared-resistance
+shot 03-prepared-resistance-tr
+
+# Vergi gerçekten100 altın getirir; huzursuzluk+12 ve yerel seçkin sadakati−4 uygulanır.
+act tax
+expect Gold 700
+expect Food 320
+expect Troops 1600
+expect Manpower 2000
+expect MilitarySupplies 90
+expect SelectedUnrest 81
+expect SelectedControl 60.5
+expect ResistanceActive True
+expect ResistanceTroops 1234
+remember taxed-resistance
+lang ru
+wait 0.7
+state 04-taxed-resistance
+shot 04-taxed-resistance-ru
+lang tr
+wait 0.7
+same taxed-resistance
+shot 05-taxed-resistance-tr
+
+# Ekmek40 gıda harcar; huzursuzluk−15 ve kontrol+2, hâlâ düşmanU66 bölge.
+act bread
+expect Gold 700
+expect Food 280
+expect Troops 1600
+expect Manpower 2000
+expect MilitarySupplies 90
+expect SelectedUnrest 66
+expect SelectedControl 62.5
+expect ResistanceActive True
+expect ResistanceTroops 1106
+expect Week 0
+expect ResolvedBattleCount 0
+expect BattleActive False
+remember bread-resistance
+lang ru
+wait 0.7
+state 06-bread-resistance
+shot 06-bread-resistance-ru
+lang tr
+wait 0.7
+same bread-resistance
+shot 07-bread-resistance-tr
+save
+select normandy
+load
+same bread-resistance
+expect SelectedRegionId champagne
+expect ResistanceActive True
+expect ResistanceTroops 1106
+state 07-bread-loaded
+
+# Ayrı gerçek başlangıç: vergi tatiliU69→59 ile çatışmayı önler.
+new
+lang ru
+mode control
+panel journal
+select champagne
+expect Troops 1200
+expect HasOfficerCommission False
+expect ResistanceTroops 1114
+accord grant
+expect HasAccord True
+expect AccordRegionId champagne
+expect AccordUntilWeek 4
+expect Gold 840
+expect Food 360
+expect SelectedUnrest 59
+expect SelectedControl 63.5
+expect ResistanceActive False
+expect ResistanceTroops 0
+expect BattleActive False
+remember peaceful-resistance
+wait 0.7
+state 08-peaceful-resistance
+shot 08-peaceful-resistance-ru
+lang tr
+wait 0.7
+same peaceful-resistance
+shot 09-peaceful-resistance-tr
+
+# Barış kolay yol değildir: U59 hâlâ difficult>=50, eski iki hareket/18 gıda bedeli.
+march
+settle 5
+expect Busy False
+expect BattleActive False
+expect ResolvedBattleCount 0
+expect HasPendingVictory False
+expect ArmyRegionId champagne
+expect SelectedRegionId champagne
+expect Troops 1200
+expect Manpower 2400
+expect Gold 840
+expect Food 342
+expect MilitarySupplies 115
+expect Moves 0
+expect Fatigue 20
+expect Supply 88
+expect Morale 78
+expect SelectedUnrest 61
+expect SelectedControl 61.5
+expect ResistanceActive False
+expect ResistanceTroops 0
+expect HasAccord True
+expect AccordUntilWeek 4
+expect Week 0
+state 10-peaceful-march
+save
+remember peaceful-march
+select ile
+load
+same peaceful-march
+expect BattleActive False
+expect ResolvedBattleCount 0
+state 11-peaceful-march-loaded
+quit
