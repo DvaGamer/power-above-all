@@ -152,7 +152,13 @@ namespace PowerAboveAll
             var uv = new Rect((index % 2) * .5f, index < 2 ? .5f : 0f, .5f, .5f);
             float aspect = (float)portraits.width / portraits.height;
             float width = Mathf.Min(rect.width, rect.height * aspect), height = width / aspect;
-            GUI.DrawTextureWithTexCoords(new Rect(rect.x + (rect.width - width) * .5f, rect.y + (rect.height - height) * .5f, width, height), portraits, uv, true);
+            Rect fitted = new Rect(rect.x + (rect.width - width) * .5f, rect.y + (rect.height - height) * .5f, width, height);
+            if (index == 3)
+            {
+                float trim = 17f / portraits.width;
+                fitted.xMin += fitted.width * trim / uv.width; uv.xMin += trim;
+            }
+            GUI.DrawTextureWithTexCoords(fitted, portraits, uv, true);
         }
         private void OnDestroy() { if (serif) Destroy(serif); if (sans) Destroy(sans); }
     }

@@ -140,6 +140,10 @@ function Get-ReviewPlan([string]$Path) {
   $captures = @(); $states = @(); $assertions = 0
   foreach ($line in $lines) {
     if ($line -match '^battle(?:\s|$)') { Assert-BattleReviewCommand $line }
+    if ($line -match '^victory(?:\s|$)' -and $line -cnotmatch '^victory (recognize|bonus|decline)$') { throw "Unsupported victory decision: $line" }
+    if ($line -match '^victory-close(?:\s|$)' -and $line -cne 'victory-close') { throw "Victory close takes no arguments: $line" }
+    if ($line -match '^panel(?:\s|$)' -and $line -cnotmatch '^panel (council|economy|journal|mandate|accord|victory)$') { throw "Unsupported review panel: $line" }
+    if ($line -match '^expect\s+HasPendingVictory(?:\s|$)' -and $line -cnotmatch '^expect HasPendingVictory (True|False)$') { throw "Pending victory assertion requires True or False: $line" }
     if ($line -match '^(shot|state|battle\s+state)\s+(.+)$') {
       $kind = $Matches[1]; $name = $Matches[2]
       if ($name -notmatch '\A[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}\z') { throw "Unsafe artifact name: $name" }

@@ -75,6 +75,14 @@ namespace PowerAboveAll.Editor
                     throw new BuildFailedException("Missing emission shader variant: " + path);
             }
 
+            // Duman, ışıklandırılmış Standard yüzeyinden ayrı ve açık alfa geçişi kullanır.
+            Material powder = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/BattleMaterials/PowderWash.mat");
+            Shader powderShader = AssetDatabase.LoadAssetAtPath<Shader>("Assets/Resources/BattleMaterials/PowderWashAlpha.shader");
+            if (powder == null || powderShader == null || powder.shader != powderShader ||
+                powderShader.name != "PowerAboveAll/PowderWashAlpha" || !powder.HasProperty("_MainTex") ||
+                !powder.HasProperty("_Color") || powder.FindPass("POWDER_WASH") < 0 || powder.renderQueue != 3000)
+                throw new BuildFailedException("Missing explicit powder alpha material, texture/tint properties or render pass.");
+
             UnityEngine.Object settings = GraphicsSettings.GetGraphicsSettings();
             var graphics = new SerializedObject(settings);
             SerializedProperty shaders = graphics.FindProperty("m_AlwaysIncludedShaders");
@@ -88,7 +96,7 @@ namespace PowerAboveAll.Editor
             // Shader listesi kaynakta tanımlıdır; derleme sırasında ProjectSettings değiştirilmez.
             if (!standardIncluded)
                 throw new BuildFailedException("Standard must be included in ProjectSettings/GraphicsSettings.asset (m_AlwaysIncludedShaders).");
-            Debug.Log("Player render resources verified: Standard retention and explicit opaque/fade/emission material references.");
+            Debug.Log("Player render resources verified: Standard retention, opaque/fade/emission references and dedicated powder alpha pass.");
         }
     }
 

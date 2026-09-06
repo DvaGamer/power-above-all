@@ -62,6 +62,14 @@ $journeyPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'long-campaign.script')
 Check ($journeyPlan.Captures.Count -eq 12 -and $journeyPlan.Assertions -gt 25 -and $journeyPlan.States.Count -eq 4) 'Long campaign review parses six-week evidence and save assertions'
 $tacticalPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'tactical-campaign.script')
 Check ($tacticalPlan.Captures.Count -eq 9 -and $tacticalPlan.States.Count -eq 8 -and $tacticalPlan.Assertions -ge 12) 'Natural tactical review includes all battle snapshots and return assertion in receipt plan'
+foreach ($victoryScript in @('victory-campaign.script', 'victory-recognize.script')) {
+  $victoryPlan = Get-ReviewPlan (Join-Path $PSScriptRoot $victoryScript)
+  Check ($victoryPlan.Captures.Count -eq 13 -and $victoryPlan.States.Count -eq 12 -and $victoryPlan.Assertions -ge 25) "Natural victory decision receipt includes combat, pending load and committed save evidence: $victoryScript"
+}
+$badVictory = Fixture 'injected-victory.script' "new`nexpect HasPendingVictory True`nvictory bonus 0`nshot sample`nquit"
+Reject { Get-ReviewPlan $badVictory } 'Decision review cannot override the domain-computed price'
+$badPending = Fixture 'ambiguous-victory.script' "new`nexpect HasPendingVictory maybe`nshot sample`nquit"
+Reject { Get-ReviewPlan $badPending } 'Ambiguous pending-offer expectation is rejected before a natural battle runs'
 $badBattle = Fixture 'invalid-battle.script' "new`nexpect Week 0`nbattle finish true`nshot sample`nquit"
 Reject { Get-ReviewPlan $badBattle } 'Review grammar cannot inject a battle outcome'
 $badWait = Fixture 'unbounded-battle.script' "new`nexpect Week 0`nbattle wait ended 121`nshot sample`nquit"

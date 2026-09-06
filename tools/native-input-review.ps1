@@ -9,10 +9,16 @@ param(
     [double]$Y = 0,
     [ValidateSet('Enter', 'Escape', 'Right', 'Left', 'Space', 'Digit1', 'Digit2', 'Digit3', 'Digit4')][string]$Key = 'Enter',
     [ValidateRange(-10, 10)][int]$Wheel = 0,
+    [ValidateRange(180, 300)][int]$PlayerTimeoutSeconds = 180,
     [switch]$VisiblePlayer
 )
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'native-input-owner.ps1') -PlayerPath $PlayerPath -VisiblePlayer:$VisiblePlayer
+trap {
+    [Console]::Out.WriteLine('Native input review failed: ' + $_.Exception.Message)
+    [Console]::Out.WriteLine([string]$_.ScriptStackTrace)
+    exit 1
+}
+. (Join-Path $PSScriptRoot 'native-input-owner.ps1') -PlayerPath $PlayerPath -VisiblePlayer:$VisiblePlayer -PlayerTimeoutSeconds $PlayerTimeoutSeconds
 $repo = Split-Path -Parent $PSScriptRoot
 $reviewRoot = [IO.Path]::GetFullPath((Join-Path $repo 'output\verify')) + '\'
 Add-Type @'
@@ -51,8 +57,8 @@ if ($Action -eq 'Start') {
     [IO.File]::Copy($ScriptPath, $scriptCopy, $false)
     $plan = Get-ReviewPlan $scriptCopy
     if ($plan.Captures[0] -ne '00-start.png') { throw 'Native review needs 00-start as its first capture.' }
-    $nativeArgs = ((Get-NativeOwnerArguments $PlayerPath $out) | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
-    # Tek gizli sahip, orijinal player handle'ini tutar ve en gec 240 saniyede raporlar.
+    $nativeArgs = ((Get-NativeOwnerArguments $PlayerPath $out $PlayerTimeoutSeconds) | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
+    # Tek gizli sahip, orijinal handle'i tutar; oyuncu butcesi +60 saniyede raporlar.
     # Ebeveyn cikinca kapanacak yonlendirilmis boru acma; sahip kendi raporunu yazar.
     $owner = Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList $nativeArgs -WorkingDirectory $repo -WindowStyle Hidden -PassThru
     $ReceiptPath = Join-Path $out 'owned-process.json'

@@ -50,6 +50,8 @@ namespace PowerAboveAll
         // v1/v2 arşivleri bu iki alanı taşımaz; v3 wire sözleşmesi varlıklarını ayrıca doğrular.
         [System.Runtime.Serialization.OptionalField] public string AccordRegionId = "";
         [System.Runtime.Serialization.OptionalField] public int AccordUntilWeek;
+        // v4 arşivinde zorunlu; eski zaferler yeni bir tercih üretmez.
+        [System.Runtime.Serialization.OptionalField] public string PendingVictoryId = "";
         // JsonUtility boş sınıfı örnekleyebilir; boş liste ise gerçek yokluğu korur.
         [System.Runtime.Serialization.OptionalField] public List<MandateObligation> Mandates;
         public MandateObligation Obligation
@@ -233,6 +235,7 @@ namespace PowerAboveAll
         private static void Travel(CampaignState s,string id,bool battle)
         {
             var r=Region(s,id);var arrival=TravelProjection(s,id);
+            s.PendingVictoryId="";
             s.Food=arrival.FoodAfter;s.MilitarySupplies=arrival.MilitarySuppliesAfter;
             s.Supply=arrival.Supply;s.Fatigue=arrival.Fatigue;s.Morale=arrival.Morale;s.Moves=arrival.MovesAfter;
             if(arrival.Difficult){r.Unrest=Clamp(r.Unrest+2);r.Control=Clamp(r.Control-2);}
@@ -260,6 +263,7 @@ namespace PowerAboveAll
                 s.ArmyRegionId=target;r.Unrest=Clamp(r.Unrest-22);r.Control=Clamp(r.Control+12);
                 Faction(s,"urban").Approval=Clamp(Faction(s,"urban").Approval-3);army.Approval=Clamp(army.Approval+4);
                 general.Ambition=Clamp(general.Ambition+3);general.Relationship=Clamp(general.Relationship+2);s.Power=Clamp(s.Power+4);
+                s.PendingVictoryId=battleId;
             }
             else {r.Unrest=Clamp(r.Unrest+5);army.Approval=Clamp(army.Approval-6);general.Relationship=Clamp(general.Relationship-4);s.Power=Clamp(s.Power-6);}
             return Record(s,won?"log.battle.victory":"log.battle.defeat","region."+target,N(casualties),N(s.Troops));
@@ -294,6 +298,7 @@ namespace PowerAboveAll
             if(s.PendingPetition)return Result(false,"error.petition.pending");
             if(MandateDue(s))return Result(false,"error.mandate.due");
             if(s.Week>=MaximumWeek)return Result(false,"error.week.limit");
+            s.PendingVictoryId="";
             var f=Forecast(s);bool hunger=(long)s.Food+f.NetFood<0,unpaid=(long)s.Gold+f.NetGold<0;
             int materials=(s.Troops>0||s.MilitarySupplies<120)&&!unpaid?18:0,materialUse=(int)Math.Ceiling(s.Troops/120d);
             bool unequipped=(long)s.MilitarySupplies+materials<materialUse;
@@ -333,6 +338,7 @@ namespace PowerAboveAll
             ValidateBase(s);
             ValidateRoleState(s);
             ValidateRegionalAccordState(s);
+            ValidateVictoryDecisionState(s);
         }
         internal static void ValidateBase(CampaignState s)
         {

@@ -1,0 +1,71 @@
+# Gercek topcu aimed volley: ortak emir yolu ve normal simulation tick'i.
+# Tum oyuncu ranged birlikleri hold fire; cephane farki ve duman kareleri sonradan incelenir.
+# Tek volley vardir. Bu fixture reddedilen/double-click emirleri otomatik test ettigini iddia etmez.
+new
+lang ru
+select champagne
+expect ResolvedBattleCount 0
+march
+battle wait active 5
+battle pause on
+battle select 1 replace
+battle select 2 add
+battle formation line
+battle fire hold
+battle move -8 0
+battle select 3 replace
+battle formation column
+battle move -10 10
+battle select 4 replace
+battle fire hold
+battle move 14 -6
+battle state 00-deployment
+shot 00-start
+battle pause off
+battle wait arrived 45
+battle wait volley-ready 30
+expect BattleSelectionArrived True
+expect BattleCanVolley True
+battle pause on
+battle state 01-before-shot-paused
+shot 01-before-shot-paused
+wait 0.75
+battle state 02-pause-held
+expect BattlePaused True
+expect BattleHasOutcome False
+shot 02-pause-held
+battle pause off
+battle wait volley-ready 5
+battle state 03-before-accepted-order
+battle volley
+wait 0.12
+battle pause on
+battle state 04-early-clouds
+expect BattlePaused True
+expect BattleHasOutcome False
+shot 04-early-clouds
+wait 0.75
+battle state 05-clouds-pause-held
+shot 05-clouds-pause-held
+battle pause off
+wait 1.1
+battle pause on
+battle state 06-developed-clouds
+expect BattlePaused True
+shot 06-developed-clouds
+battle pause off
+wait 6.5
+battle pause on
+battle state 07-clouds-cleared-candidate
+expect BattlePaused True
+expect BattleHasOutcome False
+shot 07-clouds-cleared-candidate
+# Asagidaki kapanis gercek retreat/rapor aktarimidir; dogal zafer iddiasi yoktur.
+retreat
+accept
+battle verify-return
+expect BattleActive False
+expect ResolvedBattleCount 1
+state 08-campaign-return
+shot 08-campaign-return
+quit

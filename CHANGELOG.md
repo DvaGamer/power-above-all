@@ -4,6 +4,13 @@
 
 ### 6 Eylül 2026 — gece kontrol noktaları
 
+- Gerçek zafer sonrası isteğe bağlı siyasi karar: Dumas'nın girişimini tanıyarak orduyu toparlamak veya sağ kalan askerlere hükümet adına prim ödemek. Sadakat ve hırs siyasi bedeli belirler; eski savaş sonucu yalnız bir kez uygulanır. Yan yana RU/TR belge, Esc ile haritaya dönüş ve konseyden yeniden açma eklendi.
+- Arşiv v4 açık zafer teklifini saklar ve v1–v3 kayıtlarını taşır; v3 bölgesel anlaşmaları korunur. Faydasız prim reddedilir; uzun süreli sadakatle kazanılan ücretsiz komutan desteği korunur.
+- Duman ayrı alfa shader'ıyla yumuşak ve saydam çizilir. Opak dörtgen hatası giderildi; erken duman hâlâ hafiftir. Dumas portresinin komşu resimden gelen küçük parçası, kaynak PNG değiştirilmeden gösterim sınırından çıkarıldı.
+- Güncel tam kapı: 176 Unity testi, 21 PNG, 38 durum kontrolü, 21 JSON ve 10 tarayıcı testi. İki savaş dünyası art arda kuruldu; doğal zafer ve prim kayıtları önceki sonuçlarla aynı kaldı. Gerçek Esc/TR/RU/fare primi ayrıca native exit0 ile sınandı; ilk Start çağrısının açıklamasız ret sınırı NIGHT_REPORT içinde kayıtlıdır.
+
+### Önceki gece kontrol noktaları
+
 - Üç başlangıç rolü, ayrıcalık karşılığında süreli sözler ve hami güveni: temerrüt yeni yardımı kapatır, siyasi telafi erişimi geri açabilir; eski borç/bölgesel sonuçlar korunur.
 - Bölgesel vergi tatili: dört gerçek gelir hesabında bir ilin vergisi bırakılır, direnç azalabilir ve orduya barışçıl geçiş açılabilir. Olağanüstü vergi sözleşmeyi bozar; v3arşiv v1/v2 kayıtlarını açıkça taşır.
 - Guaj atlas ve tepe, 12 şehir silueti, 4 kurgusal portre ve doğal yol–sığ geçit bağlantısı; açık mat kâğıt ile koyu mürekkep paleti. İşe alımın haftalık ek gideri ve RU/TR yardım metni okunur.

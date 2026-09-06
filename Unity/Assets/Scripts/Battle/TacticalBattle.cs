@@ -78,7 +78,9 @@ namespace PowerAboveAll
         readonly List<Material> materials = new List<Material>();
         readonly List<Mesh> meshes = new List<Mesh>();
         readonly List<Texture2D> hudTextures = new List<Texture2D>();
-        Texture2D meadowPainting;
+        Texture2D meadowPainting, powderMask;
+        Mesh powderMesh;
+        bool powderDiagnosticsLogged;
         readonly Vector3 convoy = new Vector3(4, 0, 3);
         Camera battleCamera;
         BattleSetup setup;
@@ -142,6 +144,9 @@ namespace PowerAboveAll
             foreach (Mesh mesh in meshes) if (mesh != null) ReleaseObject(mesh);
             foreach (Texture2D texture in hudTextures) if (texture != null) ReleaseObject(texture);
             if (meadowPainting != null) ReleaseObject(meadowPainting); meadowPainting = null;
+            if (powderMask != null) ReleaseObject(powderMask); powderMask = null;
+            powderMesh = null;
+            powderDiagnosticsLogged = false;
             materials.Clear(); meshes.Clear(); regiments.Clear(); selected.Clear(); effects.Clear();
             hudTextures.Clear(); bodyStyle = titleStyle = smallStyle = cardStyle = buttonStyle = null;
             chosenButtonStyle = inkSmallStyle = inkCardStyle = null;
@@ -265,11 +270,12 @@ namespace PowerAboveAll
                     float life = age / effect.Lifetime;
                     effect.Object.transform.position = effect.Start + effect.Drift * age + Vector3.up * (.12f * age * age);
                     effect.Object.transform.localScale = effect.Scale * (.42f + age * .72f);
-                    effect.Object.transform.rotation = Quaternion.Euler(age * 7, age * 12 + effect.Start.x * 19, age * 4);
-                    Color color = new Color(.82f, .81f, .74f, Mathf.Min(1, age * 12) * .34f * Mathf.Pow(1 - life, .85f));
+                    float tilt = Mathf.Sin(effect.Start.x * 1.7f + effect.Start.z * .6f) * 9;
+                    effect.Object.transform.rotation = battleCamera.transform.rotation * Quaternion.Euler(0, 0, tilt + age * 4);
+                    Color color = new Color(.96f, .95f, .88f, Mathf.Min(1, age * 12) * .46f * Mathf.Pow(1 - life, .85f));
                     smokeProperties.SetColor("_Color", color);
-                    smokeProperties.SetColor("_BaseColor", color);
                     effect.Renderer.SetPropertyBlock(smokeProperties);
+                    if (L.IsReviewSession && !powderDiagnosticsLogged) LogPowderRenderer(effect.Renderer);
                 }
             }
         }
@@ -470,12 +476,91 @@ namespace PowerAboveAll
             leafLight = MakeMaterial("Orchard sunlit crown", Paint(0x71936B));
             water = MakeMaterial("Shallow creek", Paint(0x83B0B6));
             gold = MakeMaterial("Convoy brass", Paint(0xCAB36F));
-            smoke = MakeMaterial("Powder smoke", new Color(.82f, .81f, .73f, .42f), true);
+            Material powderTemplate = Resources.Load<Material>("BattleMaterials/PowderWash");
+            if (powderTemplate == null || powderTemplate.shader == null ||
+                powderTemplate.shader.name != "PowerAboveAll/PowderWashAlpha" || !powderTemplate.shader.isSupported)
+                throw new InvalidOperationException("Powder smoke alpha render resource is missing or unsupported.");
+            smoke = new Material(powderTemplate) { name = "Powder smoke", color = new Color(.96f, .95f, .88f, .46f) };
+            materials.Add(smoke);
+            powderMask = CreatePowderMask(); smoke.mainTexture = powderMask;
+            powderMesh = CreatePowderMesh();
             flash = MakeMaterial("Brief powder flash", new Color(1, .80f, .36f), false, true);
             flash.EnableKeyword("_EMISSION"); flash.SetColor("_EmissionColor", new Color(1, .62f, .18f) * 1.5f);
             blueRing = MakeMaterial("Friendly formation marker", Paint(0x5F8DA5));
             redRing = MakeMaterial("Opposing formation marker", Paint(0xC98270));
             orderInk = MakeMaterial("Field order brass", Paint(0xCAB36F));
+        }
+
+        Texture2D CreatePowderMask()
+        {
+            // Üç geniş leke tek iz oluşturur; savaşın rastgele sayı dizisine dokunmaz.
+            const int width = 64, height = 32;
+            Vector4[] lobes = {
+                new Vector4(-.30f, -.10f, .59f, .55f),
+                new Vector4(.18f, .13f, .56f, .48f),
+                new Vector4(.64f, .22f, .28f, .28f)
+            };
+            Color[] pixels = new Color[width * height];
+            for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+            {
+                float u = x / (width - 1f), v = y / (height - 1f), coverage = 0;
+                foreach (Vector4 lobe in lobes)
+                {
+                    float dx = (u * 2 - 1 - lobe.x) / lobe.z, dy = (v * 2 - 1 - lobe.y) / lobe.w;
+                    float wash = Mathf.SmoothStep(0, 1, Mathf.Clamp01(1 - dx * dx - dy * dy)) * .9f;
+                    coverage = 1 - (1 - coverage) * (1 - wash);
+                }
+                Color tone = Color.Lerp(new Color(.90f, .94f, .90f), new Color(1, .99f, .94f), v);
+                pixels[y * width + x] = new Color(tone.r, tone.g, tone.b, coverage * .66f);
+            }
+            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, true) {
+                name = "Gouache powder wash", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear
+            };
+            texture.SetPixels(pixels); texture.Apply(true, true); return texture;
+        }
+
+        Mesh CreatePowderMesh()
+        {
+            Mesh mesh = new Mesh { name = "Shared powder wash" };
+            mesh.vertices = new[] {
+                new Vector3(-.55f, -.55f, 0), new Vector3(-.55f, .55f, 0),
+                new Vector3(.55f, .55f, 0), new Vector3(.55f, -.55f, 0)
+            };
+            mesh.uv = new[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0) };
+            mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+            mesh.RecalculateNormals(); mesh.RecalculateBounds(); meshes.Add(mesh); return mesh;
+        }
+
+        GameObject CreatePowderCloud(Vector3 position)
+        {
+            GameObject cloud = new GameObject("Powder wash");
+            cloud.transform.SetParent(world.transform, false);
+            cloud.transform.localPosition = position; cloud.transform.localScale = Vector3.one * .4f;
+            cloud.AddComponent<MeshFilter>().sharedMesh = powderMesh;
+            MeshRenderer renderer = cloud.AddComponent<MeshRenderer>(); renderer.sharedMaterial = smoke;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+            return cloud;
+        }
+
+        void LogPowderRenderer(Renderer renderer)
+        {
+            powderDiagnosticsLogged = true;
+            Material material = renderer.sharedMaterial;
+            Texture texture = material.mainTexture;
+            MaterialPropertyBlock actual = new MaterialPropertyBlock(); renderer.GetPropertyBlock(actual);
+            Debug.Log("Powder render diagnostic: shader=" + material.shader.name +
+                "; supported=" + material.shader.isSupported + "; material=" + material.name +
+                "; texture=" + (texture == null ? "null" : texture.name + "/" + texture.width + "x" + texture.height) +
+                "; keywords=" + string.Join(",", material.shaderKeywords) + "; queue=" + material.renderQueue +
+                "; renderType=" + material.GetTag("RenderType", false) + "; pass=" + material.GetPassName(0) +
+                "; mode=" + (material.HasProperty("_Mode") ? material.GetFloat("_Mode").ToString() : "absent") +
+                "; src=" + (material.HasProperty("_SrcBlend") ? material.GetFloat("_SrcBlend").ToString() : "absent") +
+                "; dst=" + (material.HasProperty("_DstBlend") ? material.GetFloat("_DstBlend").ToString() : "absent") +
+                "; zwrite=" + (material.HasProperty("_ZWrite") ? material.GetFloat("_ZWrite").ToString() : "absent") +
+                "; hasMainTex=" + material.HasProperty("_MainTex") + "; hasColor=" + material.HasProperty("_Color") +
+                "; materialColor=" + material.color + "; propertyColor=" + actual.GetColor("_Color") +
+                "; propertyTexture=" + (actual.GetTexture("_MainTex") == null ? "inherited" : actual.GetTexture("_MainTex").name));
         }
 
         Texture2D PaintMeadow()
@@ -915,7 +1000,7 @@ namespace PowerAboveAll
                 float lateral = cannon ? i * 3 - 1.5f : (i - 2) * 1.35f;
                 Vector3 start = regiment.Root.transform.position + regiment.Root.transform.right * lateral + regiment.Root.transform.forward * (cannon ? 2.7f : 1) + Vector3.up * (cannon ? .85f : 1);
                 Vector3 end = target.Root.transform.position + Vector3.up;
-                GameObject cloud = Primitive("Powder cloud", PrimitiveType.Sphere, world.transform, start, Vector3.one * .4f, smoke);
+                GameObject cloud = CreatePowderCloud(start);
                 cloud.SetActive(false);
                 effects.Add(new Puff { Object = cloud, Start = start, Born = visualClock, Lifetime = cannon ? 5.2f : 4.1f,
                     Delay = i * .012f, Drift = new Vector3(.48f + i * .055f, .12f, .13f),

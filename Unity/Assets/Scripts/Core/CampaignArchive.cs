@@ -12,7 +12,7 @@ namespace PowerAboveAll
     // Dosya işlemi yapmaz. Eski arşiv geçişi ve yeni arşiv doğrulaması tek yerde tutulur.
     public static class CampaignArchive
     {
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
 
         [Serializable] private sealed class Envelope
         {
@@ -30,6 +30,16 @@ namespace PowerAboveAll
         {
             [DataMember(IsRequired = true)] public string AccordRegionId = null;
             [DataMember(IsRequired = true)] public int AccordUntilWeek = 0;
+        }
+
+        [DataContract] private sealed class RequiredVictoryEnvelope
+        {
+            [DataMember(IsRequired = true)] public RequiredVictoryState State = null;
+        }
+
+        [DataContract] private sealed class RequiredVictoryState
+        {
+            [DataMember(IsRequired = true)] public string PendingVictoryId = null;
         }
 
         public static string Serialize(CampaignState state, bool prettyPrint = true)
@@ -53,27 +63,40 @@ namespace PowerAboveAll
             {
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
                     envelope = (Envelope)new DataContractJsonSerializer(typeof(Envelope)).ReadObject(stream);
-                if (envelope != null && envelope.Version == CurrentVersion)
+                if (envelope != null && envelope.Version >= 3)
                     using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
                     {
                         var required = (RequiredAccordEnvelope)new DataContractJsonSerializer(typeof(RequiredAccordEnvelope)).ReadObject(stream);
                         if (required == null || required.State == null || required.State.AccordRegionId == null)
                             throw new SerializationException("Missing required regional accord data.");
                     }
+                if (envelope != null && envelope.Version >= 4)
+                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var required = (RequiredVictoryEnvelope)new DataContractJsonSerializer(typeof(RequiredVictoryEnvelope)).ReadObject(stream);
+                        if (required == null || required.State == null || required.State.PendingVictoryId == null)
+                            throw new SerializationException("Missing required victory decision data.");
+                    }
             }
             catch (Exception error) when (IsArchiveReadError(error))
             {
                 throw new ArgumentException("Invalid campaign archive.", nameof(json), error);
             }
-            if (envelope == null || envelope.State == null || (envelope.Version != 1 && envelope.Version != 2 && envelope.Version != CurrentVersion))
+            if (envelope == null || envelope.State == null || envelope.Version < 1 || envelope.Version > CurrentVersion)
                 throw new ArgumentException("Unsupported campaign archive.", nameof(json));
             var state = envelope.State;
-            if (envelope.Version < CurrentVersion)
+            if (envelope.Version < 3)
             {
                 if (!string.IsNullOrEmpty(state.AccordRegionId) || state.AccordUntilWeek != 0)
                     throw new ArgumentException("Invalid regional accord data in an older archive.", nameof(json));
                 state.AccordRegionId = "";
                 state.AccordUntilWeek = 0;
+            }
+            if (envelope.Version < 4)
+            {
+                if (!string.IsNullOrEmpty(state.PendingVictoryId))
+                    throw new ArgumentException("Invalid victory decision data in an older archive.", nameof(json));
+                state.PendingVictoryId = "";
             }
             if (envelope.Version == 1)
             {

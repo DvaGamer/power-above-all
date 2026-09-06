@@ -44,3 +44,9 @@ Başlangıç dört dünya konumu X=-24,-8,8,24; Z=-18'dir. Hedefler yakındaki g
 - AutoShots mevcut beklenti dili, ayrı birliğin Id/düzen/hedef alanları için doğrudan `expect` sunmaz. Bu ayrıntılar burada açıkça root/ajan JSON incelemesi olarak bırakılır; scriptin toplam PASS sonucu tüm seçim/düzen ayrıntılarının otomatik kontrol edildiği şeklinde sunulmaz.
 - `03-after-return.json` gerçek retreat sonrasında kampanya durumudur. `battle verify-return`, gözlenen rapordaki kayıp/moral/malzeme ve çözülmüş battleId aktarımını sınar. Bu kapanış taktik zafer denemesi değildir.
 - Yeni native sahibi gerçek native çıkış0, scriptin tüm assertion/artifact sonuçları ve gerçek kare kontrolleri birlikte geçince yalnız PARTIAL yazar. Unity test/build/browser bu çalışmada atlanır. Önceki veya başarısız çıktılar değiştirilmez.
+
+## İkinci gerçek koşuda Digit4→Digit1 kanıtı
+
+`native-input-20260906-003635-cf3cced5`, `accord-layout-final-20260906-002826-992-56dba0b4` oyuncusunda tamamlandı: native0, timeoutfalse,100.4s,13assert/4PNG/5JSON ve gerçek kare kontrolü PASS; raporPARTIAL. Root başlangıçta açıkça Digit4 sonra Digit1 gönderdi ve `Temp03-37-04.png` topçu seçimini, `Temp03-37-05.png` piyadeye dönüşü gösteren iki ara görüntüyü açıp doğruladı. Bu, ikinci koşunun kanıtıdır; ilk koşunun idempotent Digit1 sınırı geriye dönük silinmez.
+
+Bu ajan01/02 JSON ve native/result makbuzlarını salt okunur kontrol etti.01'de pausedtrue/elapsed20.59997, yalnız Id3 seçili; dört oyuncu birliği hâlâ ilk konumunda ve Movingtrue. Beklenen Column/Square/Column/Line düzenleri ve X hedefleri−17.89322/−6.26263/8.05195/21.47186, ortak Z−20.25765 doğrulandı.02'de pausedfalse/elapsed31.19981, aynı hedefler, bütün Movingfalse ve SelectedIds[3]; tüm birlikler hedeflerine0.3 dünya biriminden yakın. Gerçek Space devamı yaklaşık10.59984 simülasyon saniyesi bırakmış ve hareket tamamlanmıştır. Shift ve manuel volley bu koşunun kapsamına eklenmez.

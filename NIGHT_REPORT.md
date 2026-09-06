@@ -1,46 +1,41 @@
 # Gece geliştirme raporu — çalışma sürüyor
 
-Çalışma aralığı: 6 Eylül 2026 İstanbul 00:22–10:22. Kullanıcı daha erken durdurursa veya yeni yön verirse buna uyulur. Bu belge ara rapordur; on saatin tamamlandığı veya bütün vizyonun uygulandığı iddia edilmez.
+Güncelleme: 6 Eylül 2026, 01:38 UTC. On saatlik görev **07:22:03 UTC / 10:22 İstanbul** saatine kadar aktiftir. Bu bir ara rapordur; uzun vadeli vizyonun tamamlandığı anlamına gelmez.
 
-## Doğrulanmış kontrol noktası
+## Çalışan sürüm
 
-- **00:33 UTC güncel:** son başlatılabilir Windowsbuild `accord-layout-final-20260906-002826-992-56dba0b4`, GREEN128Unity/4PNG7kontrol1JSON/10tarayıcı/141dosya. Ana sözleşme rotası `regional-accord-20260906-002323-844-cee27fbb` ayrıca GREEN128/14PNG36kontrol6JSON. Vergi tatili dört gerçek hesap boyunca gelirden vazgeçer; Champagne'ye savaşsız ama masraflı geçiş sağlar; erken vergi Morel/temsilciler/kişisel iktidarı etkiler, ilk tekrar tarihi arşivde kalır. Role ait eski söz ayrı işler. Ayrı7politika×12haftaCoreincelemesi1327kontrolPASS; uzun vadede tutulan anlaşma güçlü bir sivil seçenek, son denge hükmü değil.
-- Root ve görsel ajan teklif, imza, ekonomi, Paris'teki bütün emirler ve başka bölge seçiliyken asıl sözleşme bölgesini RU/TR gördü. Kesirli kontrol göstergesi 60,5→63,5 olarak düzeltildi. Yardım iki dilde tamamen sığar; işe alım +200 asker için ek 17 livre/7 erzak haftalık gideri önceden gösterir. Sığ geçidin ve tepenin tonu mevcut paleti korur.
-- Aynı kaynak kesitinin doğal savaşı `accord-ford-natural-20260906-002505-474-25aa327c` PARTIAL/native0,9PNG15kontrol8JSON:125.803s zafer/196kayıp/+24teçhizat, önceki sonuçla aynı. Gerçek Windows mouse/Space/düzen/rakam2–4 yolu `native-input-20260906-000936-3ea85fdc` PARTIAL/native0,13kontrol4PNG5JSON. Rakam1 baştan seçili olduğu için o tuşun ayrı geçişi ve Shift/manuelvolley bu koşuda kanıtlanmadı. İnsan kaydı00:32UTCaynıSHA256'da.
+[PLAY_GAME.cmd](PLAY_GAME.cmd) son doğrulanmış Windows oyununu açar. `node play-game.cjs --check` oyunu başlatmadan seçilen yolu ve dosya bütünlüğünü gösterir.
 
-- **23:53 UTC:** `hill-natural-victory-20260905-234734-753-1141ea63` ayrıca GREEN92Unity/9PNG/15kontrol/8JSON/10tarayıcı; zafer açık kabul koşulu oldu ve aynı125,8s/196kayıp/+24sonucu doğdu. Root ve görsel ajan gerçek tepe ışık/gölgesini kabul etti. `native-input-20260905-235035-73515bcc` gerçek mouse/ok/Enter/koşullara kaydırma incelemesi nativeexit0 ve4kontrol/2PNG/1JSON ilePARTIAL; bu yeniden kullanılan build incelemesidir. Önceki native ok tuşu hatası araçtaki scan/extended kodlaması düzeltilince çözüldü; eski RED çıktısı korundu.
+Son tam kapı: [military-art-final raporu](output/verify/military-art-final-20260906-012710-424-48b0deff/REPORT.md), **GREEN**. 176 Unity testi, yeni Direct3D11 build, 21 gerçek PNG, 38 durum kontrolü, 21 JSON kaydı ve 10 tarayıcı testi geçti. Başlatıcı bu 141 dosyalık build'i `complete-build` olarak seçti. Runtime SHA256: `fc1e21937ace6213b4f62fd20cd2e7727fe465ada5baa3e853f713ce61a4cff6`.
 
-- **23:36 UTC yeni iki kapı GREEN:** `tactical-trust-first-20260905-233324-829-3db06d4c` ve `patron-trust-journey-20260905-233615-111-60fec1ea`. Her biri92 Unity testi, taze DX11 build,10 tarayıcı testi ve141 dosya manifesti.
-- İlk gerçek taktik sonuç: normal seçim/hareket/düzen/ateş/nişanlı salvo emirleriyle125,8 saniyede konvoy zaferi;1200 kişiden196 kayıp,24 teçhizat.9 PNG/14 kontrol/8 JSON; rapor bir kez sefere geçti ve kayıt/yükleme eşit kaldı. Root RU raporunu gördü. Sonraki regresyon senaryosu artık açıkça zafer bekleyecek.
-- Güven rotası:20 haftada5 temerrüt, Valcourt ilişki0 iken avans reddi; siyasi sorumluluk Güç35→29/ilişki0→4; yeni avans ve22. haftada ödeme, ilişki8.6 PNG/15 kontrol/3 JSON. Root iki dilde ret ve telafi ekranını gördü. Eski bölgesel ve kurumsal kayıplar silinmedi.
--12 farklı şehir silueti yeni atlas RU/TR karelerinde okunuyor. Gerçek Windows fare/klavye yolu ile New/iptal/rol kartı/Enter kontrolü de görüldü; ilk bu yardımcı koşunun native çıkış kodu tutulmadığı için tam kapı sayılmadı.
-- İnsan kaydı SHA256 23:38 UTC hâlâ aynı.453 RU/TR girdisi anahtar/boş metin/yer tutucu denetimini geçti. Bu kayıtlar aşağıdaki önceki kontrol noktalarının üstündedir.
+## Oynanabilir değişiklikler
 
-- Dal `polish/unity-visual-feel`; sanat kontrol noktası `19e5fa8`. Yeni rol kesiti ayrı commit hazırlığındadır.
-- Son rol kapısı: `output/verify/roles-visible-20260905-230302-558-1717bcb0/REPORT.md` — **GREEN**.
-- 56/56 Unity EditMode testi, yeni Direct3D11 Windows player, 22 gerçek PNG, 29 durum kontrolü, 3 JSON durum kaydı ve 10/10 tarayıcı çekirdek testi.
-- Standard shader saklama ana kaynağa taşındı. Normal Windows build filigransız; development menüsü ayrı.
-- Güvenli doğrulama kullanıcı editörlerini kapatmaz, kişisel kaydı taşımaz; her koşu ayrı çıktı/kayıt dizini kullanır. Oyunun inceleme sırasında değiştirdiği dil/ses kalıcı kullanıcı tercihlerini etkilemez.
-- `PLAY_GAME.cmd` en yeni tamamı geçen derlemeyi seçer. `node play-game.cjs --check` oyunu açmadan yol ve kanıtı gösterir.
-- İnsan kaydı SHA256 aynı: `18f3c57d89161fc471bc0aa997c8266c01d50ba1def670cd476081f1f5f7b63e`.
+- Kampanya öncesi üç çalışma rolü seçilir. Her rol farklı bir hamiden yardım alır ve iki hafta içinde karşılık vermeyi taahhüt eder. Sözün ilk bölgesi, vadesi ve bedeli korunur. Tekrarlanan temerrüt kişinin güvenini tüketir; yeni yardım için siyasi telafi gerekir.
+- Morel aracılığıyla bir bölgeye dört haftalık vergi tatili verilebilir. Direnç azalırken gerçek vergi gelirinden vazgeçilir. Olağanüstü vergi bu anlaşmayı bozabilir; kişisel iktidar, ilişki ve temsilcilerin desteği etkilenir. Eski rol sözüyle birlikte çalışır.
+- Gerçek zaferden sonra iki isteğe bağlı karar görünür: Dumas'ya toparlanma yetkisi verip yorgunluğu azaltmak veya kalan askerlere hükümet adına prim ödemek. İlki generalin hırsını da artırır ve sadakat düşükse kişisel güç harcar. İkincisi gerçek hazineyle sadakat ve yerel denetim kurar. Olağan sonuçla devam etmek mümkündür.
+- Zafer belgesi iki seçeneği, bedelleri ve sonuçları yan yana gösterir. Esc yalnız pencereyi kapatır; teklif konseyden yeniden açılır. Ayrı ret düğmesi teklifi kapatır. Yeni hafta ek bir cevap kilidi getirmez.
+- Arşiv v4 açık ve kapanmış zafer kararlarını saklar. v1–v3 geçişleri, eski rol sözleri ve v3 bölgesel anlaşmaları için doğrulamalar vardır.
 
-## Uygulanan ve gerçek karelerde incelenen sanat paketi
+## Görsel dil ve savaş
 
-- Boyanmış atlas ve yaşayan minyatürler yönünde krem, adaçayı, mavi, mercan ve koyu mürekkep paleti.
-- Daha büyük savaş kadrajı; guaj arazi yüzeyi; daha doğal su kıyısı ve ağaç siluetleri; okunur polk ve emir kartları.
-- Atlas kaynak etiketleri ve devre dışı emirlerin okunurluğu; Lorraine etiket konumu; veriyle tutarlı harita renkleri ve lejant.
-- Dört ayrı kurgusal portre, mat dil kontrolleri, harita bağlamını koruyan kısa kâğıt sevk geçişi.
-- 141 dağıtım dosyasının hash manifesti; başlatıcı bütün dosyaları doğrular. Altı haftalık çekirdek testleri geçti; önceki build'de görünür DX11 ile altı hafta ve iki geri çekilme de tamamlandı. Yeni rol kaynaklarında eski rotalar ayrıca denetleniyor.
+Krem kâğıt, adaçayı yeşili, açık mavi, mercan ve koyu mürekkep birlikte kullanılır. Haritada on iki ayrı şehir silueti, guaj arazi ve kurgu kişilerin resimli portreleri bulunur. Savaş alanındaki tepe ve sığ geçit gerçek arazi kurallarıyla uyumludur.
 
-Root atlası, ekonomi sayfasını, dört portreyi, dilekçeyi, sevk geçişini, RU/TR savaş ve raporu gerçek PNG'lerde inceledi. Koyu kenar/gölge, 9 piksel eski atlas kalıntısı ve Rusça başlık taşması düzeltildi. Portre varlığının kökeni ve üretim istemi [ART_ASSETS.md](ART_ASSETS.md) içindedir.
+Duman için ayrı ve açık alfa geçişi kullanıldı. Önceki opak beyaz dörtgen hatası gerçek karelerde giderildi; son duman hafif bir izdir, erken evresi hâlâ zayıf görünür. Bu, bitmiş ve güçlü bir salvo gösterisi olarak sunulmaz. Dumas'nın yanındaki komşu portre kırıntısı yalnız gösterilen kaynak bölgesi daraltılarak kaldırıldı; resim dosyası ve ana siluetin ölçeği değiştirilmedi.
 
-## Bilinen sınırlar
+Aynı taktik adımda verilen atışlar birlikte çözülür. Cephanesiz piyade ve süvari yakın temasa girebilir. Gerçek oyuncu rotası 125,803 saniyede zafer, 196 kayıp ve 24 ele geçirilen teçhizat verdi; bu her oyuncunun sonucu için garanti değildir. Yeni birleşik koşuda iki savaş dünyası art arda kurulup kapandı ve eski nesneler yeni karşılaşmaya taşınmadı.
 
-- Üç çalışma rolü ve ayrıcalık/söz döngüsü uygulandı: saray avansı, meclis tahıl sözü, ordunun zor alımı. Kazanç, vade, ödeme ve ihlal bedelleri imzadan önce görünür; sonuçlar kaynaklara, bölgelere, desteğe ve kişisel ilişkilere döner. Bu kesit tüm kariyer veya geniş alternatif tarih sisteminin tamamı değildir.
-- Doğal taktik zafer artık bir gerçek rota üzerinde görüldü. Bütün taktik planlar, kötü hazırlıklar ve tüm insan girdileri sınandı anlamına gelmez; yeni savaş regresyonu kapsamı yukarıda açıktır.
-- Ses kaynakları prosedürel taslaktır; dinlenmeden son ses kalitesi ilan edilmez.
-- Gizli oyun penceresi DX12'de screenshot hatası, DX11'de siyah kare üretti. Gerçek görüntü için önceki canlı önizleme izni kapsamındaki görünür test player kullanılır; test/editor/helper süreçleri gizli kalır. Siyah kareyi başarılı sayan bir istisna eklenmedi.
+## Kanıtlanan siyasi sonuçlar
 
-## Sonraki inceleme
+1004 sağ kalan asker için prim **84 livre** oldu: hazine840→756, Dumas sadakati60→65, Champagne denetimi70,5→73,5. Başka bir bölge seçmek ödülün yerini değiştirmedi. Önceki açık teklif ile yüklenen kayıt, ayrıca ödenmiş sonuç ile iki ayrı yükleme birebir eşitti.
 
-Sıradaki kesit kişisel iktidarın askerî başarıdan nasıl etkilendiği için üç ayrı kavramın değerlendirilmesidir; henüz seçilmiş/uygulanmış yeni bir sistem yoktur. Görsel tarafta en zayıf kalan savaş geri bildirimi ayrı gerçek karelerle ele alınacak. Sabah açılacak build ve üç inceleme noktası son kontrol noktasına göre güncellenecek; görev07:22UTC'ye kadar sürüyor.
+Ayrı gerçek zaferde yetki verme **güç59→55, yorgunluk35→23, ilişki52→56, hırs83→86** üretti; hazine840 kaldı. Bu kayıt da aynı biçimde korundu. Yetki verildikten sonraki haftanın zorlu yürüyüşünde yorgunluk31 olur; olağan sonuçta43 olur. Bu karşılaştırma formül hesabıdır, ikinci bir savaş sonucu iddiası değildir.
+
+Gerçek Windows girdisi [native-victory kaydında](Unity/WorkNotes/native-victory-input.md) incelendi: Esc, konseyden yeniden açma, TR/RU seçimi ve prim düğmesine fare tıklaması. Sahipli süreç native exit0 ile ve süre aşımı olmadan kapandı. Yeniden kullanılan build nedeniyle sonuç PARTIAL'dır. İlk Start çağrısı açıklamasız exit1 döndürdü; aynı sürecin sonraki Inspect ve altı gerçek girdi çağrısı başarılıydı. Başlangıç hatasının nedeni kanıtlanmadı; sonraki hatalar için açık tanı çıktısı eklendi.
+
+## Kalan sınırlar
+
+Kesin rol kadrosu, kampanya sonu, görevden düşme sonrası devam ve geniş alternatif tarih yolları hâlâ [VISION.md](VISION.md) içindeki açık kararlardır. Yeni NPC girişimi yalnız tasarım önerisidir. Mevcut sayılar tarihsel istatistik olarak sunulmaz.
+
+Shift ile çoklu seçim ve elle nişanlı salvo bu son native pencere testinin kapsamı değildir. Sesin dinlenerek kalite kabulü tamamlanmış sayılmaz. Yeni dumanın erken okunurluğu ve sıkışık savaş etiketleri sonraki görsel iyileştirme alanlarıdır.
+
+Kullanıcının kişisel kayıt dosyası korunmuştur; son okunan SHA256 `18f3c57d89161fc471bc0aa997c8266c01d50ba1def670cd476081f1f5f7b63e`. Testler ayrı kayıt dizinleri kullandı. Eski güvensiz `tools/night.ps1` ve `tools/night-prompt.txt` çalıştırılmadı. Ayrıntılı tarihçe [NOTES.md](NOTES.md), devam noktası [SESSION_PROGRESS.md](SESSION_PROGRESS.md) içindedir.

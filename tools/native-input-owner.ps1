@@ -1,5 +1,6 @@
 # Gorunur inceleme oyuncusunun tek sahibi. Dot-source yalniz denetim islevlerini yukler.
-param([switch]$Run, [string]$PlayerPath, [string]$OutputDirectory, [switch]$VisiblePlayer)
+param([switch]$Run, [string]$PlayerPath, [string]$OutputDirectory, [switch]$VisiblePlayer,
+    [ValidateRange(180, 300)][int]$PlayerTimeoutSeconds = 180)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'verify-support.ps1')
 $nativeRepo = Split-Path -Parent $PSScriptRoot
@@ -63,8 +64,8 @@ function Get-NativePlayerArguments([string]$Folder) {
     return @('-shots', (Join-Path $Folder 'shots'), '-script', (Join-Path $Folder 'review.script'), '-logFile', (Join-Path $Folder 'player.log'), '-screen-width', '1440', '-screen-height', '900', '-screen-fullscreen', '0')
 }
 
-function Get-NativeOwnerArguments([string]$Player, [string]$Folder) {
-    return @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $nativeOwnerScript, '-Run', '-PlayerPath', $Player, '-OutputDirectory', $Folder, '-VisiblePlayer')
+function Get-NativeOwnerArguments([string]$Player, [string]$Folder, [ValidateRange(180, 300)][int]$PlayerTimeoutSeconds = 180) {
+    return @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $nativeOwnerScript, '-Run', '-PlayerPath', $Player, '-OutputDirectory', $Folder, '-VisiblePlayer', '-PlayerTimeoutSeconds', [string]$PlayerTimeoutSeconds)
 }
 
 function Assert-NativeCommandLine([string]$CommandLine, [string[]]$Expected) {
@@ -82,7 +83,11 @@ function Assert-NativeReceiptLayout($Record, [string]$Receipt) {
     $player = Assert-NativeReviewPath $Record.playerPath
     if ($Record.launchedBy -ne 'PowerAboveAllNativeReview2' -or $receiptFull -ne (Join-Path $folder 'owned-process.json')) { throw 'Receipt is not the original owned native review record.' }
     if ($Record.scriptPath -ne (Join-Path $folder 'review.script') -or $Record.ownerScript -ne $nativeOwnerScript -or $Record.ownerPath -ne (Join-Path $PSHOME 'powershell.exe')) { throw 'Receipt script or owner provenance differs from this tool.' }
-    if ($Record.playerTimeoutSeconds -ne 180 -or $Record.ownerTimeoutSeconds -ne 240 -or $Record.processId -le 0 -or $Record.ownerProcessId -le 0 -or $Record.processId -eq $Record.ownerProcessId) { throw 'Receipt owner identity or lifetime is invalid.' }
+    $playerSeconds = $Record.playerTimeoutSeconds
+    $ownerSeconds = $Record.ownerTimeoutSeconds
+    if (($playerSeconds -isnot [int] -and $playerSeconds -isnot [long]) -or ($ownerSeconds -isnot [int] -and $ownerSeconds -isnot [long]) -or
+        $playerSeconds -lt 180 -or $playerSeconds -gt 300 -or $ownerSeconds -ne ($playerSeconds + 60) -or
+        $Record.processId -le 0 -or $Record.ownerProcessId -le 0 -or $Record.processId -eq $Record.ownerProcessId) { throw 'Receipt owner identity or lifetime is invalid.' }
     $data = Join-Path (Split-Path -Parent $player) (([IO.Path]::GetFileNameWithoutExtension($player)) + '_Data')
     if ($Record.assemblyPath -ne (Join-Path $data 'Managed\PowerAboveAll.Runtime.dll')) { throw 'Receipt runtime assembly path differs from the launched player.' }
     foreach ($path in @($Record.scriptPath, $Record.assemblyPath)) { $null = Assert-NativeReviewPath $path }
@@ -112,11 +117,11 @@ function Get-NativeOwnedPlayer([string]$Receipt) {
     $record = [IO.File]::ReadAllText($receiptFull) | ConvertFrom-Json
     $folder = Assert-NativeReceiptLayout $record $receiptFull
     if ((Test-Path -LiteralPath (Join-Path $folder 'native-exit.json')) -or (Test-Path -LiteralPath (Join-Path $folder 'result.json'))) { throw 'Native review has ended; no further input is allowed.' }
-    if ([DateTime]::UtcNow -gt ([DateTime]::Parse($record.ownerStartUtc).ToUniversalTime().AddSeconds(240))) { throw 'Native review owner deadline has elapsed.' }
+    if ([DateTime]::UtcNow -gt ([DateTime]::Parse($record.ownerStartUtc).ToUniversalTime().AddSeconds($record.ownerTimeoutSeconds))) { throw 'Native review owner deadline has elapsed.' }
     foreach ($pair in @(@($record.playerPath, $record.playerSha256), @($record.assemblyPath, $record.assemblySha256), @($record.scriptPath, $record.scriptSha256), @($record.ownerScript, $record.ownerSha256))) {
         if ((Get-FileHash -LiteralPath $pair[0] -Algorithm SHA256).Hash -ne $pair[1]) { throw "Review provenance file changed: $($pair[0])" }
     }
-    $owner = Assert-NativeLiveProcess $record.ownerProcessId $record.ownerStartUtc $record.ownerPath (Get-NativeOwnerArguments $record.playerPath $folder)
+    $owner = Assert-NativeLiveProcess $record.ownerProcessId $record.ownerStartUtc $record.ownerPath (Get-NativeOwnerArguments $record.playerPath $folder $record.playerTimeoutSeconds)
     try { return Assert-NativeLiveProcess $record.processId $record.startUtc $record.playerPath (Get-NativePlayerArguments $folder) -ExpectedParent $record.ownerProcessId }
     finally { $owner.Dispose() }
 }
@@ -146,6 +151,7 @@ foreach ($name in @('owned-process.json', 'native-exit.json', 'result.json', 'sh
     if (Test-Path -LiteralPath (Join-Path $OutputDirectory $name)) { throw "Refusing to reuse native review evidence: $name" }
 }
 $started = [DateTime]::UtcNow
+$ownerTimeoutSeconds = $PlayerTimeoutSeconds + 60
 $budget = [Diagnostics.Stopwatch]::StartNew()
 $owned = $null; $nativeExit = $null; $timedOut = $false; $record = $null
 $failures = New-Object 'Collections.Generic.List[string]'
@@ -158,7 +164,7 @@ try {
     $assembly = Assert-ReviewProtocol $PlayerPath
     $self = Get-Process -Id $PID
     try {
-        $record = [ordered]@{ launchedBy = 'PowerAboveAllNativeReview2'; outputPath = $OutputDirectory; playerPath = $PlayerPath; scriptPath = $scriptCopy; assemblyPath = $assembly; playerSha256 = (Get-FileHash -LiteralPath $PlayerPath -Algorithm SHA256).Hash; assemblySha256 = (Get-FileHash -LiteralPath $assembly -Algorithm SHA256).Hash; scriptSha256 = (Get-FileHash -LiteralPath $scriptCopy -Algorithm SHA256).Hash; ownerSha256 = (Get-FileHash -LiteralPath $nativeOwnerScript -Algorithm SHA256).Hash; ownerScript = $nativeOwnerScript; ownerPath = $self.Path; ownerProcessId = $PID; ownerStartUtc = $self.StartTime.ToUniversalTime().ToString('O'); playerTimeoutSeconds = 180; ownerTimeoutSeconds = 240 }
+        $record = [ordered]@{ launchedBy = 'PowerAboveAllNativeReview2'; outputPath = $OutputDirectory; playerPath = $PlayerPath; scriptPath = $scriptCopy; assemblyPath = $assembly; playerSha256 = (Get-FileHash -LiteralPath $PlayerPath -Algorithm SHA256).Hash; assemblySha256 = (Get-FileHash -LiteralPath $assembly -Algorithm SHA256).Hash; scriptSha256 = (Get-FileHash -LiteralPath $scriptCopy -Algorithm SHA256).Hash; ownerSha256 = (Get-FileHash -LiteralPath $nativeOwnerScript -Algorithm SHA256).Hash; ownerScript = $nativeOwnerScript; ownerPath = $self.Path; ownerProcessId = $PID; ownerStartUtc = $self.StartTime.ToUniversalTime().ToString('O'); playerTimeoutSeconds = $PlayerTimeoutSeconds; ownerTimeoutSeconds = $ownerTimeoutSeconds }
     } finally { $self.Dispose() }
     $gates.Preflight = 'PASSED: explicit visible player; isolated protocol 2; script/runtime/executable fingerprints'
     $activeGate = 'Player'
@@ -169,7 +175,7 @@ try {
     $record.processId = $owned.Id
     $record.startUtc = $owned.StartTime.ToUniversalTime().ToString('O')
     Write-NativeEvidence (Join-Path $OutputDirectory 'owned-process.json') $record
-    if (-not $owned.WaitForExit(180000)) {
+    if (-not $owned.WaitForExit($PlayerTimeoutSeconds * 1000)) {
         $timedOut = $true
         $owned.Kill()
         if (-not $owned.WaitForExit(5000)) { throw 'Owned player did not stop after its bounded timeout.' }
@@ -178,12 +184,12 @@ try {
     if ($null -eq $owned.ExitCode) { throw 'Owned player native exit code is unavailable.' }
     $nativeExit = [int]$owned.ExitCode
     Write-NativeEvidence (Join-Path $OutputDirectory 'native-exit.json') ([ordered]@{ processId = $owned.Id; startUtc = $record.startUtc; exitCode = $nativeExit; timedOut = $timedOut; completedUtc = [DateTime]::UtcNow.ToString('O') })
-    if ($timedOut) { throw 'Owned player exceeded 180 seconds; only its original handle was stopped.' }
+    if ($timedOut) { throw "Owned player exceeded $PlayerTimeoutSeconds seconds; only its original handle was stopped." }
     $null = Assert-CleanLog (Join-Path $OutputDirectory 'player.log')
     $summary = Assert-ReviewResult (Join-Path $OutputDirectory 'shots') $plan $nativeExit
     $gates.Player = "PASSED: $summary; native exit $nativeExit"
     $activeGate = 'Frames'
-    $remaining = [Math]::Min(60, [Math]::Floor(235 - $budget.Elapsed.TotalSeconds))
+    $remaining = [Math]::Min(60, [Math]::Floor($ownerTimeoutSeconds - 5 - $budget.Elapsed.TotalSeconds))
     if ($remaining -lt 1) { throw 'Owner review budget exhausted before frame validation.' }
     $frameSummary = Invoke-FrameReview (Join-Path $PSScriptRoot 'shot-check.py') (Join-Path $OutputDirectory 'shots') $OutputDirectory -TimeoutSeconds ([int]$remaining)
     $gates.Frames = "PASSED: $frameSummary"
@@ -208,9 +214,9 @@ try {
     }
     $verdict = 'RED'
     if ($failures.Count -eq 0 -and $gates.Player.StartsWith('PASSED') -and $gates.Frames.StartsWith('PASSED')) { $verdict = 'PARTIAL' }
-    $result = [ordered]@{ verdict = $verdict; reusedBuild = $true; currentSourceVerified = $false; gates = $gates; failures = $failures.ToArray(); playerPath = $PlayerPath; playerWindow = 'Visible (explicit authorization)'; playerExitCode = $nativeExit; elapsedSeconds = [Math]::Round($budget.Elapsed.TotalSeconds, 2); artifacts = $OutputDirectory }
+    $result = [ordered]@{ verdict = $verdict; reusedBuild = $true; currentSourceVerified = $false; gates = $gates; failures = $failures.ToArray(); playerPath = $PlayerPath; playerWindow = 'Visible (explicit authorization)'; playerExitCode = $nativeExit; playerTimeoutSeconds = $PlayerTimeoutSeconds; ownerTimeoutSeconds = $ownerTimeoutSeconds; elapsedSeconds = [Math]::Round($budget.Elapsed.TotalSeconds, 2); artifacts = $OutputDirectory }
     Write-NativeEvidence (Join-Path $OutputDirectory 'result.json') $result
-    $report = @('# Yerel girdi incelemesi', '', "Sonuc: $verdict; native cikis: $nativeExit", '', 'Yalniz mevcut oyuncu ve gercek fare/tus yolu incelendi. Yeni kaynak derlemesi, Unity testleri ve tarayici atlandi. Bu rapor GREEN olamaz.', '', '| Kontrol | Sonuc |', '| --- | --- |')
+    $report = @('# Yerel girdi incelemesi', '', "Sonuc: $verdict; native cikis: $nativeExit", "Sure siniri: player $PlayerTimeoutSeconds saniye; owner $ownerTimeoutSeconds saniye.", '', 'Yalniz mevcut oyuncu ve gercek fare/tus yolu incelendi. Yeni kaynak derlemesi, Unity testleri ve tarayici atlandi. Bu rapor GREEN olamaz.', '', '| Kontrol | Sonuc |', '| --- | --- |')
     foreach ($gate in $gates.GetEnumerator()) { $report += "| $($gate.Key) | $($gate.Value) |" }
     foreach ($failure in $failures) { $report += "`nHata: $failure" }
     [IO.File]::WriteAllLines((Join-Path $OutputDirectory 'REPORT.md'), $report, [Text.Encoding]::UTF8)

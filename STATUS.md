@@ -2,6 +2,8 @@
 
 Son güncelleme: **6 Eylül 2026**. Kullanıcının on saatlik özerk geliştirme talimatıyla çalışma yeniden başladı. Onaylı yeni yön [VISION.md](VISION.md), görsel hedef [ART_DIRECTION.md](ART_DIRECTION.md), gece işleri [NIGHT_QUEUE.md](NIGHT_QUEUE.md) içindedir.
 
+**01:38 UTC güncel:** `military-art-final-20260906-012710-424-48b0deff` GREEN: 176 Unity testi, yeni DX11 build, 21 PNG / 38 kontrol / 21 JSON / 10 tarayıcı testi. Gerçek zaferden sonra komutan yetkisi veya alay primi seçilir; v4 arşiv eski bölgesel sözleşmeleri korur. Dumanın opak dörtgen hatası giderildi; RU/TR zafer penceresi ve gerçek Esc/dil/fare ödeme yolu incelendi. Başlatıcı bu build'i seçer. İş hâlâ 07:22:03 UTC'ye kadar sürer. [Ara rapor](NIGHT_REPORT.md) en son sonuçları ve sınırları içerir; aşağıdaki saatli kayıtlar önceki kontrol noktalarıdır.
+
 **En yeni kanıt, 00:33 UTC:** `accord-layout-final-20260906-002826-992-56dba0b4` GREEN128 Unity/4PNG/7kontrol/1JSON/10tarayıcı. Aynı kesitin ana rotası `regional-accord-20260906-002323-844-cee27fbb` GREEN128/14PNG/36kontrol/6JSON: dört hesaplık bölgesel vergi tatili, barışçıl ordu geçişi, erken tahsilatta siyasi ihlal ve v3arşiv geçişi. Root ve görsel ajan iki dilde imza/ekonomi/Paris emirleri/asıl bölge bağlamını gördü. Ayrıntılar [NIGHT_REPORT.md](NIGHT_REPORT.md).
 
 Önceki doğrulanmış kesitler: üç başlangıç rolü ve iki haftalık sözler;20→22haftalık temerrüt/ret/telafi/ödeme; eşzamanlı salvo ve cephanesiz yakın temas;12 şehir minyatürü ve guaj arazi. Son doğal savaş incelemesi `accord-ford-natural-20260906-002505-474-25aa327c`, yeniden kullanım nedeniyle PARTIAL/native0;9PNG/15kontrol/8JSON,125.803s doğal zafer/196kayıp/+24teçhizat. Hızlı aktif kayıt [SESSION_PROGRESS.md](SESSION_PROGRESS.md).

@@ -35,11 +35,12 @@ namespace PowerAboveAll
         private readonly Dictionary<string, ActionResult> orderChecks = new Dictionary<string, ActionResult>();
         private bool weeklyChange;
         private int observedWeek;
-        public bool BlocksMapInput { get { return showHelp || confirmNew; } }
+        public bool BlocksMapInput { get { return showHelp || confirmNew || showVictory; } }
         private static readonly string[] ModeNames = { "control", "unrest", "food", "tax", "army", "influence" };
 
         public void OpenDocument(string name)
         {
+            if(name=="victory"){showVictory=true;return;}
             if(name!="council"&&name!="economy"&&name!="journal"&&name!="mandate"&&name!="accord")return;
             document=name;documentScroll=Vector2.zero;documentContentHeight=584;pendingMandateTerms=false;
         }
@@ -56,6 +57,7 @@ namespace PowerAboveAll
             if (cachedLanguage != L.Language) { cachedLanguage = L.Language; provinceScroll = documentScroll = Vector2.zero; }
             CampaignState state = app.State; EconomyForecast forecast = CampaignCore.Forecast(state);
             Observe(state);
+            if(!CampaignCore.HasPendingVictory(state))showVictory=false;
             bool previousEnabled = GUI.enabled;
             if (BlocksMapInput) GUI.enabled = false;
             Top(app, forecast);
@@ -66,6 +68,7 @@ namespace PowerAboveAll
             GUI.enabled = previousEnabled;
             if (showHelp) Help();
             if (confirmNew) Confirm(app);
+            if (showVictory && !state.PendingPetition && !CampaignCore.MandateDue(state)) VictoryDecision(app);
         }
 
         private void EnsureStyles()
@@ -119,6 +122,7 @@ namespace PowerAboveAll
             }
             previewSource=state;previewEntry=current;previewRegion=state.SelectedRegionId;
             ObserveRegionalAccord(state);
+            ObserveVictoryDecision(state);
             // Salt okunur sunum: gerçek çekirdek kuralları yalnızca derin kopyada hesaplanır.
             string snapshot=JsonUtility.ToJson(state);
             nextState=JsonUtility.FromJson<CampaignState>(snapshot);
@@ -312,6 +316,12 @@ namespace PowerAboveAll
                 float aspect=(float)portraitSheet.width/portraitSheet.height;
                 float width=Mathf.Min(rect.width,rect.height*aspect),height=width/aspect;
                 rect=new Rect(rect.x+(rect.width-width)*.5f,rect.y+(rect.height-height)*.5f,width,height);
+                if(variant==3)
+                {
+                    // Komşu portre kırıntısını çıkar; Dumas'nın ölçeği ve yeri sabit kalır.
+                    float trim=17f/portraitSheet.width;
+                    rect.xMin+=rect.width*trim/uv.width;uv.xMin+=trim;
+                }
                 GUI.DrawTextureWithTexCoords(rect,portraitSheet,uv,true);
             }
             else GUI.DrawTexture(rect,medallions[variant],ScaleMode.ScaleToFit,true);
@@ -513,6 +523,7 @@ namespace PowerAboveAll
         {
             float y=0;Paragraph(ref y,T("ui.council.title"),heading,242,12);
             Paragraph(ref y,T("ui.council.intro"),small,242,19);
+            VictoryDecisionEntry(app,ref y);
             RegionalAccordEntry(app,ref y);
             foreach(var faction in app.State.Factions)
             {
@@ -535,6 +546,7 @@ namespace PowerAboveAll
                 Pair(5,y,236,T("ui.influence"),Number(faction.Influence));y+=29;Pair(5,y,236,T("ui.radicalism"),Number(faction.Radicalism));y+=36;
                 Paragraph(ref y,T(faction.DemandKey),body,236,10);
                 if(person!=null)Paragraph(ref y,T(person.AgendaKey),small,236,19);
+                if(person!=null&&person.Id=="dumas")CommanderPoliticalTerms(person,ref y);
             }
             documentContentHeight=y+12;
         }
@@ -732,7 +744,7 @@ namespace PowerAboveAll
             Text(new Rect(161,y,81,height),Signed(value),number);y+=height+9;
         }
         private float JournalEntryHeight(LogEntry entry){return 28+body.CalcHeight(new GUIContent(L.Text(entry.Key,entry.Args)),226)+29;}
-        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)||entry.Key.StartsWith("log.accord.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
+        private static bool Important(LogEntry entry){return entry.Key.StartsWith("log.battle.",StringComparison.Ordinal)||entry.Key.StartsWith("log.victory.",StringComparison.Ordinal)||entry.Key.StartsWith("log.petition.",StringComparison.Ordinal)||entry.Key.StartsWith("log.mandate.",StringComparison.Ordinal)||entry.Key.StartsWith("log.accord.",StringComparison.Ordinal)||entry.Key=="log.shortage"||entry.Key=="log.subsidy.failed";}
         private void Journal(GameApp app)
         {
             float y=0;Paragraph(ref y,T("ui.journal.title"),heading,242,19);bool first=true;

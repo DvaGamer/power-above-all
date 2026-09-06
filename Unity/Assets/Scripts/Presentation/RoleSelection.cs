@@ -94,6 +94,11 @@ namespace PowerAboveAll
             if (!portraits) return;
             int quadrant = index == 2 ? 3 : index;
             Rect uv = new Rect(quadrant % 2 * .5f, quadrant < 2 ? .5f : 0, .5f, .5f);
+            if (quadrant == 3)
+            {
+                float trim = 17f / portraits.width;
+                bounds.xMin += bounds.width * trim / uv.width; uv.xMin += trim;
+            }
             GUI.DrawTextureWithTexCoords(bounds, portraits, uv, true);
         }
 

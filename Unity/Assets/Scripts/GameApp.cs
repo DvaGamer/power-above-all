@@ -296,6 +296,13 @@ namespace PowerAboveAll
             Report(result);
             if (result.Ok) { hud.OpenDocument("accord"); Map.Pulse(State.SelectedRegionId); Feedback("seal"); }
         }
+        public void ResolveVictory(string expectedBattleId, string choice)
+        {
+            if (CampaignInputBlocked) return;
+            var result = CampaignCore.ResolveVictory(State, expectedBattleId, choice);
+            Report(result);
+            if (result.Ok) { hud.CloseVictoryDecision(); Map.Pulse(State.ArmyRegionId); Feedback("seal"); }
+        }
         public void March()
         {
             if (CampaignInputBlocked) return;
@@ -322,6 +329,7 @@ namespace PowerAboveAll
             pendingBattleId = null; pendingTarget = null;
             if (result.Ok) CampaignCore.RecoverMilitarySupplies(State, outcome.MilitarySuppliesRecovered);
             battle.Stop(); RestoreAtlas(); Report(result);
+            if (result.Ok && CampaignCore.HasPendingVictory(State)) hud.OpenDocument("victory");
             // The report's single return button restores the atlas immediately.
         }
         private void Dispatch(string key, Action action)

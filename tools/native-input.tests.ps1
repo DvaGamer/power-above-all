@@ -42,6 +42,30 @@ $record = [ordered]@{
 }
 $receipt = Join-Path $folder 'owned-process.json'
 Check ((Assert-NativeReceiptLayout ([pscustomobject]$record) $receipt) -eq $folder) 'Receipt derives all artifacts from its exact own folder'
+$defaultOwnerArguments = @(Get-NativeOwnerArguments $player $folder)
+Check ($defaultOwnerArguments[-2] -eq '-PlayerTimeoutSeconds' -and $defaultOwnerArguments[-1] -eq '180') 'Existing native reviews keep their default 180-second player deadline'
+$extended = [ordered]@{}; foreach ($entry in $record.GetEnumerator()) { $extended[$entry.Key] = $entry.Value }
+$extended.playerTimeoutSeconds = 240; $extended.ownerTimeoutSeconds = 300
+Check ((Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt) -eq $folder) 'Natural battle review has a bounded 240-second player and 60-second owner allowance'
+$extendedOwnerArguments = @((Join-Path $PSHOME 'powershell.exe')) + @(Get-NativeOwnerArguments $player $folder 240)
+$extendedCommand = ($extendedOwnerArguments | ForEach-Object { ConvertTo-NativeArgument $_ }) -join ' '
+Assert-NativeCommandLine $extendedCommand $extendedOwnerArguments
+Check $true 'Explicit longer deadline is part of the exact owned command line'
+Reject { Assert-NativeCommandLine $extendedCommand (@((Join-Path $PSHOME 'powershell.exe')) + $defaultOwnerArguments) } 'Receipt cannot claim a different lifetime than the live owner launch'
+$extended.playerTimeoutSeconds = 300; $extended.ownerTimeoutSeconds = 360
+Check ((Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt) -eq $folder) 'Maximum supported review lifetime remains bounded at 300 plus 60 seconds'
+$extended.playerTimeoutSeconds = 240
+$extended.ownerTimeoutSeconds = 301
+Reject { Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt } 'Owner allowance cannot grow independently of the player deadline'
+$extended.playerTimeoutSeconds = 179; $extended.ownerTimeoutSeconds = 239
+Reject { Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt } 'Receipt below the supported player deadline range is rejected'
+$extended.playerTimeoutSeconds = 301; $extended.ownerTimeoutSeconds = 361
+Reject { Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt } 'Receipt above the maximum player deadline is rejected'
+$extended.playerTimeoutSeconds = 240.5; $extended.ownerTimeoutSeconds = 300.5
+Reject { Assert-NativeReceiptLayout ([pscustomobject]$extended) $receipt } 'Fractional receipt deadlines are not silently rounded'
+Reject { Get-NativeOwnerArguments $player $folder 301 } 'Invalid launch timeout is rejected before any process can start'
+$nativeVictoryPlan = Get-ReviewPlan (Join-Path $PSScriptRoot 'native-victory.script')
+Check ($nativeVictoryPlan.Captures[0] -eq '00-start.png' -and $nativeVictoryPlan.Captures.Count -eq 9 -and $nativeVictoryPlan.States.Count -eq 8 -and $nativeVictoryPlan.Assertions -ge 18) 'Native victory plan preserves readiness and combat/decision evidence in its receipt'
 Reject { Assert-NativeReceiptLayout ([pscustomobject]$record) (Join-Path $nativeReviewRoot 'copied\owned-process.json') } 'Copied receipt cannot control the original review process'
 $bad = [ordered]@{}; foreach ($entry in $record.GetEnumerator()) { $bad[$entry.Key] = $entry.Value }
 $bad.scriptPath = Join-Path $nativeRepo 'human.script'
