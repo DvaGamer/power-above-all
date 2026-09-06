@@ -2,6 +2,8 @@
 
 ## Güncel oturum kaydı
 
+- İlk görev yayınlandı:8a4e04090f22ffba7636f4126f6c94dfadcddb82 origin/research/reference-library vePR2headaynı. YeniPRbaşlığı gerçek-zaman/sefer/ikmal/ilkhami görevi. Push34043089755 vePR34043092361 simulationSUCCESS. Finalplayable14FD80...590test kaynakta başkaoyun değişikliği yok. İlgisiz9untracked dosya korunur. OperasyonelAI ve ayrıntılımuhareberaporu sonraki iş; bu tur ilk28gün görevine odaklandı. Sonraki belgecommit'i yalnız yayın kaydını taşır.
+
 - Yayına hazır son `first-report-release-20260906-153138-885-781be7cd` GREEN590Unity/yeniWindows10PNG21assert2state/10browser; runtime14FD80B878C778997461759D3919239C44BE5F8A4AC3E23F203A8F960EC7C022. 310Assets/Packages/ProjectSettings kaynakdosyası son izolecopy153128-44460a54ileSHAeşit.955RU/TR33asset,96helperkontrol. Aynıbinary responsive768153413-eb3d3898,1080153527-d1199eb7,1440p153705-eea6190f hepsiPARTIAL/native0/4PNG3assert. Rootson768RUarmy ve1440pTRassembly,1440×90003RUbaşarı gördü. Yeni10.kare01b-keptTR tutulmuşsözmetnini yakalar. PLAY_GAME--check sonrelease verified/complete-build. Githubyayınıbuadaya hazırlanır; operasyonelAI/muhareberaporu sonrakiadım, kaynak590freeze.
 
 - Native590 `native-input-20260906-152148-ed417164` PARTIAL/native0/3PNG4assert1state/43.76s tamamlandı. İlk590responsive768 ve1080 native0/4PNG3assert;768RUarmyrootgerçekgördü. Metin sığıyor, fakatrapor altındaki ordudüğmeleri kırpık görünüyordu; CabinetHud artık ShowCommission sırasında WorldArmyDesk'i ve ona ait görünmez tıklamaalanlarını göstermiyor. Son590UIkaynağı tekrar fullbuild gerektirir; 1440p ve finalresponsive bundan sonra. Yeni davranıştesti gerekmez, gerçekkarşılaştırma yapılır.

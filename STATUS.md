@@ -2,6 +2,8 @@
 
 ## Güncel aşama: ilk hami raporu
 
+Uygulama [8a4e040](https://github.com/DvaGamer/power-above-all/commit/8a4e04090f22ffba7636f4126f6c94dfadcddb82) olarak `research/reference-library` dalına gönderildi; [taslak PR #2](https://github.com/DvaGamer/power-above-all/pull/2) güncellendi. Bu commit'in push ve PR CI kontrolleri geçti. `main` ile birleştirilmedi.
+
 6 Eylül 2026: [ilk görev](FIRST_COMMISSION.md) Unity'de çalışır. Yeni kampanyada üç rol, 28 oyun gününe bağlı farklı hedefler alır; mevcut yardım/söz, siyasi güven, Champagne ve askerî ikmal kararları birlikte değerlendirilir. Koşullar baştan görünür. Sonuç anındaki değerler ve +4/−4 siyasi etki bir kez kaydedilir; rapordan sonra aynı dünya sürdürülebilir. Açık belge sözün vadesini durdurmaz; iki günlük ek süre sonunda ihlal işlenir.
 
 Son kaynak: `first-report-release-20260906-153138-885-781be7cd` **GREEN: 590/590 Unity testi, yeni Windows build, 10 gerçek PNG, 21 kontrol, 2 durum ve 10 browser testi**. Runtime SHA256 `14FD80B878C778997461759D3919239C44BE5F8A4AC3E23F203A8F960EC7C022`. Ana projenin Assets/Packages/ProjectSettings içindeki 310 dosyası test edilen izole kaynakla aynı. **955 RU/TR anahtarı, 33 asset; 96 doğrulama yardımcısı kontrolü.** `PLAY_GAME.cmd` son tam GREEN build'i seçer.
