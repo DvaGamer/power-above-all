@@ -230,6 +230,7 @@ namespace PowerAboveAll
                 key == "HasArmyEstablishment" ? CampaignCore.HasArmyEstablishment(app.State) :
                 key == "HasOfficerCommission" ? CampaignCore.HasOfficerCommission(app.State) :
                 key == "ResistanceTroops" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).EnemyTroops :
+                key == "UrbanApproval" ? (object)app.State.Factions.Find(faction=>faction.Id=="urban").Approval :
                 key == "ResistanceActive" ? (object)CampaignCore.GetRegionalResistance(app.State,app.State.SelectedRegionId).RequiresBattle :
                 key == "CommissionRevokeGold" ? (object)CampaignCore.GetOfficerCommissionTerms(app.State).RevokeGoldCost :
                 key == "DumasLoyalty" ? (object)app.State.Characters.Find(person=>person.Id=="dumas").Loyalty :

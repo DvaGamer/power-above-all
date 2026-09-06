@@ -61,3 +61,33 @@ Renkler mevcut `leaf #4F7361` ve `leafLight #71936B`. Yeni renk ailesi veya mate
 ## Mevcut kaynak yeterliliği
 
 Evet. Buradaki eksik, doku ayrıntısı değil siluet tekrarının fazla görünür olması. Mevcut iki yaprak tonu, sahne ışığı ve üç küçük özgün mesh yeterli araçları sağlar. Ancak küçük ölçekte tek taç hacminin kapladığı ekran alanı başlıca risktir; bu planın uygulanması veya kabulü varsayılmamalı.
+
+## A uygulandı — SOURCE FREEZE, görsel kabul bekleniyor
+
+Root'un ayrı yetkisiyle yalnız `TacticalBattle.cs / BuildLandscape` bahçe taçları ve `BuildOrchardCrown`, `BuildOrchardCrownMesh` private yardımcıları değiştirildi. Aynı 20 gövde, aynı x/z konumları, `TerrainHeight` çağrısı ve yükseklik formülü korundu. Üç Sphere çağrısı yerine ağaç başına bir ortak taç mesh'i kullanılıyor.
+
+Üç ayrı elle belirlenmiş dört halkalı profil uygulandı: geniş üst, daralan üst, karşı omuzlu asimetri. Her profilde 12 çevre noktası × 4 halka + iki uç = **50 vertex**; 72 yan + 12 alt + 12 üst = **96 üçgen**. Üç owned mesh toplam **150 vertex / 288 üçgen**; 20 örnek, 20 taç renderer. İki submesh mevcut `leaf` ve `leafLight` materyallerini paylaşır; yeni materyal, UV dokusu, shader veya collider yoktur. Yüzlerin 34 üçgeni mevcut açık tonda, 62'si koyu tondadır; üst kapak ve tek sürekli yan yön açık, rastgele renk benekleri yoktur.
+
+Sabit aile dizisi satır başına `0 1 0 2 1 / 2 0 1 0 2 / 1 2 0 1 0 / 0 1 2 0 1`; toplam 8 geniş, 7 daralan, 5 omuzlu taç. Rastgele dönüş, ölçek veya sayı akışı kullanılmadı.
+
+Kaynak profil değerlerinden sınırlar (yerel taç merkezine göre):
+
+| Aile | X | Y | Z |
+| --- | --- | --- | --- |
+| 0 | `−1.1016 .. 1.08` | `−1.02 .. 1.10` | `−.8789 .. .9367` |
+| 1 | `−.91 .. .95` | `−1.05 .. 1.10` | `−.82 .. .82` |
+| 2 | `−1.01 .. 1.09` | `−1.02 .. 1.07` | `−.8228 .. .8972` |
+
+Bunlar eski birleşik küre zarfını büyütmez; genel plan kutusu `X−1.12..1.16 / Z−.90...95 / Y−1.05..1.10` içinde kalır. Dünya üzerindeki taçların tamamı gerçek bahçe sınırında kalır. Kutu korunması, asker örtmesinin artmadığını tek başına kanıtlamaz; boşlukların dolması riski hâlâ gerçek A/B konusudur.
+
+Her mesh mevcut `meshes` listesine yalnız bir kez eklenir; taç GameObject'leri `world` altındadır ve mevcut `Stop` temizliği kullanılır. Genel lifecycle veya başka sahne malzemesi değiştirilmedi. Kaynak patch sonrası okundu. Git/index, test, derleme, Unity veya oyuncu çalıştırılmadı. Root aynı fixture ile gerçek önce/sonra deployment ve bahçede temas karelerini üretecek; bu not bir runtime kabulü değildir.
+
+## Gerçek dört çift A/B — görsel kabul önerisi
+
+Önce: `output/verify/orchard-before-20260906-051301-350-76b5caca`. Aday: `output/verify/orchard-candidate-20260906-051614-489-fea6b772`. `00-deployment-ru`, `01-deployment-tr`, `02-orchard-contact-ru`, `03-orchard-contact-tr` çiftlerinin sekiz PNG'si ayrı ayrı tam boy açıldı.
+
+**Görsel öneri: bu dar A adımı kabul edilsin.** İlk karelerde üç topaklı kopya taçlar yerine tek ve küçük asimetrik taçlar, daha belirgin gövdeler ve sakin biçim farklılıkları görülüyor. İki yeşil ton mevcut güneşli çayırdan ayrılıyor; parlak kristal yüzey veya sahneye uymayan yeni renk oluşmamış. Etki bahçe içinde açıkça fark ediliyor, tüm sahnenin sanat kimliğinin tamamlandığı anlamına gelmiyor. Üç aile ayrı ağaç türleri kadar farklı okunmuyor; aynı dikim içindeki küçük ritim olarak kalıyor.
+
+Yoğun temas çiftleri özellikle kontrol edildi: bahçenin alt sağ sırasındaki mavi piyadenin gövde/şapka ve beyaz bayrakları daha fazla saklanmıyor; bazı taç aralıkları biraz daha açık. Üst sağ kenardaki süvari grubu, kuzeyden yaklaşan mercan piyade, hedef çevresindeki birlikler ve yandaki etiketler önceki kadar okunur. Yeni tek taçların eski küre boşluklarını doldurarak askerleri örttüğüne dair bu iki gerçek temas karesinde belirti yok.
+
+RU/TR etiket ve emir düzeni aynı okunurlukta; yeni geometri ekran kenarına veya kartlara taşmıyor. Bu inceleme yalnız görsel kabul önerisidir: before/after durum JSON'larının eşitliği burada iddia edilmedi, verification ajanının ayrı denetimi bekleniyor. A/B incelemesinde Assets düzenlenmedi ve süreç başlatılmadı.

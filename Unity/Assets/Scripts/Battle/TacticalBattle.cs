@@ -677,15 +677,16 @@ namespace PowerAboveAll
             BuildCreekReach("Creek south", -32, -3);
             BuildDryFord();
             BuildRuralApproach();
+            var orchardCrowns = new[] { BuildOrchardCrownMesh(0), BuildOrchardCrownMesh(1), BuildOrchardCrownMesh(2) };
+            var orchardMaterials = new[] { leaf, leafLight };
+            int[] orchardPattern = { 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, 0, 0, 1, 2, 0, 1 };
             for (int i = 0; i < 20; i++)
             {
                 float x = -25.8f + i % 5 * 3.55f, z = -3.4f + i / 5 * 3.7f;
                 float y = TerrainHeight(x, z);
                 float height = 2.05f + (i % 3) * .16f;
                 Primitive("Orchard trunk", PrimitiveType.Cylinder, world.transform, new Vector3(x, y + .8f, z), new Vector3(.25f, .8f, .25f), wood);
-                Primitive("Orchard shaded crown", PrimitiveType.Sphere, world.transform, new Vector3(x + .22f, y + height, z + .16f), new Vector3(1.9f, 2.2f, 1.8f), leaf);
-                Primitive("Orchard sunlit crown", PrimitiveType.Sphere, world.transform, new Vector3(x - .42f, y + height + .33f, z - .10f), new Vector3(1.5f, 1.55f, 1.65f), leafLight);
-                Primitive("Orchard crown shoulder", PrimitiveType.Sphere, world.transform, new Vector3(x + .56f, y + height + .10f, z - .30f), new Vector3(1.35f, 1.5f, 1.4f), i % 3 == 0 ? leafLight : leaf);
+                BuildOrchardCrown(new Vector3(x, y + height, z), orchardCrowns[orchardPattern[i]], orchardMaterials);
             }
             // Fences are scenery; the clearly marked orchard, hill and creek own terrain rules.
             for (int i = 0; i < 10; i++)
@@ -711,6 +712,87 @@ namespace PowerAboveAll
                 float angle = i * Mathf.PI * 2 / 40;
                 Primitive("Convoy capture boundary", PrimitiveType.Cube, world.transform, convoy + new Vector3(Mathf.Sin(angle) * 6.5f, .12f, Mathf.Cos(angle) * 6.5f), new Vector3(.45f, .1f, .45f), gold);
             }
+        }
+
+        void BuildOrchardCrown(Vector3 position, Mesh mesh, Material[] crownMaterials)
+        {
+            var crown = new GameObject("Painted orchard crown");
+            crown.transform.SetParent(world.transform, false);
+            crown.transform.localPosition = position;
+            crown.AddComponent<MeshFilter>().sharedMesh = mesh;
+            crown.AddComponent<MeshRenderer>().sharedMaterials = crownMaterials;
+        }
+
+        Mesh BuildOrchardCrownMesh(int family)
+        {
+            // Aynı bahçenin üç çizilmiş profili: geniş, yukarı daralan ve yana omuz veren.
+            Vector4[] rings;
+            float[] heights, outline;
+            Vector3 bottom, top;
+            if (family == 0)
+            {
+                rings = new[] {
+                    new Vector4(.10f, .05f, .62f, .53f), new Vector4(0, .02f, 1.08f, .89f),
+                    new Vector4(-.05f, -.03f, .96f, .81f), new Vector4(-.14f, .02f, .59f, .53f)
+                };
+                heights = new[] { -.68f, -.20f, .42f, .83f };
+                outline = new[] { 1f, .97f, .93f, 1.03f, 1f, .96f, 1.02f, .97f, .94f, 1.01f, .98f, .96f };
+                bottom = new Vector3(.08f, -1.02f, .04f); top = new Vector3(-.17f, 1.10f, .02f);
+            }
+            else if (family == 1)
+            {
+                rings = new[] {
+                    new Vector4(0, .04f, .64f, .55f), new Vector4(.02f, 0, .93f, .82f),
+                    new Vector4(-.08f, -.04f, .79f, .70f), new Vector4(-.17f, -.02f, .41f, .40f)
+                };
+                heights = new[] { -.70f, -.12f, .52f, .91f };
+                outline = new[] { 1f, .98f, 1.04f, 1f, .95f, 1.03f, 1f, .96f, 1.02f, 1f, 1.04f, .95f };
+                bottom = new Vector3(.03f, -1.05f, 0); top = new Vector3(-.20f, 1.10f, -.02f);
+            }
+            else
+            {
+                rings = new[] {
+                    new Vector4(-.10f, .04f, .62f, .54f), new Vector4(.04f, .02f, 1.05f, .86f),
+                    new Vector4(.12f, -.04f, .96f, .78f), new Vector4(-.18f, -.03f, .63f, .56f)
+                };
+                heights = new[] { -.66f, -.18f, .37f, .79f };
+                outline = new[] { 1f, .98f, .94f, 1.02f, 1f, .97f, 1f, 1.02f, 1f, .98f, .96f, 1.03f };
+                bottom = new Vector3(-.06f, -1.02f, .02f); top = new Vector3(-.25f, 1.07f, -.03f);
+            }
+            const int around = 12, ringCount = 4;
+            var vertices = new Vector3[around * ringCount + 2];
+            var shaded = new List<int>(240);
+            var sunlit = new List<int>(120);
+            for (int ring = 0; ring < ringCount; ring++)
+            for (int side = 0; side < around; side++)
+            {
+                float angle = side * Mathf.PI * 2 / around;
+                Vector4 profile = rings[ring];
+                vertices[ring * around + side] = new Vector3(
+                    profile.x + Mathf.Cos(angle) * profile.z * outline[side], heights[ring],
+                    profile.y + Mathf.Sin(angle) * profile.w * outline[side]);
+                if (ring == ringCount - 1) continue;
+                float faceAngle = (side + .5f) * Mathf.PI * 2 / around;
+                bool lightFace = ring == 2 && Mathf.Cos(faceAngle) < .35f
+                    || ring == 1 && Mathf.Cos(faceAngle) < -.55f && Mathf.Sin(faceAngle) < .3f;
+                List<int> indices = lightFace ? sunlit : shaded;
+                int a = ring * around + side, b = ring * around + (side + 1) % around;
+                indices.Add(a); indices.Add(a + around); indices.Add(b);
+                indices.Add(b); indices.Add(a + around); indices.Add(b + around);
+            }
+            int bottomIndex = around * ringCount, topIndex = bottomIndex + 1;
+            vertices[bottomIndex] = bottom; vertices[topIndex] = top;
+            for (int side = 0; side < around; side++)
+            {
+                int next = (side + 1) % around;
+                shaded.Add(side); shaded.Add(next); shaded.Add(bottomIndex);
+                sunlit.Add((ringCount - 1) * around + side); sunlit.Add(topIndex); sunlit.Add((ringCount - 1) * around + next);
+            }
+            var mesh = new Mesh { name = "Orchard silhouette " + family, vertices = vertices, subMeshCount = 2 };
+            mesh.SetTriangles(shaded, 0); mesh.SetTriangles(sunlit, 1);
+            mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            meshes.Add(mesh);
+            return mesh;
         }
 
         void BuildDryFord()

@@ -2,6 +2,12 @@
 
 Bu belge kullanıcının yanıtları üzerine geliştirilmiş çalışma önerisidir. Kesinleşenler: parti öncesi rol seçimi; kişisel iktidar, ülke yönetimi ve savaşın birlikte temel deneyim olması; tarihsel koşullardan beslenen, sonuçlu geniş alternatif tarih; hoş ve yumuşak renkler, yer yer aydınlık ve gerektiğinde karanlık, tam gerçekçi olmayan tutarlı grafik. Görüşmenin cevaplanmamış coğrafya, karakter, süre ve nihai rol soruları [VISION.md](VISION.md) içinde açıktır. Buradaki bütün gelecek mekanikleri uygulanmış sayılmaz.
 
+## Tarihî çerçeve ve oyun kurgusu
+
+Mevcut kampanya 5 Mayıs 1789 Fransa'sından esinlenen bir alternatif tarih oyunudur. Dönem ve yer adları tarihî çerçeveyi kurar; oynanabilir bölge sınırları, nüfus ve vergi değerleri, asker sayıları ve diğer sayısal modeller okunabilirlik ve oyun dengesi için sadeleştirilmiş veya kurgulanmıştır. Harita ve küçük yerleşim siluetleri, tarihî sınırların ya da binaların birebir rekonstrüksiyonu olarak sunulmaz.
+
+Étienne de Valcourt, Adrien Morel, Jean Lefèvre ve Lucien Dumas oyuna ait dört kurgusal danışmandır. Bu karakterlerin görevleri, portreleri, kişisel gündemleri ve siyasi davranışları oyun dünyasının parçalarıdır; tarihî kişilerin belgelenmiş biyografileri olarak değerlendirilmemelidir. Bu çerçeve proje dokümantasyonunda korunur. Oyun içindeki günlük ve görev satırları ise güncel kararları anlatır; yardım metni gerçek kontrolleri ve mekaniklerin sonuçlarını açıklar.
+
 ## Oyuncuya verilen vaat
 
 Bir devleti yönetirken kendi iktidarınızı kurarsınız. Orduyu beslemek için anlaştığınız kişi, savaş sonrasında kazandığınız prestiji kendi payına çevirmek ister. Bir reform yalnız üretim sayısını artırmaz: bölgenin kime ihtiyaç duyduğunu, hangi grubun sizi desteklediğini ve gelecek seferin ne kadar mümkün olduğunu değiştirir. Tarihten ayrılmak mümkündür; yeni düzenin ekonomik ve siyasi dayanaklarını oyuncu oluşturur.
@@ -51,6 +57,6 @@ Taktik adaletin ölçüsü yalnız zafer sayısı değildir. Aynı anda hazır k
 
 ## Üretim ve kabul
 
-İlk sanat temeli gerçek karelerle doğrulandı. Sıradaki küçük kesit üç rol ve iki hafta sonra geri dönen sözlerdir. Ardından taktik doğruluk ve gerçek oyuncu komutlarıyla savaş; sonra mevcut duruma tepki veren siyasi ve bölgesel sonuçlar gelir. Geniş dünya haritası, tam diplomasi, kariyerler ve rejim yolları ayrı tasarım kararı ve üretim kapsamı ister.
+Mevcut çalışan kesit; üç başlangıç rolünü ve iki haftalık söz vadelerini, bölgesel anlaşmaları, ordu mevcudunun kademeli azaltılmasını ve subay atama yetkisini birbirine bağlıyor. Yürüyüş öncesi bölgenin koşullarından hesaplanan direniş görülebiliyor; olağan taktik muharebede verilen emirler ve gerçek kayıplar seferin kaynaklarına ve siyasi sonuçlarına dönüyor. Bu akışlar gerçek Windows oyuncusunda ve iki dilde sınandı; mevcut kesit, bütün oyunun veya bu vizyonun tamamlandığı anlamına gelmiyor. Geniş dünya haritası, tam diplomasi, kariyerler ve rejim yolları sonraki tasarım kararları ve üretim kapsamıdır.
 
 Bir kesit ancak şu sorular olumlu cevaplandığında kapanır: farklı başlangıç aynı sorun için farklı makul karar doğuruyor mu; bedel başka bir ana sisteme ulaşıyor mu; oyuncu sebebi ekranda görüyor mu; kayıt/yükleme sonucu koruyor mu; iki dilde okunuyor mu; gerçek Windows oyuncusunda çalışıyor mu? Görsel ve ses kalitesi yalnız derleme sonucundan çıkarılmaz.

@@ -1,0 +1,26 @@
+# Yeni günlük, görev ve yardım metinleri gerçek Windows girdisiyle okunur.
+new
+lang ru
+panel journal
+expect Week 0
+expect Gold 840
+expect Food 360
+expect Troops 1200
+remember copy-unchanged
+state 00-start
+shot 00-start
+wait 120
+same copy-unchanged
+expect Language tr
+expect Week 0
+expect Gold 840
+expect Food 360
+expect Troops 1200
+state 01-copy-native
+shot 01-copy-native
+save
+load
+same copy-unchanged
+state 02-copy-loaded
+shot 02-copy-loaded
+quit

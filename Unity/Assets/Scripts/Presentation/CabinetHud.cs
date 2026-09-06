@@ -603,7 +603,24 @@ namespace PowerAboveAll
             Rule(4,y,238);y+=18;
             Paragraph(ref y,T("ui.economy.unrest.title"),heading,238,12);
             float unrest=CampaignCore.AverageUnrest(state),after=CampaignCore.AverageUnrest(nextState);
-            Paragraph(ref y,T("ui.economy.unrest.forecast",Number(unrest),Number(after),Change(after-unrest)),body,238,12);
+            if(weekCheck.Ok)
+                Paragraph(ref y,T("ui.economy.unrest.forecast",ResistanceNumber(unrest),ResistanceNumber(after),Change(after-unrest)),body,238,12);
+            else
+            {
+                var delayed=new GUIStyle(small);delayed.normal.textColor=red;
+                Paragraph(ref y,L.Text(weekCheck.Key,weekCheck.Args),delayed,238,12);
+            }
+            Paragraph(ref y,T("ui.mood.title"),tiny,238,10);
+            Paragraph(ref y,T("ui.mood.current",ResistanceNumber(state.Factions.Find(f=>f.Id=="urban").Approval)),small,238,10);
+            if(weekCheck.Ok)
+            {
+                float nextApproval=nextState.Factions.Find(f=>f.Id=="urban").Approval;
+                Paragraph(ref y,T("ui.mood.next",ResistanceNumber(nextApproval),Change(CampaignCore.UrbanUnrestDelta(nextApproval))),small,238,10);
+            }
+            Paragraph(ref y,T("ui.mood.rules",CampaignCore.UrbanUnrestPressureThreshold,CampaignCore.UrbanUnrestCalmThreshold,
+                Change(CampaignCore.UrbanUnrestDelta(0)),Change(CampaignCore.UrbanUnrestDelta(CampaignCore.UrbanUnrestPressureThreshold)),
+                Change(CampaignCore.UrbanUnrestDelta(CampaignCore.UrbanUnrestCalmThreshold))),small,238,10);
+            Paragraph(ref y,T("ui.mood.order"),small,238,18);
             Paragraph(ref y,T("ui.economy.unrest.reason"),small,238,18);
             Paragraph(ref y,T("ui.economy.supply.detail"),small,238,18);
             if(Press(new Rect(4,y,238,41),T("ui.economy.paris")))app.SelectRegion("ile");

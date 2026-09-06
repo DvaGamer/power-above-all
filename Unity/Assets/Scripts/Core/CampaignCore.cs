@@ -93,6 +93,8 @@ namespace PowerAboveAll
     {
         private const int MaximumStock = 100000000;
         private const int MaximumWeek = 1000000;
+        public const int UrbanUnrestPressureThreshold = 40;
+        public const int UrbanUnrestCalmThreshold = 60;
         private static readonly string[] FactionIds = { "crown", "assembly", "urban", "army" };
         private static readonly string[] CharacterIds = { "valcourt", "morel", "lefevre", "dumas" };
         public static readonly RegionDefinition[] Regions = {
@@ -145,6 +147,11 @@ namespace PowerAboveAll
         }
         public static float AverageUnrest(CampaignState s)
         { float total=0;foreach(var r in s.Regions)total+=r.Unrest;return total/s.Regions.Count; }
+        public static int UrbanUnrestDelta(float approval)
+        {
+            if(!Percent(approval))throw new ArgumentOutOfRangeException(nameof(approval));
+            return approval<UrbanUnrestPressureThreshold?2:approval>=UrbanUnrestCalmThreshold?-1:0;
+        }
         // Taxes depend on unrest, actual government control and Assembly approval.
         // Weekly army cost includes 36 gold to replenish 18 military supplies.
         public static EconomyForecast Forecast(CampaignState s)
@@ -327,7 +334,7 @@ namespace PowerAboveAll
             {
                 bool garrison=r.Id==s.ArmyRegionId&&s.Troops>0;
                 r.BreadUsed=r.TaxUsed=r.RecruitUsed=false;
-                r.Unrest=Clamp(r.Unrest+(urban.Approval<40?2:urban.Approval>=60?-1:0)+(hunger?8:0)+(unpaid?4:0)-(garrison?3:0));
+                r.Unrest=Clamp(r.Unrest+UrbanUnrestDelta(urban.Approval)+(hunger?8:0)+(unpaid?4:0)-(garrison?3:0));
                 r.Control=Clamp(r.Control+(garrison?2:0)+(r.EliteLoyalty<35?-2:0)-(r.Unrest>=65?3:0));
             }
             urban.Radicalism=Clamp(urban.Radicalism+(hunger?5:urban.Approval>=60?-1:0));

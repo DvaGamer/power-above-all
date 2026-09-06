@@ -201,8 +201,8 @@
     },
     {
       "key": "character.valcourt.position",
-      "ru": "Советник короны · вымышленный персонаж",
-      "tr": "Kraliyet danışmanı · kurgusal karakter"
+      "ru": "Советник короны",
+      "tr": "Kraliyet danışmanı"
     },
     {
       "key": "character.valcourt.agenda",
@@ -216,8 +216,8 @@
     },
     {
       "key": "character.morel.position",
-      "ru": "Представитель сословий · вымышленный персонаж",
-      "tr": "Zümre temsilcisi · kurgusal karakter"
+      "ru": "Представитель сословий",
+      "tr": "Zümre temsilcisi"
     },
     {
       "key": "character.morel.agenda",
@@ -231,8 +231,8 @@
     },
     {
       "key": "character.lefevre.position",
-      "ru": "Представитель горожан · вымышленный персонаж",
-      "tr": "Kent temsilcisi · kurgusal karakter"
+      "ru": "Представитель горожан",
+      "tr": "Kent temsilcisi"
     },
     {
       "key": "character.lefevre.agenda",
@@ -246,8 +246,8 @@
     },
     {
       "key": "character.dumas.position",
-      "ru": "Командующий · вымышленный персонаж",
-      "tr": "Komutan · kurgusal karakter"
+      "ru": "Командующий",
+      "tr": "Komutan"
     },
     {
       "key": "character.dumas.agenda",
@@ -341,8 +341,8 @@
     },
     {
       "key": "log.begin",
-      "ru": "5 мая 1789. Начало кампании. Персонажи и численные значения этого наброска вымышлены.",
-      "tr": "5 Mayıs 1789. Sefer başlıyor. Bu taslaktaki karakterler ve sayısal değerler kurgusaldır."
+      "ru": "5 мая 1789. Начало кампании. Совет ждёт ваших первых распоряжений.",
+      "tr": "5 Mayıs 1789. Sefer başlıyor. Konsey ilk emirlerinizi bekliyor."
     },
     {
       "key": "log.bread",

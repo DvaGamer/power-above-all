@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {"key":"ui.mood.title","ru":"ПОДДЕРЖКА ГОРОЖАН","tr":"KENTLİ DESTEĞİ"},
+    {"key":"ui.mood.current","ru":"Сейчас: {0}/100.","tr":"Şimdi: {0}/100."},
+    {"key":"ui.mood.next","ru":"В конце недели: {0}/100 → {1} волнений в каждой области.","tr":"Hafta sonunda: {0}/100 → her bölgede {1} huzursuzluk."},
+    {"key":"ui.mood.rules","ru":"В неделю: ниже {0} — {2}; от {0} до {1} (не включая) — {3}; от {1} — {4}.","tr":"Haftalık etki: {0} altı {2}; {0} dahil, {1} hariç {3}; {1} ve üzeri {4}."},
+    {"key":"ui.mood.order","ru":"Выплата или срыв помощи Парижу меняет поддержку до расчёта волнений.","tr":"Paris yardımının ödenmesi veya aksaması, desteği huzursuzluk hesabından önce değiştirir."}
+  ]
+}
