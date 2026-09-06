@@ -2,6 +2,8 @@
 
 Son güncelleme: **6 Eylül 2026**. Yeni bağlayıcı yön: tek gerçek-zaman dünyası, tek küresel harita; hafta bir tur değildir, ayrı savaş arenası yoktur. Oyuncu bir kişidir; emir insan, mesafe ve bilgi üzerinden işler. [REALTIME_ARCHITECTURE.md](REALTIME_ARCHITECTURE.md) eski haftalı/ayrı-savaş tasarımının yerine geçer.
 
+Güncel uygulama [273e32d](https://github.com/DvaGamer/power-above-all/commit/273e32d649349c80242a5a3bfe530aaa1c020647) olarak `research/reference-library` dalına gönderildi. [Taslak PR #2](https://github.com/DvaGamer/power-above-all/pull/2) yeni gerçek-zaman/komuta/ikmal kapsamıyla güncellendi; bu uygulama commit'inin push ve PR CI kontrolleri geçti. CI tarayıcı regresyonudur; Unity/Windows kanıtları aşağıdadır. `main` ile birleşmedi.
+
 Güncel aday `playable-balance-20260906-135642-436-62670a8a` **GREEN: 577/577 Unity testi, yeni Windows build, 8 gerçek PNG, 11 kontrol, 3 durum ve 10 tarayıcı testi**. Runtime SHA256 `039585725F0CB16652590EAE5BD351E69AD23F5717E03131983CE563A985C022`; 141 dağıtım dosyası doğrulandı. `PLAY_GAME.cmd` son GREEN adayı bütünlük kontrolünden geçirerek seçer. 908 RU/TR anahtarı 32 asset içindedir. Bu kalite kabulünün tamamlandığı anlamına gelmez.
 
 Son adayın RU muharebe ve TR teslim kareleri gerçekten incelendi: komut/erzak bilgisi okunur, teslim sonrası 11,2 günlük erzak ve 256 salvo görünür. Yakın şehir simgesi artık konvoyu kapatmıyor. Kalan görsel açıklar: seyrek yerel arazi, zaman zaman yakınlaşan alay etiketleri, düz kâğıt düğmeler ve yetersiz sonuç hiyerarşisi. Kaynak kodun derlenmesi bunların kabulü değildir.

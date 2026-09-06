@@ -2,6 +2,8 @@
 
 ## Güncel oturum kaydı
 
+- Yayın tamam: uygulama273e32d649349c80242a5a3bfe530aaa1c020647 origin/research/reference-library ile eşit. TaslakPR2 başlık/gövde yeni tekdünya/komuta/ikmal kapsamına yazıldı. CI push34038117836 vePR34038120282 simulationSUCCESS; yalnızbrowserCI, yerel577Unitykanıtı ayrı. STATUS'a kesin uygulama commit'i eklendi. İlgisiz9untracked dosya bırakıldı; insanEditor/Hub/save korundu. Küçük sefer hedefi, operasyonel düşman ve sonuç raporu sonraki kalite işi; tam oyun/müzik/30–50kart bitmiş sayılmaz.
+
 - Yayın öncesi karşılaştırma: ana Unity Assets/Packages/ProjectSettings içindeki302dosya son izole577build kaynağıyla SHA256aynı, fark0. `PLAY_GAME.cmd --check` yeni577adayı verified/complete-build seçti.908yerelleştirme ve219referanslinkPASS, working/index whitespacePASS. Yeni gerçek-zaman/ikmal değişiklikleri ayrı commit ve mevcut taslakPR2'ye hazırlanıyor; kullanıcıya ait ilgisiz untracked dosyalar dışarıda tutulur.
 
 - Son kapı `playable-balance-20260906-135642-436-62670a8a` GREEN: 577/577 Unity, yeni Windows build, 8PNG/11kontrol/3state, 10browser,141files; runtime039585725F0CB16652590EAE5BD351E69AD23F5717E03131983CE563A985C022. Root02battleRU ve09deliveredTR gerçekten gördü; etiket yakınlaşması/seyrek arazi/prototip düğmeler kalite açığı olarak kaydedildi. Kaynak artık donduruldu. Uzun576review `natural-live-7efd0631-20260906-134422-118-63891e49` PARTIAL/native0/710s/6PNG8assert3state tamamlandı; root04resultTR gördü:1200→1034 geri çekilme, sonuç enjekte edilmedi. Bu binary son iki açlık-yorgunluk düzeltmesini içermez; tam577gate onları ayrı doğrular.
